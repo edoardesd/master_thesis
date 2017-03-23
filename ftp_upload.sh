@@ -1,13 +1,27 @@
 #!/bin/sh
-HOST='files.000webhost.com'
-USER='blewizi'
-PASSWD='paparoach123'
+HOST_HOME='blewizi.suroot.com'
+USER_HOME='edoardesd'
+PASSWD_HOME='blewizipass'
+
+HOST="files.000webhost.com"
+USER="blewizi"
+PASSWD="bubusette123"
+
 FILE=$2
 DIR=$1
 echo "il file è $FILE"
 echo "la dir è $DIR quindi $1"
 
 cd $DIR
+
+ftp -n $HOST_HOME <<END_SCRIPT
+quote USER $USER_HOME
+quote PASS $PASSWD_HOME
+binary
+put $FILE
+quit
+END_SCRIPT
+
 
 ftp -n $HOST <<END_SCRIPT
 quote USER $USER

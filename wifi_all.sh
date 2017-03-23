@@ -8,8 +8,10 @@ function ctrl_c(){
 
 }
 
+my_pid=$$
 iw_name="wlp3s0"
 iw_mon_name="mon0"
+tim="timeout 10"
 
 data_day=$(date +"%y%m%d")
 
@@ -21,6 +23,6 @@ wifi_file="wifi-$data_time"
 
 ifconfig $iw_name up  \
 && airmon-ng check kill \
-&& airmon-ng start $iw_name \
-&& airodump-ng $iw_mon_name -w $data_day/wifi/$wifi_file --output-format csv
+&& airmon-ng start $iw_name 
 
+$tim airodump-ng $iw_mon_name -w $data_day/wifi/$wifi_file --output-format csv
