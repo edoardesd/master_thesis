@@ -12,4 +12,4 @@ echo "*********** IWCONFIG ***************"
 iwconfig
 sleep 5
 echo "*********** CARICO IL FILE ***************"
-sh ./ftp_upload.sh $dir_up $file_up
+bash ./ftp_upload.sh $dir_up $file_up

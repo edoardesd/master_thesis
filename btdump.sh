@@ -1,16 +1,15 @@
 #! /bin/bash
 
 
-trap ctrl_c INT
+trap ctrl_c EXIT
 
 function ctrl_c(){
-	kill $dump_pid
-	echo "Stop capturing probes from bluetooth and BLE"
+	echo "Stop capture probes from bluetooth and BLE"
 	sh ./ftp_upload.sh $data_day/bluetooth $hcifile
-	kill $my_pid
 }
 ################## VARS DECL AND INIT ##############
-my_pid=$$
+echo Start bluetooth DUMP
+
 
 data=$(date +"%y%d%m-%H%M")
 
@@ -20,21 +19,9 @@ hcifile="BT-$data.txt"
 
 
 ################### END VAR DECL ##############
-echo Il mio pid è $my_pid
 
 mkdir -p $data_day/bluetooth
 
-###### WHILE BEGIN ######
-while :
-do
-	hcidump -at | tee -a "$data_day/bluetooth/$hcifile" &
-	dump_pid=$!
-	echo pid del figlio è $dump_pid
-
-	sleep 1800
-	kill $dump_pid
-	echo ho killato $dump_pid
-	sleep 3
-
-done
-####### WHILE END #######
+###### HCI DUMP ######
+hcidump -at | tee -a "$data_day/bluetooth/$hcifile"
+####### END #######
