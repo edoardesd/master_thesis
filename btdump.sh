@@ -5,7 +5,7 @@ trap ctrl_c EXIT
 
 function ctrl_c(){
 	echo "Stop capture probes from bluetooth and BLE"
-	sh ./ftp_upload.sh $data_day/bluetooth $hcifile
+	bash ./ftp_upload.sh $data_day/bluetooth $hcifile
 }
 ################## VARS DECL AND INIT ##############
 echo Start bluetooth DUMP
