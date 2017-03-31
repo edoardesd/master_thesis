@@ -22,7 +22,9 @@ class AirodumpProcessor:
 
 	def start(self, rasp):
 		mon_interface = "mon0"
+		#rasp_mode = False
 		if rasp == True:
+			global rasp_mode
 			rasp_mode = True
 			mon_interface = "wlan1mon"
 
@@ -35,7 +37,8 @@ class AirodumpProcessor:
 		mosq_msg = "mosquitto_pub -h "+mosq_host+" -d -t "+mosq_topic+" -m \""+my_string+"\""
 		subprocess.call(mosq_msg, shell=True)
 
-	def process(self):	
+	def process(self):
+		global rasp_mode	
 		if not self.fd:
 			self.start()
 
@@ -58,7 +61,7 @@ class AirodumpProcessor:
 		
 		#line = line.replace("\r", "").replace("\n", "").strip()
 
-
+		
 		try:
 			v = re.split(r'\s{2,}', line)
 			
