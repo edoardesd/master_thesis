@@ -13,8 +13,6 @@ class AirodumpProcessor:
 
 	client_list={}
 	bssid_list={}
-	mosq_host = "192.168.1.10"
-	mosq_topic = "wifi/log"
 
 	def __init__(self): 
 		pass
@@ -24,7 +22,7 @@ class AirodumpProcessor:
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True
-			mon_interface = "mon0"
+			mon_interface = "wlan1mon"
 
 		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'fileprova', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
@@ -32,9 +30,11 @@ class AirodumpProcessor:
 		return self.fd
 
 	def process(self, rasp):
-
+                mosq_host = "192.168.1.4"
+                mosq_topic = "wifi/log"
 		def mosquitto_pub(my_string):
-			subprocess.call("mosquitto_pub -h 192.168.1.4 -t topico -m \"msg test\"", shell=True)
+                        print "Sending a message to", mosq_host
+			subprocess.call("mosquitto_pub -h "+ mosq_host+" -t "+mosq_topic+" -m \""+my_string+"\"", shell=True)
 
 
 
@@ -101,9 +101,8 @@ class AirodumpProcessor:
 				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
 				print new_client_str
 				
-
 				if rasp_mode:
-					mosquitto_pub("costina")
+					mosquitto_pub(new_client_str)
 
 				#TODO lo split per le varie probes: bisogna considerare ogni probe diversa come stringa separaa
 				#ora la stringa delle probes e' unica anche se ne vengono inviate tante. causa piccoli probemi
@@ -122,7 +121,8 @@ class AirodumpProcessor:
 					new_accpoint_str = "Client "+CLIENT+" change access point from "+old_acc_point+" to "+self.client_list[CLIENT]["acc point"]
 					print new_accpoint_str
 
-					#if rasp_mode:
+					if rasp_mode:
+                                                mosquitto_pub(new_accpoint_str)
 						
 
 				#controllo se sta mandando probes diverse
@@ -133,7 +133,8 @@ class AirodumpProcessor:
 						new_probe_str = "Client "+CLIENT+" sends new probe "+v[6]
 						print new_probe_str
 
-						#if rasp_mode:
+						if rasp_mode:
+                                                        mosquitto_pub(new_probe_str)
 						
 						
 
