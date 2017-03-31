@@ -2,6 +2,7 @@
 
 import os
 import airodump
+import hcidump
 import signal
 import sys
 import subprocess
@@ -34,7 +35,11 @@ if __name__ == "__main__":
 	cl_list = {}
 	# Start the airodump-ng processor
 	ad = airodump.AirodumpProcessor()
-	proc = ad.start(rasp)
+	wifi_proc = ad.start(rasp)
+	
+	#Start the hcidump processor
+	bt = hcidump.HcidumpProcessor()
+	bt_proc = bt.start()
 
 	starting_time = strftime("Starting dump at %H:%M:%S of %d-%m-%y\n\n", gmtime())
 	print starting_time
@@ -42,6 +47,7 @@ if __name__ == "__main__":
 
 		try:
 			cl_list = ad.process(rasp)
+			bt.process()
 		except:
 			pass
 			
