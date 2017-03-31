@@ -4,6 +4,7 @@ import os
 import airodump
 import signal
 import sys
+import subprocess
 import pprint as pp
 
 from time import gmtime, strftime
@@ -38,8 +39,9 @@ if __name__ == "__main__":
 	starting_time = strftime("Starting dump at %H:%M:%S of %d-%m-%y\n\n", gmtime())
 	print starting_time
 	while 1:
+
 		try:
-			cl_list = ad.process()
+			cl_list = ad.process(rasp)
 		except:
 			pass
 			

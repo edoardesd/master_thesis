@@ -7,7 +7,6 @@ import re
 
 from time import gmtime, strftime
 
-rasp_mode = False
 
 
 class AirodumpProcessor:
@@ -17,30 +16,34 @@ class AirodumpProcessor:
 	mosq_host = "192.168.1.10"
 	mosq_topic = "wifi/log"
 
-	def __init__(self):
+	def __init__(self): 
 		pass
 
 	def start(self, rasp):
 		mon_interface = "mon0"
-		#rasp_mode = False
+		rasp_mode = False
 		if rasp == True:
-			global rasp_mode
 			rasp_mode = True
-			mon_interface = "wlan1mon"
+			mon_interface = "mon0"
 
 		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'fileprova', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
-		
+
 		return self.fd
 
-	def mosquitto_pub(my_string):
-		mosq_msg = "mosquitto_pub -h "+mosq_host+" -d -t "+mosq_topic+" -m \""+my_string+"\""
-		subprocess.call(mosq_msg, shell=True)
+	def process(self, rasp):
 
-	def process(self):
-		global rasp_mode	
+		def mosquitto_pub(my_string):
+			subprocess.call("mosquitto_pub -h 192.168.1.4 -t topico -m \"msg test\"", shell=True)
+
+
+
 		if not self.fd:
 			self.start()
+
+		rasp_mode = False
+		if rasp == True:
+			rasp_mode = True
 
 		#recupero la stringa che sta scrivendo airodump
 		line = self.fd.stdout.readline()
@@ -51,16 +54,11 @@ class AirodumpProcessor:
 		#per guardare output di airodump a schermo
 		#if line:
 			#self.logger.write("L:"+line.encode('ascii', errors='ignore'))
-
 		if not line:
 			self.fd.close()
 
 		if len(line) < 1:
 			self.fd.close()
-
-		
-		#line = line.replace("\r", "").replace("\n", "").strip()
-
 		
 		try:
 			v = re.split(r'\s{2,}', line)
@@ -89,7 +87,6 @@ class AirodumpProcessor:
 			CLIENT = v[1]
 			BSSID_client = v[0][1:]
 
-
 			if not self.client_list.has_key(CLIENT):
 				
 				self.client_list[CLIENT] = {}
@@ -104,8 +101,9 @@ class AirodumpProcessor:
 				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
 				print new_client_str
 				
+
 				if rasp_mode:
-					mosquitto_pub(new_client_str)
+					mosquitto_pub("costina")
 
 				#TODO lo split per le varie probes: bisogna considerare ogni probe diversa come stringa separaa
 				#ora la stringa delle probes e' unica anche se ne vengono inviate tante. causa piccoli probemi
@@ -124,8 +122,8 @@ class AirodumpProcessor:
 					new_accpoint_str = "Client "+CLIENT+" change access point from "+old_acc_point+" to "+self.client_list[CLIENT]["acc point"]
 					print new_accpoint_str
 
-					if rasp_mode:
-						mosquitto_pub(new_accpoint_str)
+					#if rasp_mode:
+						
 
 				#controllo se sta mandando probes diverse
 				if(len(v) > 6):
@@ -134,8 +132,10 @@ class AirodumpProcessor:
 						self.client_list[CLIENT]["probes"] += "; "
 						new_probe_str = "Client "+CLIENT+" sends new probe "+v[6]
 						print new_probe_str
-						if rasp_mode:
-							mosquitto_pub(new_probe_str)
+
+						#if rasp_mode:
+						
+						
 
 
 			return self.client_list
