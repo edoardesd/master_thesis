@@ -1,11 +1,4 @@
 #!/usr/bin/python
-#
-# Copyright (C), Attila Sukosd, BIT BLUEPRINT ApS (as@bitblueprint.com)
-# 
-# The following is a wrapper around airodump-ng to collect information about wireless APs/clients
-# http://www.aircrack-ng.org/doku.php?id=airodump-ng
-#
-
 
 import os
 import airodump
@@ -20,15 +13,18 @@ def signal_handler(signal, frame):
    pp.pprint(cl_list)
    
    sys.exit(0)	
-   pd.kill()
+   proc.kill()
 
+
+
+################# MAIN START ################## 
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 
 	cl_list = {}
 	# Start the airodump-ng processor
 	ad = airodump.AirodumpProcessor()
-	pd = ad.start()
+	proc = ad.start()
 
 	starting_time = strftime("Starting dump at %H:%M:%S of %d-%m-%y\n\n", gmtime())
 	print starting_time
@@ -38,7 +34,6 @@ if __name__ == "__main__":
 		except:
 			pass
 			
-		
 
 
 	ad.stop()

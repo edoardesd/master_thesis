@@ -16,7 +16,7 @@ class AirodumpProcessor:
 		pass
 
 	def start(self):
-		self.fd = subprocess.Popen(['airodump-ng', 'mon0', '-w', 'fileprova', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.fd = subprocess.Popen(["airodump-ng mon0 -w fileprova --output-format csv"], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 		return self.fd
 
@@ -47,15 +47,16 @@ class AirodumpProcessor:
 
 
 		try:
-			#v=line.split()
 			v = re.split(r'\s{2,}', line)
-			del v[-1]
-
+			
 
 			#trova la riga ch elapsed secondi eccc...
 			if len(v) < 5:
 				return None
- 
+ 			
+ 			#elimino l'ultima colonna che e' sempre vuota
+			del v[-1]
+
  			#trova le reti nello spazio in alto
 			if v[1].find(":") < 0:
 				if v[0].find(":")>0:
@@ -70,14 +71,14 @@ class AirodumpProcessor:
 
 
 			CLIENT = v[1]
-			#print "la client list e':", self.client_list
+			BSSID_client = v[0][1:]
 			
 
 
 			if not self.client_list.has_key(CLIENT):
 				
 				self.client_list[CLIENT] = {}
-				self.client_list[CLIENT]["acc point"] = v[0]
+				self.client_list[CLIENT]["acc point"] = BSSID_client
 				self.client_list[CLIENT]["first seen"] = now
 				self.client_list[CLIENT]["last seen"] = now
 				self.client_list[CLIENT]["probes"] = ""
@@ -88,6 +89,8 @@ class AirodumpProcessor:
 				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
 				print new_client_str
 
+				#TODO lo split per le varie probes: bisogna considerare ogni probe diversa come stringa separaa
+				#ora la stringa delle probes e' unica anche se ne vengono inviate tante. causa piccoli problemi
 				if(len(v) > 6):
 					self.client_list[CLIENT]["probes"] = v[6]
 
@@ -96,9 +99,9 @@ class AirodumpProcessor:
 				self.client_list[CLIENT]["last seen"] = now
 
 				#controllo se la rete alla quale e' connesso e' la stessa
-				if self.client_list[CLIENT]["acc point"] != v[0]:
+				if self.client_list[CLIENT]["acc point"] != BSSID_client:
 					old_acc_point = self.client_list[CLIENT]["acc point"]
-					self.client_list[CLIENT]["acc point"] = v[0]
+					self.client_list[CLIENT]["acc point"] = BSSID_client
 					
 					new_accpoint_str = "Client "+CLIENT+" change access point from "+old_acc_point+" to "+self.client_list[CLIENT]["acc point"]
 					print new_accpoint_str
