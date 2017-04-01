@@ -34,8 +34,8 @@ if __name__ == "__main__":
 
 	cl_list = {}
 	# Start the airodump-ng processor
-	ad = airodump.AirodumpProcessor()
-	wifi_proc = ad.start(rasp)
+	#ad = airodump.AirodumpProcessor()
+	#wifi_proc = ad.start(rasp)
 	
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
@@ -46,7 +46,7 @@ if __name__ == "__main__":
 	while 1:
 
 		try:
-			cl_list = ad.process(rasp)
+			#cl_list = ad.process(rasp)
 			bt.process()
 		except:
 			pass
