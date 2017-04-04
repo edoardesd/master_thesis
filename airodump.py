@@ -27,13 +27,14 @@ class AirodumpProcessor:
 		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'fileprova', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
+		print "Start wifi dump!"
 		return self.fd
 
 	def process(self, rasp):
-                mosq_host = "192.168.1.4"
-                mosq_topic = "wifi/log"
+		mosq_host = "192.168.1.4"
+		mosq_topic = "wifi/log"
 		def mosquitto_pub(my_string):
-                        print "Sending a message to", mosq_host
+			print "Sending a message to", mosq_host
 			subprocess.call("mosquitto_pub -h "+ mosq_host+" -t "+mosq_topic+" -m \""+my_string+"\"", shell=True)
 
 
@@ -122,7 +123,7 @@ class AirodumpProcessor:
 					print new_accpoint_str
 
 					if rasp_mode:
-                                                mosquitto_pub(new_accpoint_str)
+						mosquitto_pub(new_accpoint_str)
 						
 
 				#controllo se sta mandando probes diverse
@@ -134,11 +135,8 @@ class AirodumpProcessor:
 						print new_probe_str
 
 						if rasp_mode:
-                                                        mosquitto_pub(new_probe_str)
-						
-						
-
-
+							mosquitto_pub(new_probe_str)
+	
 			return self.client_list
 
 		except:
