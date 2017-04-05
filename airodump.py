@@ -5,7 +5,7 @@ import sys
 import subprocess
 import re
 
-from time import gmtime, strftime
+from time import localtime, strftime
 
 
 
@@ -27,7 +27,6 @@ class AirodumpProcessor:
 		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'fileprova', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
-		print "Start wifi dump!"
 		return self.fd
 
 	def process(self, rasp):
@@ -50,16 +49,13 @@ class AirodumpProcessor:
 		line = self.fd.stdout.readline()
 		
 		#setto il tempo attuale
-		now = strftime("%H:%M:%S", gmtime())
+		now = strftime("%H:%M:%S", localtime())
 
 		#per guardare output di airodump a schermo
 		#if line:
 			#self.logger.write("L:"+line.encode('ascii', errors='ignore'))
 		if not line:
-			self.fd.close()
-
-		if len(line) < 1:
-			self.fd.close()
+			return self.client_list, False
 		
 		try:
 			v = re.split(r'\s{2,}', line)
@@ -67,7 +63,7 @@ class AirodumpProcessor:
 
 			#trova la riga ch elapsed secondi eccc...
 			if len(v) < 5:
-				return None
+				return self.client_list, True
  			
  			#elimino l'ultima colonna che e' sempre vuota
 			if v[-1]=='':
@@ -82,8 +78,7 @@ class AirodumpProcessor:
 						self.bssid_list[BSSID] = {}
 						self.bssid_list[BSSID]["ESSID"] = v[-1]
 						print self.bssid_list
-				return self.bssid_list
-
+				return self.bssid_list, True
 
 			CLIENT = v[1]
 			BSSID_client = v[0][1:]
@@ -137,7 +132,7 @@ class AirodumpProcessor:
 						if rasp_mode:
 							mosquitto_pub(new_probe_str)
 	
-			return self.client_list
+			return self.client_list, True
 
 		except:
 			print "Failed,",line
@@ -145,8 +140,7 @@ class AirodumpProcessor:
 	
 
 	def stop(self):
-		self.fd.close()
-		fd.kill()
+		self.fd.kill()
 		#subprocess.call("killall airodump-ng", shell=True)
 
 

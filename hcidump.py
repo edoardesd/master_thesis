@@ -5,7 +5,7 @@ import sys
 import subprocess
 import re
 
-from time import gmtime, strftime
+from time import localtime, strftime
 
 
 class HcidumpProcessor:
@@ -24,9 +24,15 @@ class HcidumpProcessor:
 			rasp_mode = True
 
 		self.sinq = subprocess.call(['hcitool spinq'], shell=True)
+		try:
+			self.blescan = subprocess.call(['hcitool lescan'], shell=True)
+		except:
+			pass
 		self.bd = subprocess.Popen(['hcidump', '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
+
 		in_inquiry = False
+		
 		return self.bd
 
 	def process(self, rasp):
@@ -51,29 +57,22 @@ class HcidumpProcessor:
 
 		#recupero la stringa che sta scrivendo airodump
 		line = self.bd.stdout.readline()
-		
+
 		#setto il tempo attuale
-		now = strftime("%H:%M:%S", gmtime())
+		now = strftime("%H:%M:%S", localtime())
 
 		#per guardare output a schermo
 		#if line:
 			#elf.logger.write("L:"+line.encode('ascii', errors='ignore'))
 
 		if not line:
-			self.bd.close()
-
-		if len(line) < 1:
-			self.bd.close()
-		
-
-		#setto il tempo attuale
-		now = strftime("%H:%M:%S", gmtime())
+			return self.client_list, False		
 
 		try:
 
 			if "sniffer - Bluetooth" in line:
 				in_inquiry = False
-				print "hcidump starts!"
+				print "HCIDUMP is running!"
 
 			if "Extended Inquiry" in line:
 				in_inquiry = True
@@ -122,19 +121,16 @@ class HcidumpProcessor:
 
 				
 
-			return self.client_list
-
+			return self.client_list, True
+	
 		except:
-			print "Failed,",line
-			traceback.print_exc()
+			pass
 	
 
 	def stop(self):
-		self.bd.close()
-		self.sinq.close()
 		self.einq = subprocess.call(['hcitool epinq'], shell=True)
-		self.einq.close()
-		bd.kill()
+		self.bd.kill()
+		#self.blescan.kill()
 
 
 
