@@ -79,7 +79,8 @@ if __name__ == "__main__":
 	cl_list = {}
 	bt_list = {}
 	
-
+	subprocess.call(['./wifi_py_config.sh'], shell=True)
+	#subprocess.call(['hcitool lescan &'], shell=True)
 	
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
@@ -93,7 +94,7 @@ if __name__ == "__main__":
 	print starting_time
 	
 	thread_wifi = myThread(1, "wifi")
-	thread_bt = myThread(2, "bluetooth")
+	#thread_bt = myThread(2, "bluetooth")
 
 	thread_wifi.start()
-	thread_bt.start()
+	#thread_bt.start()
