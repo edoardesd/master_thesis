@@ -11,6 +11,9 @@ import pprint as pp
 
 from time import strftime, localtime
 
+############ END OF IMPORT ###############
+
+############ THREAD METHODS ##############
 
 class myThread(threading.Thread):
 	def __init__(self, threadID, name):
@@ -20,7 +23,7 @@ class myThread(threading.Thread):
 	def run(self):
 
 		global bt_list
-		global cl_list
+		global wifi_list
 
 		print "Starting " + self.name + " dump!"
 		if self.name == "wifi":
@@ -28,18 +31,19 @@ class myThread(threading.Thread):
 		if self.name == "bluetooth":
 			bt_proc = bt.start(rasp)
 
-		cl_list, bt_list = while_dump(self.name)
+		wifi_list, bt_list = while_dump(self.name)
 
 		print "Exiting " + self.name + " dump!"
 
+############ END THREAD METHODS ##############
 
 def while_dump(threadName):
 	is_running = True
 	global bt_list
-	global cl_list
+	global wifi_list
 	while is_running:
 		if threadName == "wifi":
-			cl_list, is_running = ad.process(rasp)
+			wifi_list, is_running = ad.process(rasp)
 		if threadName == "bluetooth":
 			bt_list, is_running = bt.process(rasp)
 
@@ -51,12 +55,12 @@ def while_dump(threadName):
 
 
 	print "\n\n"
-	return cl_list, bt_list
+	return wifi_list, bt_list
 
 def signal_handler(signal, frame):
 	print ("You pressed CTRL + C!\n\n")
 	print "WIFI DEVICES:"
-	pp.pprint(cl_list)
+	pp.pprint(wifi_list)
 	print "BLUETOOTH DEVICES:"
 	pp.pprint(bt_list)
 	
@@ -64,7 +68,7 @@ def signal_handler(signal, frame):
 
 
 
-################# MAIN START ##################
+############ MAIN ##############
 rasp = False
 
 if len(sys.argv) > 1:
@@ -76,7 +80,7 @@ if len(sys.argv) > 1:
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 
-	cl_list = {}
+	wifi_list = {}
 	bt_list = {}
 	
 	subprocess.call(['./wifi_py_config.sh'], shell=True)
@@ -84,14 +88,12 @@ if __name__ == "__main__":
 	
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
-	#bt_proc = bt.start(rasp)
 
 	# Start the airodump-ng processor
 	ad = airodump.AirodumpProcessor()
-	#wifi_proc = ad.start(rasp)
 
-	starting_time = strftime("BLEWIZI dump V0.2. Start at time %H:%M:%S of %d-%m-%y\n", localtime())
-	print starting_time
+	starting_time = strftime("Start at time %H:%M:%S of %d-%m-%y\n", localtime())
+	print "BLEWIZI dump V0.3.", starting_time
 	
 	thread_wifi = myThread(1, "wifi")
 	#thread_bt = myThread(2, "bluetooth")
