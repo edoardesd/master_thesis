@@ -1,6 +1,6 @@
 #! /bin/bash
 
-trap ctrl_c SIGINT
+trap ctrl_c EXIT
 
 function ctrl_c(){
 	data_end=$(date +"%y%d%m-%H%M")
@@ -19,6 +19,7 @@ data_start=$(date +"%y%d%m-%H%M")
 echo "Start capture at $data_start. MAC address: $MAC	Device: $DEV"
 
 while true; do
+	trap ctrl_c EXIT
 	#((x++))
 	
 	OUT_rssi="$(sudo hcitool -i hci$DEV rssi $MAC)"
