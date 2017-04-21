@@ -13,6 +13,7 @@ class HcidumpProcessor:
 	client_list={}
 
 	global in_inquiry
+	global in_BLE
 
 	def __init__(self): 
 		pass
@@ -23,23 +24,25 @@ class HcidumpProcessor:
 		if rasp == True:
 			rasp_mode = True
 
-		self.sinq = subprocess.call(['hcitool spinq'], shell=True)
-		try:
-			self.blescan = subprocess.call(['hcitool lescan'], shell=True)
-		except:
-			pass
-		self.bd = subprocess.Popen(['hcidump', '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.sinq = subprocess.call(['hcitool -i hci0 spinq'], shell=True)
+		#try:
+		#	self.blescan = subprocess.call(['hcitool lescan'], shell=True)
+		#except:
+		#	pass
+		self.bd = subprocess.Popen(['hcidump', '-i', 'hci0', '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		in_inquiry = False
+		in_BLE = False
 		
 		return self.bd
 
 	def process(self, rasp):
 		global in_inquiry
+		global in_BLE
 		global last_mac
 		
-		mosq_host = "192.168.1.4"
+		mosq_host = "127.0.0.1"
 		mosq_topic = "bt/log"
 
 		def mosquitto_pub(my_string):
@@ -72,15 +75,24 @@ class HcidumpProcessor:
 
 			if "sniffer - Bluetooth" in line:
 				in_inquiry = False
+				in_BLE = False
 				print "HCIDUMP is running!"
 
 			if "Extended Inquiry" in line:
 				in_inquiry = True
-				#print line
+				in_BLE = False
 			
-
-			if "Extended Inquiry" not in line and (line[0] == ">" or line[0] == "<"):
+			if "Inquiry Result with RSSI" in line:
+				in_inquiry = True
+				in_BLE = False
+			
+			if "LE Meta Event" in line:
 				in_inquiry = False
+				in_BLE = True
+
+			#if ("Extended Inquiry" or "Inquiry Result with RSSI") not in line and (line[0] == ">" or line[0] == "<"):
+			#	in_inquiry = False
+			#	in_BLE = False
 
 
 			#se sono dentro l'inquiry
@@ -91,18 +103,25 @@ class HcidumpProcessor:
 					mac_line = v.split()
 					CLIENT = mac_line[1]
 					last_mac = CLIENT
-				
 					#prima volta che scopro il nuovo client
 					if not self.client_list.has_key(CLIENT):
 						self.client_list[CLIENT] = {}
+						self.client_list[CLIENT]["rssi"] = []
+
 						self.client_list[CLIENT]["first seen"] = now
 						self.client_list[CLIENT]["last seen"] = now
 						self.client_list[CLIENT]["name"] = "not discovered yet!"
-						self.client_list[CLIENT]["rssi"] = mac_line[-1]
+						self.client_list[CLIENT]["rssi"].append(mac_line[-1])
 						self.client_list[CLIENT]["device class"] = mac_line[-3][2:]
+						self.client_list[CLIENT]["time seen"] = 1
 
 					else:
+						times = self.client_list[CLIENT]["time seen"]
+						times = times + 1
+
+						self.client_list[CLIENT]["rssi"].append(mac_line[-1])
 						self.client_list[CLIENT]["last seen"] = now
+						self.client_list[CLIENT]["time seen"] = times
 
 				#se sono alla seconda riga della inquiry
 				if v.startswith("Complete local name"):
@@ -119,7 +138,8 @@ class HcidumpProcessor:
 						if rasp_mode:
 							mosquitto_pub(new_bt_device)
 
-				
+			if in_BLE:
+				print "BELEE", line
 
 			return self.client_list, True
 	

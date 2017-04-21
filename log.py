@@ -83,20 +83,20 @@ if __name__ == "__main__":
 	wifi_list = {}
 	bt_list = {}
 	
-	subprocess.call(['./wifi_py_config.sh'], shell=True)
+	#subprocess.call(['./wifi_py_config.sh'], shell=True)
 	#subprocess.call(['hcitool lescan &'], shell=True)
 	
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
 
 	# Start the airodump-ng processor
-	ad = airodump.AirodumpProcessor()
+	#ad = airodump.AirodumpProcessor()
 
 	starting_time = strftime("Start at time %H:%M:%S of %d-%m-%y\n", localtime())
 	print "BLEWIZI dump V0.3.", starting_time
 	
-	thread_wifi = myThread(1, "wifi")
-	#thread_bt = myThread(2, "bluetooth")
+	#thread_wifi = myThread(1, "wifi")
+	thread_bt = myThread(2, "bluetooth")
 
-	thread_wifi.start()
-	#thread_bt.start()
+	#thread_wifi.start()
+	thread_bt.start()
