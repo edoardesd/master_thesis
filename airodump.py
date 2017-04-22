@@ -22,15 +22,15 @@ class AirodumpProcessor:
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True
-			mon_interface = "wlan1mon"
+			mon_interface = "mon0"
 
-		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'fileprova', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'lab', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		return self.fd
 
 	def process(self, rasp):
-		mosq_host = "192.168.1.4"
+		mosq_host = "127.0.0.1"
 		mosq_topic = "wifi/log"
 		def mosquitto_pub(my_string):
 			print "Sending a message to", mosq_host
@@ -77,7 +77,7 @@ class AirodumpProcessor:
 					if not self.bssid_list.has_key(BSSID):
 						self.bssid_list[BSSID] = {}
 						self.bssid_list[BSSID]["ESSID"] = v[-1]
-						print self.bssid_list
+						#print self.bssid_list
 				return self.bssid_list, True
 
 			CLIENT = v[1]
@@ -86,11 +86,15 @@ class AirodumpProcessor:
 			if not self.client_list.has_key(CLIENT):
 				
 				self.client_list[CLIENT] = {}
+				self.client_list[CLIENT]["rssi"] = []
+				self.client_list[CLIENT]["ts_rssi"] = []
+
 				self.client_list[CLIENT]["acc point"] = BSSID_client
 				self.client_list[CLIENT]["first seen"] = now
 				self.client_list[CLIENT]["last seen"] = now
 				self.client_list[CLIENT]["probes"] = ""
-				#self.client_list[CLIENT]["pwr"] = v[2]
+				self.client_list[CLIENT]["rssi"].append(v[2])
+				self.client_list[CLIENT]["ts_rssi"].append(now)
 				#self.client_list[CLIENT]["rate"] = v[3]
 				#self.client_list[CLIENT]["lost"] = v[4]
 				#self.client_list[CLIENT]["packets"] = v[5]
@@ -108,6 +112,9 @@ class AirodumpProcessor:
 			else:
 				#aggiorno last seen
 				self.client_list[CLIENT]["last seen"] = now
+				if now not in self.client_list[CLIENT]["ts_rssi"]:
+					self.client_list[CLIENT]["rssi"].append(v[2])
+					self.client_list[CLIENT]["ts_rssi"].append(now)
 
 				#controllo se la rete alla quale e' connesso e' la stessa
 				if self.client_list[CLIENT]["acc point"] != BSSID_client:

@@ -26,10 +26,11 @@ class myThread(threading.Thread):
 		global wifi_list
 
 		print "Starting " + self.name + " dump!"
+		
 		if self.name == "wifi":
 			wifi_proc = ad.start(rasp)
 		if self.name == "bluetooth":
-			bt_proc = bt.start(rasp)
+			bt_proc = bt.start(rasp, bt_dongle)
 
 		wifi_list, bt_list = while_dump(self.name)
 
@@ -41,6 +42,7 @@ def while_dump(threadName):
 	is_running = True
 	global bt_list
 	global wifi_list
+
 	while is_running:
 		if threadName == "wifi":
 			wifi_list, is_running = ad.process(rasp)
@@ -70,12 +72,18 @@ def signal_handler(signal, frame):
 
 ############ MAIN ##############
 rasp = False
+bt_dongle="0"
 
 if len(sys.argv) > 1:
 	if sys.argv[1] == "-r":
 		print "Rasperry Pi mode activated!\n\n"
 		rasp = True
-
+	if sys.argv[1] == "1":
+		print "working on dongle 1 (dikom)\n\n"
+		bt_dongle = "1"
+	else: 
+		print "working on dongle 0 (pc)\n\n"
+		bt_dongle = "0"
 
 if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
@@ -98,5 +106,6 @@ if __name__ == "__main__":
 	#thread_wifi = myThread(1, "wifi")
 	thread_bt = myThread(2, "bluetooth")
 
-	#thread_wifi.start()
 	thread_bt.start()
+	#thread_wifi.start()
+	

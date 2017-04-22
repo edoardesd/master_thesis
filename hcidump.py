@@ -18,18 +18,18 @@ class HcidumpProcessor:
 	def __init__(self): 
 		pass
 
-	def start(self, rasp):
-		
+	def start(self, rasp, my_dongle):
+
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True
 
-		self.sinq = subprocess.call(['hcitool -i hci0 spinq'], shell=True)
+		self.sinq = subprocess.call(['hcitool -i hci'+my_dongle+' spinq'], shell=True)
 		#try:
 		#	self.blescan = subprocess.call(['hcitool lescan'], shell=True)
 		#except:
 		#	pass
-		self.bd = subprocess.Popen(['hcidump', '-i', 'hci0', '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.bd = subprocess.Popen(['hcidump', '-i', 'hci'+my_dongle, '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		in_inquiry = False
@@ -107,11 +107,13 @@ class HcidumpProcessor:
 					if not self.client_list.has_key(CLIENT):
 						self.client_list[CLIENT] = {}
 						self.client_list[CLIENT]["rssi"] = []
+						self.client_list[CLIENT]["ts_rssi"] = []
 
 						self.client_list[CLIENT]["first seen"] = now
 						self.client_list[CLIENT]["last seen"] = now
 						self.client_list[CLIENT]["name"] = "not discovered yet!"
 						self.client_list[CLIENT]["rssi"].append(mac_line[-1])
+						self.client_list[CLIENT]["ts_rssi"].append(now)
 						self.client_list[CLIENT]["device class"] = mac_line[-3][2:]
 						self.client_list[CLIENT]["time seen"] = 1
 
@@ -120,6 +122,7 @@ class HcidumpProcessor:
 						times = times + 1
 
 						self.client_list[CLIENT]["rssi"].append(mac_line[-1])
+						self.client_list[CLIENT]["ts_rssi"].append(now)
 						self.client_list[CLIENT]["last seen"] = now
 						self.client_list[CLIENT]["time seen"] = times
 
