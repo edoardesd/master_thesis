@@ -18,7 +18,7 @@ class AirodumpProcessor:
 		pass
 
 	def start(self, rasp):
-		mon_interface = "mon0"
+		mon_interface = "wlan0mon"
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True
@@ -82,19 +82,21 @@ class AirodumpProcessor:
 
 			CLIENT = v[1]
 			BSSID_client = v[0][1:]
+			ts_probe = v[6]
+			sn_probe = v[5]
+			#packet = v[4]
 
 			if not self.client_list.has_key(CLIENT):
 				
 				self.client_list[CLIENT] = {}
-				self.client_list[CLIENT]["rssi"] = []
-				self.client_list[CLIENT]["ts_rssi"] = []
+				self.client_list[CLIENT]["probe info"] = {"SN": sn_probe, "RX": v[2],"TS": ts_probe}
 
 				self.client_list[CLIENT]["acc point"] = BSSID_client
-				self.client_list[CLIENT]["first seen"] = now
-				self.client_list[CLIENT]["last seen"] = now
+				self.client_list[CLIENT]["first seen"] = ts_probe
+				self.client_list[CLIENT]["last seen"] = ts_probe
 				self.client_list[CLIENT]["probes"] = ""
-				self.client_list[CLIENT]["rssi"].append(v[2])
-				self.client_list[CLIENT]["ts_rssi"].append(now)
+				#self.client_list[CLIENT]["rssi"].append(v[2])
+				#self.client_list[CLIENT]["ts_rssi"].append(now)
 				#self.client_list[CLIENT]["rate"] = v[3]
 				#self.client_list[CLIENT]["lost"] = v[4]
 				#self.client_list[CLIENT]["packets"] = v[5]
@@ -106,15 +108,15 @@ class AirodumpProcessor:
 
 				#TODO lo split per le varie probes: bisogna considerare ogni probe diversa come stringa separaa
 				#ora la stringa delle probes e' unica anche se ne vengono inviate tante. causa piccoli probemi
-				if(len(v) > 6):
-					self.client_list[CLIENT]["probes"] = v[6]
+				#if(len(v) > 6):
+				#	self.client_list[CLIENT]["probes"] = v[6]
 
 			else:
 				#aggiorno last seen
-				self.client_list[CLIENT]["last seen"] = now
-				if now not in self.client_list[CLIENT]["ts_rssi"]:
-					self.client_list[CLIENT]["rssi"].append(v[2])
-					self.client_list[CLIENT]["ts_rssi"].append(now)
+				self.client_list[CLIENT]["last seen"] = ts_probe
+				#if now not in self.client_list[CLIENT]["ts_rssi"]:
+				#	self.client_list[CLIENT]["rssi"].append(v[2])
+				#	self.client_list[CLIENT]["ts_rssi"].append(now)
 
 				#controllo se la rete alla quale e' connesso e' la stessa
 				if self.client_list[CLIENT]["acc point"] != BSSID_client:
@@ -129,15 +131,15 @@ class AirodumpProcessor:
 						
 
 				#controllo se sta mandando probes diverse
-				if(len(v) > 6):
-					if v[6] not in self.client_list[CLIENT]["probes"]:
-						self.client_list[CLIENT]["probes"] += v[6]
-						self.client_list[CLIENT]["probes"] += "; "
-						new_probe_str = "Client "+CLIENT+" sends new probe "+v[6]
-						print new_probe_str
+				#if(len(v) > 6):
+				#	if v[6] not in self.client_list[CLIENT]["probes"]:
+				#		self.client_list[CLIENT]["probes"] += v[6]
+				#		self.client_list[CLIENT]["probes"] += "; "
+				#		new_probe_str = "Client "+CLIENT+" sends new probe "+v[6]
+				#		print new_probe_str
 
-						if rasp_mode:
-							mosquitto_pub(new_probe_str)
+				#		if rasp_mode:
+				#			mosquitto_pub(new_probe_str)
 	
 			return self.client_list, True
 
