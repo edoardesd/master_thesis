@@ -102,29 +102,29 @@ class HcidumpProcessor:
 				if v.startswith("bdaddr"):
 					mac_line = v.split()
 					CLIENT = mac_line[1]
+					rx_power = mac_line[-1]
 					last_mac = CLIENT
+
 					#prima volta che scopro il nuovo client
 					if not self.client_list.has_key(CLIENT):
 						self.client_list[CLIENT] = {}
-						self.client_list[CLIENT]["rssi"] = []
-						self.client_list[CLIENT]["ts_rssi"] = []
 
+						probe_key = 1
+						self.client_list[CLIENT]["times seen"] = 1
+						self.client_list[CLIENT]["probe info"] = {probe_key: {"RX": rx_power, "TS": now}}
 						self.client_list[CLIENT]["first seen"] = now
 						self.client_list[CLIENT]["last seen"] = now
 						self.client_list[CLIENT]["name"] = "not discovered yet!"
-						self.client_list[CLIENT]["rssi"].append(mac_line[-1])
-						self.client_list[CLIENT]["ts_rssi"].append(now)
 						self.client_list[CLIENT]["device class"] = mac_line[-3][2:]
-						self.client_list[CLIENT]["time seen"] = 1
+						
 
 					else:
-						times = self.client_list[CLIENT]["time seen"]
-						times = times + 1
+						lenght_key = self.client_list[CLIENT]["times seen"]
+						lenght_key += 1
 
-						self.client_list[CLIENT]["rssi"].append(mac_line[-1])
-						self.client_list[CLIENT]["ts_rssi"].append(now)
+						self.client_list[CLIENT]["probe info"][lenght_key] = {"RX": rx_power,"TS": now}
+						self.client_list[CLIENT]["times seen"] += 1
 						self.client_list[CLIENT]["last seen"] = now
-						self.client_list[CLIENT]["time seen"] = times
 
 				#se sono alla seconda riga della inquiry
 				if v.startswith("Complete local name"):
@@ -142,7 +142,7 @@ class HcidumpProcessor:
 							mosquitto_pub(new_bt_device)
 
 			if in_BLE:
-				print "BELEE", line
+				print "BLE", line
 
 			return self.client_list, True
 	

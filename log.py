@@ -104,8 +104,8 @@ if __name__ == "__main__":
 	print "BLEWIZI dump V0.3.", starting_time
 	
 	thread_wifi = myThread(1, "wifi")
-	#thread_bt = myThread(2, "bluetooth")
+	thread_bt = myThread(2, "bluetooth")
 
-	#thread_bt.start()
+	thread_bt.start()
 	thread_wifi.start()
 	
