@@ -24,7 +24,8 @@ class AirodumpProcessor:
 			rasp_mode = True
 			mon_interface = "wlan0mon"
 
-		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'lab', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		#per scrivere su file: '-w', 'lab', '--output-format', 'csv'
+		self.fd = subprocess.Popen(['airodump-ng', mon_interface], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		return self.fd
