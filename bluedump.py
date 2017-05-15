@@ -45,12 +45,15 @@ class BluetoothProcessor:
 		log_val = subprocess.check_output("./values_log.sh "+mac_address+" ", shell=True)
 		if "Not" in log_val:
 			print "not connected at ", now
+			return self.client_list, True
 		
-		else:
-			o = re.split(r'\s{4,}', log_val)
-			rssi = o[0]
-			lq = o[1]
-			tpl = o[2].replace("\n", "")
+		
+		o = re.split(r'\s{4,}', log_val)
+		rssi = o[0]
+		lq = o[1]
+		tpl = o[2]
+		if "\n" in o[3]:
+			date = o[3].replace("\n", "")
 
 		if not line:
 			return self.client_list, False
@@ -72,7 +75,7 @@ class BluetoothProcessor:
 		if not self.client_list.has_key(CLIENT):
 			self.client_list[CLIENT] = {}
 
-		self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi, "lq": lq, "tpl": tpl}
+		self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi, "lq": lq, "tpl": tpl, "date": date}
 
 		return self.client_list, True
 
