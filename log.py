@@ -70,7 +70,7 @@ def while_dump(threadName):
 	return wifi_list, bt_list, bd_list
 
 def signal_handler(signal, frame):
-	print ("You pressed CTRL + C at", datetime.utcnow().strftime("%H:%M:%S.%f")[:-3], "\n\n")
+	print ("You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n")
 	print "WIFI DEVICES:"
 	pp.pprint(wifi_list)
 	print "BLUETOOTH DEVICES:"
