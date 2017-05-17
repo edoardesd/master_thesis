@@ -14,5 +14,5 @@ RSSI_val=${OUT_rssi#$remove_rssi}
 LQ_val=${OUT_lq#$remove_lq}
 TPL_val=${OUT_tpl#$remove_tpl}
 	
-echo "$RSSI_val    $LQ_val    $TPL_val    $OUT_date"
+echo "$RSSI_val    $LQ_val    $TPL_val"
 
