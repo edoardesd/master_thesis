@@ -20,14 +20,13 @@ class BluetoothProcessor:
 		pass
 
 	def start(self):
-		outputFile = open("outputFile.txt", "a", 0)
 		global mac_address
 	
 		mac_address = "C8:14:79:31:3C:29"
 		self.bt = subprocess.Popen(['unbuffer', './respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.bt2 = subprocess.Popen(['ping', '84:11:9E:FD:16:B2'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
-		print "Starting at: ", datetime.utcnow().strftime("%H:%M:%S.%f")[:-3]
+		print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		return self.bt
 
@@ -42,7 +41,6 @@ class BluetoothProcessor:
 	
 		#recupero la stringa che sta scrivendo airodump
 		line = self.bt.stdout.readline()
-		print line
 
 		if "Ping" in line:
 			print "Start pinging process!"
@@ -50,8 +48,14 @@ class BluetoothProcessor:
 
 		if not line:
 			print "Finito il tutto"
-			print line
 			return self.client_list, False
+
+		#setto il tempo attuale
+		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+
+		#chiamo script per recuperare rssi, lq, tpl
+		log_val = subprocess.check_output("./values_log.sh "+mac_address+" ", shell=True)
+
 
 		#un po' estremo come metodo
 		#if mac_address not in line:
@@ -65,12 +69,10 @@ class BluetoothProcessor:
 			return self.client_list, False
 
 		if "Send failed" in line:
-			print "Send failed"
 			print line
 			#return self.client_list, False
 
 		if "Recv failed" in line:
-			print "Receive failed"
 			print line
 			#return self.client_list, False
 		
@@ -85,33 +87,28 @@ class BluetoothProcessor:
 			print "Puntino (no echo time)"
 			return self.client_list, True
 
-		#setto il tempo attuale
-		now = datetime.utcnow().strftime("%H:%M:%S.%f")[:-3]
-
-		#chiamo script per recuperare rssi, lq, tpl
-		log_val = subprocess.check_output("./values_log.sh "+mac_address+" ", shell=True)
 		
-		print log_val
+		
+		#print "log val e':", log_val
+		ck_out_vect = re.split(r'\s{4,}', log_val)
 		#check if device is connected		
-		if "Not connected" in log_val:
-			print "Not connected!"
+		if len(ck_out_vect)<3:
+			print "Not Connected!"
 			print line
 			return self.client_list, True
 
-		else:
-			o = re.split(r'\s{4,}', log_val)
-			rssi = o[0]
-			lq = o[1]
-			if len(o) > 2:
-				if "\n" in o[2]:
-					tpl = o[2].replace("\n", "")
+		
+		rssi = ck_out_vect[0]
+		lq = ck_out_vect[1]
+		if "\n" in ck_out_vect[2]:
+			tpl = ck_out_vect[2].replace("\n", "")
 
 
 
-			if not self.client_list.has_key(CLIENT):
-				self.client_list[CLIENT] = {}
+		if not self.client_list.has_key(CLIENT):
+			self.client_list[CLIENT] = {}
 
-			self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi, "lq": lq, "tpl": tpl}
+		self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi, "lq": lq, "tpl": tpl}
 
 		return self.client_list, True
 
