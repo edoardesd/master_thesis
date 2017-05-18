@@ -8,6 +8,8 @@ import signal
 import sys
 import subprocess
 import threading
+import csv
+
 import pprint as pp
 
 from time import strftime, localtime
@@ -41,7 +43,6 @@ class myThread(threading.Thread):
 
 		print "Exiting " + self.name + " dump!"
 
-############ END THREAD METHODS ##############
 
 def while_dump(threadName):
 	is_running = True
@@ -69,8 +70,43 @@ def while_dump(threadName):
 	print "\n\n"
 	return wifi_list, bt_list, bd_list
 
+############ END THREAD METHODS ##############
+
+############ START CSV METHODS ##############
+
+def dict_to_list(my_dict):
+	final_list = []
+
+	for mac in my_dict:
+		for ts in my_dict[mac]:
+			my_list = []
+			my_list.append(ts)
+			for val in my_dict[mac][ts]:
+				#print my_dict[mac][ts][val]
+				my_list.append(my_dict[mac][ts][val])
+			final_list.append(my_list)
+
+	return final_list	
+
+
+def csv_dict_writer(path, fieldnames, data):
+	"""
+	Writes a CSV file using DictWriter
+	"""
+	with open(path, "wb") as out_file:
+		writer = csv.DictWriter(out_file, delimiter=',', fieldnames=fieldnames)
+		writer.writeheader()
+		for row in data:
+			writer.writerow(row)
+
+############ END CSV METHODS ##############
+
+
 def signal_handler(signal, frame):
 	print ("You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n")
+	#sys.stdout = open('file.txt', 'w')
+
+
 	print "WIFI DEVICES:"
 	pp.pprint(wifi_list)
 	print "BLUETOOTH DEVICES:"
@@ -78,6 +114,18 @@ def signal_handler(signal, frame):
 	print "BLUETOOTH DUMP:"
 	pp.pprint(bd_list)
 	
+	data = dict_to_list(bd_list)
+	csv_list = []
+	fieldnames = "timestamp, echo_time, rssi, tpl, lq".split(",")
+	for values in data:
+		inner_dict = dict(zip(fieldnames, values))
+		csv_list.append(inner_dict)
+
+	path = "dict_output.csv"
+	csv_dict_writer(path, fieldnames, csv_list)
+
+	# close file
+	#outfile.close()
 	#sys.exit(0)	
 
 
@@ -85,6 +133,7 @@ def signal_handler(signal, frame):
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
+
 
 if len(sys.argv) > 1:
 	if sys.argv[1] == "-r":
@@ -107,11 +156,11 @@ if __name__ == "__main__":
 	#subprocess.call(['./wifi_py_config.sh'], shell=True)
 	#subprocess.call(['hcitool lescan &'], shell=True)
 	
-	#Start the hcidump processor
-	#bt = hcidump.HcidumpProcessor()
-
 	# Start the airodump-ng processor
-	#ad = airodump.AirodumpProcessor()
+	ad = airodump.AirodumpProcessor()
+
+	#Start the hcidump processor
+	bt = hcidump.HcidumpProcessor()
 
 	#Start the bluedump processor
 	bd = bluedump.BluetoothProcessor()
@@ -123,7 +172,7 @@ if __name__ == "__main__":
 	#thread_bt = myThread(2, "bluetooth")
 	thread_bd = myThread(3, "ping/rssi")
 
-	#thread_bt.start()
 	#thread_wifi.start()
+	#thread_bt.start()
 	thread_bd.start()
 	
