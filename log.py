@@ -9,7 +9,7 @@ import sys
 import subprocess
 import threading
 import csv
-
+import copy
 import pprint as pp
 
 from time import strftime, localtime
@@ -26,7 +26,7 @@ class myThread(threading.Thread):
 		self.name = name
 	def run(self):
 
-		global bt_list
+		global hc_list
 		global wifi_list
 		global bd_list
 
@@ -39,14 +39,14 @@ class myThread(threading.Thread):
 		if self.name == "ping/rssi":
 			bd_proc = bd.start()
 
-		wifi_list, bt_list, bd_list = while_dump(self.name)
+		wifi_list, hc_list, bd_list = while_dump(self.name)
 
 		print "Exiting " + self.name + " dump!"
 
 
 def while_dump(threadName):
 	is_running = True
-	global bt_list
+	global hc_list
 	global wifi_list
 	global bd_list
 
@@ -54,7 +54,7 @@ def while_dump(threadName):
 		if threadName == "wifi":
 			wifi_list, is_running = ad.process(rasp)
 		if threadName == "bluetooth":
-			bt_list, is_running = bt.process(rasp)
+			hc_list, is_running = bt.process(rasp)
 		if threadName == "ping/rssi":
 			bd_list, is_running = bd.process()
 
@@ -68,13 +68,50 @@ def while_dump(threadName):
 
 
 	print "\n\n"
-	return wifi_list, bt_list, bd_list
+	return wifi_list, hc_list, bd_list
 
 ############ END THREAD METHODS ##############
 
 ############ START CSV METHODS ##############
 
-def dict_to_list(my_dict):
+def init_csv(my_final_list, csv_type):
+	if csv_type == "bd":
+		data = bd_to_list(my_final_list)
+		fieldnames = "timestamp, echo_time, rssi, tpl, lq".split(",")
+		path = "dict_output_bd.csv"
+	
+	if csv_type == "hc":
+		data = hc_to_list(my_final_list)
+		fieldnames = "mac address, RX, timestamp".split(",")
+		path = "dict_output_hcdump.csv"
+
+
+	csv_list = []
+	for values in data:
+		inner_dict = dict(zip(fieldnames, values))
+		csv_list.append(inner_dict)
+
+	#aggiungere data/orario
+	csv_dict_writer(path, fieldnames, csv_list)
+
+def hc_to_list(my_dict):
+	final_list = []
+
+	for mac in my_dict:
+		my_list = []
+		my_list.append(mac)
+		if my_dict[mac]["probe info"]:
+			for info in my_dict[mac]["probe info"]:
+				my_list.append(my_dict[mac]["probe info"][info]["RX"])
+				my_list.append(my_dict[mac]["probe info"][info]["TS"])
+				final_list.append(copy.deepcopy(my_list))
+				my_list.remove(my_dict[mac]["probe info"][info]["RX"])
+				my_list.remove(my_dict[mac]["probe info"][info]["TS"])
+
+	return final_list
+
+
+def bd_to_list(my_dict):
 	final_list = []
 
 	for mac in my_dict:
@@ -82,8 +119,8 @@ def dict_to_list(my_dict):
 			my_list = []
 			my_list.append(ts)
 			for val in my_dict[mac][ts]:
-				#print my_dict[mac][ts][val]
 				my_list.append(my_dict[mac][ts][val])
+			
 			final_list.append(my_list)
 
 	return final_list	
@@ -103,26 +140,18 @@ def csv_dict_writer(path, fieldnames, data):
 
 
 def signal_handler(signal, frame):
-	print ("You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n")
-	#sys.stdout = open('file.txt', 'w')
-
+	print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
 
 	print "WIFI DEVICES:"
 	pp.pprint(wifi_list)
 	print "BLUETOOTH DEVICES:"
-	pp.pprint(bt_list)
+	pp.pprint(hc_list)
 	print "BLUETOOTH DUMP:"
 	pp.pprint(bd_list)
 	
-	data = dict_to_list(bd_list)
-	csv_list = []
-	fieldnames = "timestamp, echo_time, rssi, tpl, lq".split(",")
-	for values in data:
-		inner_dict = dict(zip(fieldnames, values))
-		csv_list.append(inner_dict)
-
-	path = "dict_output.csv"
-	csv_dict_writer(path, fieldnames, csv_list)
+	#init_csv(bd_list, "bd")
+	#init_csv(hc_list, "hc")
+	
 
 	# close file
 	#outfile.close()
@@ -150,7 +179,7 @@ if __name__ == "__main__":
 	signal.signal(signal.SIGINT, signal_handler)
 
 	wifi_list = {}
-	bt_list = {}
+	hc_list = {}
 	bd_list = {}
 	
 	#subprocess.call(['./wifi_py_config.sh'], shell=True)
@@ -168,11 +197,18 @@ if __name__ == "__main__":
 	starting_time = strftime("Start at time %H:%M:%S of %d-%m-%y\n", localtime())
 	print "BLEWIZI dump V0.5.", starting_time
 	
-	#thread_wifi = myThread(1, "wifi")
-	#thread_bt = myThread(2, "bluetooth")
-	thread_bd = myThread(3, "ping/rssi")
 
-	#thread_wifi.start()
-	#thread_bt.start()
-	thread_bd.start()
+	thread_wifi = myThread(1, "wifi")
+
+	thread_hc = myThread(2, "bluetooth")
+	
+	
+	#thread_bd = myThread(3, "ping/rssi")
+
+	subprocess.check_output(['hcitool', '-i', 'hci0', 'spinq'])
+
+	thread_hc.start()
+	#thread_bd.start()
+	thread_wifi.start()
+	
 	

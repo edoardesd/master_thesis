@@ -23,10 +23,9 @@ class BluetoothProcessor:
 		global mac_address
 	
 		mac_address = "C8:14:79:31:3C:29"
-		self.bt = subprocess.Popen(['unbuffer', './respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		#self.bt2 = subprocess.Popen(['ping', '84:11:9E:FD:16:B2'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.bt = subprocess.Popen(['unbuffer', 'log_script/./respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
-		print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]
+		#print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		return self.bt
 
@@ -54,7 +53,7 @@ class BluetoothProcessor:
 		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		#chiamo script per recuperare rssi, lq, tpl
-		log_val = subprocess.check_output("./values_log.sh "+mac_address+" ", shell=True)
+		#log_val = subprocess.check_output("log_script/./values_log.sh "+mac_address+" ", shell=True)
 
 
 		#un po' estremo come metodo
@@ -78,7 +77,7 @@ class BluetoothProcessor:
 		
 
 		#Ping is ok!
-		print "Ping in process!"
+		print "Ping in progress!"
 
 		v = re.split(r'\s{1,}', line)
 		echo_time = v[-2][:-2]
@@ -90,7 +89,7 @@ class BluetoothProcessor:
 		
 		
 		#print "log val e':", log_val
-		ck_out_vect = re.split(r'\s{4,}', log_val)
+		ck_out_vect = re.split(r'\s{4,}', "3    4    255\n    ")
 		#check if device is connected		
 		if len(ck_out_vect)<3:
 			print "Not Connected!"
@@ -103,7 +102,7 @@ class BluetoothProcessor:
 		if "\n" in ck_out_vect[2]:
 			tpl = ck_out_vect[2].replace("\n", "")
 
-
+		tpl = "3"
 
 		if not self.client_list.has_key(CLIENT):
 			self.client_list[CLIENT] = {}
