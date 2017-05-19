@@ -141,6 +141,7 @@ def csv_dict_writer(path, fieldnames, data):
 
 def signal_handler(signal, frame):
 	print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
+	einq = subprocess.call(['hcitool epinq'], shell=True)
 
 	print "WIFI DEVICES:"
 	pp.pprint(wifi_list)
@@ -195,20 +196,16 @@ if __name__ == "__main__":
 	bd = bluedump.BluetoothProcessor()
 
 	starting_time = strftime("Start at time %H:%M:%S of %d-%m-%y\n", localtime())
-	print "BLEWIZI dump V0.5.", starting_time
+	print "BLEWIZI dump V0.8.1", starting_time
 	
 
 	thread_wifi = myThread(1, "wifi")
-
 	thread_hc = myThread(2, "bluetooth")
-	
-	
-	#thread_bd = myThread(3, "ping/rssi")
+	thread_bd = myThread(3, "ping/rssi")
 
-	subprocess.check_output(['hcitool', '-i', 'hci0', 'spinq'])
 
 	thread_hc.start()
-	#thread_bd.start()
+	thread_bd.start()
 	thread_wifi.start()
 	
 	

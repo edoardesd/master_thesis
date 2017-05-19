@@ -9,10 +9,12 @@ from time import localtime, strftime
 from datetime import datetime
 
 
+global counter
 
 
 class BluetoothProcessor:
 
+	global counter
 	client_list={}
 
 
@@ -21,6 +23,8 @@ class BluetoothProcessor:
 
 	def start(self):
 		global mac_address
+		global counter
+		counter = 0
 	
 		mac_address = "C8:14:79:31:3C:29"
 		self.bt = subprocess.Popen(['unbuffer', 'log_script/./respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
@@ -30,7 +34,7 @@ class BluetoothProcessor:
 		return self.bt
 
 	def process(self):
-
+		global counter
 		global mac_address
 		CLIENT = mac_address
 
@@ -75,9 +79,13 @@ class BluetoothProcessor:
 			print line
 			#return self.client_list, False
 		
+		global counter
 
 		#Ping is ok!
-		print "Ping in progress!"
+		global counter
+		counter += 1
+		if (counter % 4 == 0):
+			print "Ping in progress!"
 
 		v = re.split(r'\s{1,}', line)
 		echo_time = v[-2][:-2]
