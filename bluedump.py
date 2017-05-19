@@ -57,8 +57,7 @@ class BluetoothProcessor:
 		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		#chiamo script per recuperare rssi, lq, tpl
-		#log_val = subprocess.check_output("log_script/./values_log.sh "+mac_address+" ", shell=True)
-
+		log_val = subprocess.check_output(['log_script/./values_log.sh', mac_address])
 
 		#un po' estremo come metodo
 		#if mac_address not in line:
@@ -73,13 +72,21 @@ class BluetoothProcessor:
 
 		if "Send failed" in line:
 			print line
-			#return self.client_list, False
+			return self.client_list, True
 
 		if "Recv failed" in line:
 			print line
-			#return self.client_list, False
+			return self.client_list, True
 		
-		global counter
+		if "no response" in line:
+			print "No response!"
+			return self.client_list, True
+
+		if "l2ping" in line:
+			print "Respawn l2ping!"
+			return self.client_list, True
+
+
 
 		#Ping is ok!
 		global counter
@@ -95,9 +102,8 @@ class BluetoothProcessor:
 			return self.client_list, True
 
 		
-		
 		#print "log val e':", log_val
-		ck_out_vect = re.split(r'\s{4,}', "3    4    255\n    ")
+		ck_out_vect = re.split(r'\s{4,}', log_val)
 		#check if device is connected		
 		if len(ck_out_vect)<3:
 			print "Not Connected!"
@@ -110,7 +116,6 @@ class BluetoothProcessor:
 		if "\n" in ck_out_vect[2]:
 			tpl = ck_out_vect[2].replace("\n", "")
 
-		tpl = "3"
 
 		if not self.client_list.has_key(CLIENT):
 			self.client_list[CLIENT] = {}
@@ -121,6 +126,7 @@ class BluetoothProcessor:
 
 
 	def stop(self):
+		#subprocess.Popen(['sudo','killall','l2ping'])
 		self.bt.kill()
 
 
