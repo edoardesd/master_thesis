@@ -49,6 +49,7 @@ class BluetoothProcessor:
 			print "Start pinging process!"
 			return self.client_list, True
 
+		#killare bene le cose
 		if not line:
 			print "Finito il tutto"
 			return self.client_list, False

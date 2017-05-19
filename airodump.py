@@ -13,12 +13,14 @@ class AirodumpProcessor:
 
 	client_list={}
 	bssid_list={}
+	global counter
+	counter = 0
 
 	def __init__(self): 
 		pass
 
 	def start(self, rasp):
-		mon_interface = "wlp3s0mon"
+		mon_interface = "wlan0mon"
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True
@@ -31,6 +33,8 @@ class AirodumpProcessor:
 		return self.fd
 
 	def process(self, rasp):
+		global counter
+
 		mosq_host = "127.0.0.1"
 		mosq_topic = "wifi/log"
 		def mosquitto_pub(my_string):
@@ -49,6 +53,10 @@ class AirodumpProcessor:
 		#recupero la stringa che sta scrivendo airodump
 		line = self.fd.stdout.readline()
 		
+		counter +=1
+		if (counter%1797 == 0):
+			print "I'm running!"
+
 		#setto il tempo attuale
 		now = strftime("%H:%M:%S", localtime())
 
