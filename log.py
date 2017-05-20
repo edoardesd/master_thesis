@@ -12,7 +12,7 @@ import csv
 import copy
 import pprint as pp
 
-from time import strftime, localtime
+from time import strftime, localtime, sleep
 from datetime import datetime
 
 ############ END OF IMPORT ###############
@@ -74,17 +74,32 @@ def while_dump(threadName):
 
 ############ START CSV METHODS ##############
 
-def init_csv(my_final_list, csv_type):
+def make_sure_path_exists(path):
+	if not os.path.exists(path):
+		
+		os.makedirs(path)
+
+def init_csv(path_day, path_time, my_final_list, csv_type):
+	make_sure_path_exists(path_day)
+	make_sure_path_exists(path_day+"/"+path_time)
+
+	string_path = path_day+"/"+path_time+"/"+path_time+"_"
+
+
 	if csv_type == "bd":
 		data = bd_to_list(my_final_list)
 		fieldnames = "timestamp, echo_time, rssi, tpl, lq".split(",")
-		path = "dict_output_bd.csv"
+		path = string_path +"bluetooth.csv"
 	
 	if csv_type == "hc":
 		data = hc_to_list(my_final_list)
 		fieldnames = "mac address, RX, timestamp".split(",")
-		path = "dict_output_hcdump.csv"
+		path = string_path +"hcidump.csv"
 
+	if csv_type == "wifi":
+		data = wifi_to_list(my_final_list)
+		fieldnames = "mac address, RX, timestamp, SN".split(",")
+		path = string_path +"wifi.csv"
 
 	csv_list = []
 	for values in data:
@@ -93,6 +108,24 @@ def init_csv(my_final_list, csv_type):
 
 	#aggiungere data/orario
 	csv_dict_writer(path, fieldnames, csv_list)
+
+def wifi_to_list(my_dict):
+	final_list = []
+
+	for mac in my_dict:
+		my_list = []
+		my_list.append(mac)
+		if my_dict[mac]["probe info"]:
+			for info in my_dict[mac]["probe info"]:
+				my_list.append(my_dict[mac]["probe info"][info]["RX"])
+				my_list.append(my_dict[mac]["probe info"][info]["TS"])
+				my_list.append(my_dict[mac]["probe info"][info]["SN"])
+				final_list.append(copy.deepcopy(my_list))
+				my_list.remove(my_dict[mac]["probe info"][info]["RX"])
+				my_list.remove(my_dict[mac]["probe info"][info]["TS"])
+				my_list.remove(my_dict[mac]["probe info"][info]["SN"])
+
+	return final_list
 
 def hc_to_list(my_dict):
 	final_list = []
@@ -139,9 +172,11 @@ def csv_dict_writer(path, fieldnames, data):
 ############ END CSV METHODS ##############
 
 
+
+
 def signal_handler(signal, frame):
 	print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
-	einq = subprocess.call(['hcitool epinq'], shell=True)
+	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
 	print "WIFI DEVICES:"
 	pp.pprint(wifi_list)
@@ -150,13 +185,11 @@ def signal_handler(signal, frame):
 	print "BLUETOOTH DUMP:"
 	pp.pprint(bd_list)
 	
-	#init_csv(bd_list, "bd")
-	#init_csv(hc_list, "hc")
+	init_csv(starting_day, starting_time, bd_list, "bd")
+	init_csv(starting_day, starting_time, hc_list, "hc")
+	init_csv(starting_day, starting_time, wifi_list, "wifi")
 	
 
-	# close file
-	#outfile.close()
-	#sys.exit(0)	
 
 
 
@@ -195,8 +228,12 @@ if __name__ == "__main__":
 	#Start the bluedump processor
 	bd = bluedump.BluetoothProcessor()
 
-	starting_time = strftime("Start at time %H:%M:%S of %d-%m-%y\n", localtime())
-	print "BLEWIZI dump V0.8.1", starting_time
+
+	starting_time = strftime("%H:%M:%S", localtime())
+	starting_day = strftime("%d-%m-%y", localtime())
+	print starting_day, starting_time
+	starting_string = "Start at time " +starting_time+ "  of " +starting_day
+	print "BLEWIZI dump V 1.0", starting_string
 	
 
 	thread_wifi = myThread(1, "wifi")
@@ -204,8 +241,8 @@ if __name__ == "__main__":
 	thread_bd = myThread(3, "ping/rssi")
 
 
-	thread_hc.start()
-	thread_bd.start()
-	thread_wifi.start()
-	
+	#thread_bd.start()
+	thread_wifi.start(
+)	
+	#thread_hc.start()
 	
