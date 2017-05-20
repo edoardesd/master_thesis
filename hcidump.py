@@ -6,6 +6,7 @@ import subprocess
 import re
 
 from time import localtime, strftime
+from datetime import datetime
 
 
 class HcidumpProcessor:
@@ -62,7 +63,8 @@ class HcidumpProcessor:
 		line = self.bd.stdout.readline()
 
 		#setto il tempo attuale
-		now = strftime("%H:%M:%S", localtime())
+		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+		#now = strftime("%H:%M:%S", localtime())
 
 		#per guardare output a schermo
 		#if line:

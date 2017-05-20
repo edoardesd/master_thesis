@@ -6,6 +6,7 @@ import subprocess
 import re
 
 from time import localtime, strftime
+from datetime import datetime
 
 
 
@@ -58,7 +59,8 @@ class AirodumpProcessor:
 			print "I'm running!"
 
 		#setto il tempo attuale
-		now = strftime("%H:%M:%S", localtime())
+		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+		#now = strftime("%H:%M:%S", localtime())
 
 		#per guardare output di airodump a schermo
 		#if line:
@@ -96,7 +98,7 @@ class AirodumpProcessor:
 			rx_power = v[2]
 			#packet = v[4]
 
-			
+
 			if not self.client_list.has_key(CLIENT):
 				
 				self.client_list[CLIENT] = {}
