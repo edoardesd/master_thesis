@@ -179,11 +179,11 @@ def signal_handler(signal, frame):
 	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
 	print "WIFI DEVICES:"
-	pp.pprint(wifi_list)
+	#pp.pprint(wifi_list)
 	print "BLUETOOTH DEVICES:"
-	pp.pprint(hc_list)
+	#pp.pprint(hc_list)
 	print "BLUETOOTH DUMP:"
-	pp.pprint(bd_list)
+	#pp.pprint(bd_list)
 	
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
@@ -216,7 +216,7 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 	
-	#subprocess.call(['./wifi_py_config.sh'], shell=True)
+	subprocess.call(['Script_Bash/./wifi_py_config.sh'], shell=True)
 	#subprocess.call(['hcitool lescan &'], shell=True)
 	
 	# Start the airodump-ng processor
@@ -241,8 +241,7 @@ if __name__ == "__main__":
 	thread_bd = myThread(3, "ping/rssi")
 
 
-	#thread_bd.start()
-	thread_wifi.start(
-)	
-	#thread_hc.start()
+	thread_bd.start()
+	thread_wifi.start()	
+	thread_hc.start()
 	

@@ -15,6 +15,8 @@ class HcidumpProcessor:
 
 	global in_inquiry
 	global in_BLE
+	global counter
+
 
 	def __init__(self): 
 		pass
@@ -42,6 +44,7 @@ class HcidumpProcessor:
 		global in_inquiry
 		global in_BLE
 		global last_mac
+		global counter
 		
 		mosq_host = "127.0.0.1"
 		mosq_topic = "bt/log"
@@ -69,6 +72,11 @@ class HcidumpProcessor:
 		#per guardare output a schermo
 		#if line:
 			#elf.logger.write("L:"+line.encode('ascii', errors='ignore'))
+
+
+		counter +=1
+		if (counter%177 == 0):
+			print "Bluetooth is running!"
 
 		if not line:
 			return self.client_list, False		

@@ -1,6 +1,6 @@
 #! /bin/bash
 
-iw_name="wlp3s0"
+iw_name="wlan1"
 
 
 
