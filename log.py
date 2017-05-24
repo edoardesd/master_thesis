@@ -83,7 +83,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 	make_sure_path_exists(path_day)
 	make_sure_path_exists(path_day+"/"+path_time)
 
-	string_path = path_day+"/"+path_time+"/"+path_time+"_"
+	string_path = dev+"-"+path_day+"/"+path_time+"/"+path_time+"_"
 
 
 	if csv_type == "bd":
@@ -188,7 +188,9 @@ def signal_handler(signal, frame):
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
 	init_csv(starting_day, starting_time, wifi_list, "wifi")
-	
+
+
+	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
 
 
@@ -196,12 +198,18 @@ def signal_handler(signal, frame):
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
+dev = 1
 
 
 if len(sys.argv) > 1:
 	if sys.argv[1] == "-r":
 		print "Rasperry Pi mode activated!\n\n"
 		rasp = True
+
+	if sys.argv[1] == "-d":
+                dev = sys.argv[2]
+                print "Device number: ", dev
+                
 	if sys.argv[1] == "1":
 		print "working on dongle 1 (dikom)\n\n"
 		bt_dongle = "1"
