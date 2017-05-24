@@ -21,7 +21,7 @@ class AirodumpProcessor:
 		pass
 
 	def start(self, rasp):
-		mon_interface = "wlan0mon"
+		mon_interface = "wlan1mon"
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True

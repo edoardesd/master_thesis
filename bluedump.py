@@ -26,7 +26,7 @@ class BluetoothProcessor:
 		global counter
 		counter = 0
 	
-		mac_address = "C8:14:79:31:3C:29"
+		mac_address = "88:c9:d0:1f:3e:48"
 		self.bt = subprocess.Popen(['unbuffer', 'log_script/./respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 		#print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]

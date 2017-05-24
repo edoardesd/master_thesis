@@ -16,6 +16,7 @@ class HcidumpProcessor:
 	global in_inquiry
 	global in_BLE
 	global counter
+	counter = 0
 
 
 	def __init__(self): 
@@ -72,7 +73,6 @@ class HcidumpProcessor:
 		#per guardare output a schermo
 		#if line:
 			#elf.logger.write("L:"+line.encode('ascii', errors='ignore'))
-
 
 		counter +=1
 		if (counter%177 == 0):

@@ -1,5 +1,11 @@
 #! /bin/bash
 
+trap ctrl_c SIGINT
+
+function ctrl_c(){
+	echo "Exit values bt log"
+}
+
 MAC=$1
 remove_rssi="RSSI return value: "
 remove_lq="Link quality: "
