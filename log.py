@@ -191,8 +191,15 @@ def signal_handler(signal, frame):
 
 
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
+        #mysqlimport --ignore-lines=1 --fields-terminated-by=,
+	#--columns='timestamp,echo_time,rssi,tpl,lq'
+	#--local -u root -p test
+	#/home/pi/master_thesis/24-05-17/15:53:49/db_bluetooth.csv
+        #
+        #non mettere i numeri nel nome della tabella (db_bluetooth.csv) è il nome della tabella
+        #test è il nome del db
 
-
+        
 
 
 ############ MAIN ##############
