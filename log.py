@@ -10,6 +10,8 @@ import subprocess
 import threading
 import csv
 import copy
+import MySQLdb
+
 import pprint as pp
 
 from time import strftime, localtime, sleep
@@ -171,6 +173,31 @@ def csv_dict_writer(path, fieldnames, data):
 
 ############ END CSV METHODS ##############
 
+############ START MYSQL METHODS ##############
+
+def mysql_connector(table_name):
+	db = MySQLdb.connect(host="localhost",    
+						 user="root",        	  # sempre root
+						 passwd="distributedpass" # nella raspberry e' raspberry
+						)  
+
+
+	bt_name = "\""+table_name+"bluetooth\"" #senza  .csv
+	wifi_name = "\""+table_name+"wifi\""
+	hci_name = "\""+table_name+"hcidump\""
+	# you must create a Cursor object. It will let you execute all the queries you need
+	cur = db.cursor()
+	cur.execute("SET sql_mode=\'ANSI_QUOTES\'")
+	cur.execute("USE test") #nome del database
+	# Use all the SQL you like
+	cur.execute("CREATE TABLE "+bt_name+" (timestamp VARCHAR(30), echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
+	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rx INT, timestamp VARCHAR(30), sn INT)") 
+	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rx INT, timestamp VARCHAR(30))") 
+
+
+	db.close()	
+
+############ END MYSQL METHODS ##############
 
 
 
@@ -191,15 +218,28 @@ def signal_handler(signal, frame):
 
 
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
-        #mysqlimport --ignore-lines=1 --fields-terminated-by=,
-	#--columns='timestamp,echo_time,rssi,tpl,lq'
-	#--local -u root -p test
-	#/home/pi/master_thesis/24-05-17/15:53:49/db_bluetooth.csv
-        
-        #non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
-        #test e' il nome del db
+	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
+	#test e' il nome del db
 
-        
+	mysql_connector(dev+"__"+starting_time+"_")
+		
+	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
+								--columns='timestamp,echo_time,rssi,tpl,lq' \
+								--local -u root -p test \
+								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_bluetooth.csv"], \
+								 shell=True)
+
+	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
+								--columns='mac_address, rx, timestamp' \
+								--local -u root -p test \
+								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_hcidump.csv"], \
+								 shell=True)
+	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
+								--columns='mac_address, rx, timestamp, sn' \
+								--local -u root -p test \
+								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_wifi.csv"], \
+								 shell=True)
+
 
 
 ############ MAIN ##############
@@ -214,9 +254,9 @@ if len(sys.argv) > 1:
 		rasp = True
 
 	if sys.argv[1] == "-d":
-                dev = sys.argv[2]
-                print "Device number: ", dev
-                
+				dev = sys.argv[2]
+				print "Device number: ", dev
+				
 	if sys.argv[1] == "1":
 		print "working on dongle 1 (dikom)\n\n"
 		bt_dongle = "1"
@@ -244,7 +284,7 @@ if __name__ == "__main__":
 	bd = bluedump.BluetoothProcessor()
 
 
-	starting_time = strftime("%H:%M:%S", localtime())
+	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d-%m-%y", localtime())
 	print starting_day, starting_time
 	starting_string = "Start at time " +starting_time+ "  of " +starting_day
