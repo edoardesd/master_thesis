@@ -83,7 +83,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 	make_sure_path_exists(path_day)
 	make_sure_path_exists(path_day+"/"+path_time)
 
-	string_path = dev+"-"+path_day+"/"+path_time+"/"+path_time+"_"
+	string_path = path_day+"/"+path_time+"/"+dev+"__"+path_time+"_"
 
 
 	if csv_type == "bd":
@@ -195,9 +195,9 @@ def signal_handler(signal, frame):
 	#--columns='timestamp,echo_time,rssi,tpl,lq'
 	#--local -u root -p test
 	#/home/pi/master_thesis/24-05-17/15:53:49/db_bluetooth.csv
-        #
-        #non mettere i numeri nel nome della tabella (db_bluetooth.csv) è il nome della tabella
-        #test è il nome del db
+        
+        #non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
+        #test e' il nome del db
 
         
 
@@ -205,7 +205,7 @@ def signal_handler(signal, frame):
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
-dev = 1
+dev = subprocess.check_output(['cat', '../raspi-number.txt'])[:1]
 
 
 if len(sys.argv) > 1:
