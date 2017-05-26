@@ -19,6 +19,10 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
+
+mac_address = ["C8:14:79:31:3c:29", "88:C9:D0:1F:3E:48", "00:02:72:CE:04:71"]
+
+
 ############ THREAD METHODS ##############
 
 class myThread(threading.Thread):
@@ -39,7 +43,7 @@ class myThread(threading.Thread):
 		if self.name == "bluetooth":
 			bt_proc = bt.start(rasp, bt_dongle)
 		if self.name == "ping/rssi":
-			bd_proc = bd.start()
+			bd_proc = bd.start(mac_address)
 
 		wifi_list, hc_list, bd_list = while_dump(self.name)
 

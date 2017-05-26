@@ -21,14 +21,13 @@ class BluetoothProcessor:
 	def __init__(self): 
 		pass
 
-	def start(self):
+	def start(self, mac_list):
 		#global mac_address
 		global counter
 		counter = 0
 	
-		mac_address = "C8:14:79:31:3c:29"
-		#self.bt = subprocess.Popen(['unbuffer', 'log_script/./respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-		self.bt = subprocess.Popen(['unbuffer', 'Script_Bash/./multiple_ping.sh'], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+		self.bt = subprocess.Popen(['unbuffer', 'Script_Bash/./multiple_ping.sh'] + mac_list, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 		#print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
@@ -101,7 +100,7 @@ class BluetoothProcessor:
 		else: 
 			return self.client_list, True
 
-		if CLIENT is not None:
+		if CLIENT is not None or CLIENT is not '':
 			#chiamo script per recuperare rssi, lq, tpl
 			log_val = subprocess.check_output(['log_script/./values_log.sh', CLIENT])
 		else: 
@@ -112,6 +111,10 @@ class BluetoothProcessor:
 
 		if echo_time == ".":
 			print "Puntino (no echo time)"
+			return self.client_list, True
+
+		if ":" in echo_time:
+			print "mac address in echo ", line
 			return self.client_list, True
 
 		
@@ -128,6 +131,10 @@ class BluetoothProcessor:
 		lq = ck_out_vect[1]
 		if "\n" in ck_out_vect[2]:
 			tpl = ck_out_vect[2].replace("\n", "")
+
+
+		if "Usage" in rssi:
+			return self.client_list, True
 
 
 		if not self.client_list.has_key(CLIENT):
