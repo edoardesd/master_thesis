@@ -94,7 +94,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 
 	if csv_type == "bd":
 		data = bd_to_list(my_final_list)
-		fieldnames = "timestamp, rasp, echo_time, rssi, tpl, lq".split(",")
+		fieldnames = "mac address, timestamp, rasp, echo_time, rssi, tpl, lq".split(",")
 		path = string_path +"bluetooth.csv"
 	
 	if csv_type == "hc":
@@ -160,6 +160,7 @@ def bd_to_list(my_dict):
 	for mac in my_dict:
 		for ts in my_dict[mac]:
 			my_list = []
+			my_list.append(mac)
 			my_list.append(ts)
 			my_list.append(dev)
 			for val in my_dict[mac][ts]:
@@ -200,7 +201,7 @@ def mysql_connector(table_name):
 
 	cur.execute("USE test") #nome del database
 	# Use all the SQL you like
-	cur.execute("CREATE TABLE "+bt_name+" (timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
+	cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
 	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
 	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30))") 
 
@@ -222,7 +223,7 @@ def signal_handler(signal, frame):
 	print "BLUETOOTH DUMP:"
 	pp.pprint(bd_list)
 	
-	'''
+	
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
@@ -237,7 +238,7 @@ def signal_handler(signal, frame):
 	mysql_connector(dev+"__"+starting_time+"_")
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='timestamp, rasp, echo_time,rssi,tpl,lq' \
+								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
 								--local -u root -p test \
 								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
@@ -252,7 +253,7 @@ def signal_handler(signal, frame):
 								--local -u root -p test \
 								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_wifi.csv"], \
 								 shell=True)
-	'''
+	
 
 
 ############ MAIN ##############
@@ -299,7 +300,6 @@ if __name__ == "__main__":
 
 	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d%m%y", localtime())
-	print starting_day, starting_time
 	starting_string = "Start at time " +starting_time+ "  of " +starting_day
 	print "BLEWIZI dump V 1.0", starting_string
 	
