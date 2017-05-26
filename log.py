@@ -89,7 +89,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 	make_sure_path_exists(path_day)
 	make_sure_path_exists(path_day+"/"+path_time)
 
-	string_path = path_day+"/"+path_time+"/"+dev+"__"+path_time+"_"
+	string_path = path_day+"/"+path_time+"/"+path_time+"_"
 
 
 	if csv_type == "bd":
@@ -203,7 +203,7 @@ def mysql_connector(table_name):
 	# Use all the SQL you like
 	cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
 	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
-	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30))") 
+	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
 
 
 	db.close()	
@@ -234,24 +234,23 @@ def signal_handler(signal, frame):
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
 
-	print "Start MYSQL"
-	mysql_connector(dev+"__"+starting_time+"_")
+	
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
 								--local -u root -p test \
-								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_bluetooth.csv"], \
+								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp' \
 								--local -u root -p test \
-								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_hcidump.csv"], \
+								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
 								 shell=True)
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp, sn' \
 								--local -u root -p test \
-								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_wifi.csv"], \
+								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
 
@@ -308,6 +307,9 @@ if __name__ == "__main__":
 	thread_hc = myThread(2, "bluetooth")
 	thread_bd = myThread(3, "ping/rssi")
 
+	if dev == "1":
+		print "Start MYSQL"
+		mysql_connector(starting_time+"_")
 
 	thread_bd.start()
 	thread_wifi.start()	
