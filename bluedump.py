@@ -22,12 +22,13 @@ class BluetoothProcessor:
 		pass
 
 	def start(self):
-		global mac_address
+		#global mac_address
 		global counter
 		counter = 0
 	
-		mac_address = "88:c9:d0:1f:3e:48"
-		self.bt = subprocess.Popen(['unbuffer', 'log_script/./respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		mac_address = "C8:14:79:31:3c:29"
+		#self.bt = subprocess.Popen(['unbuffer', 'log_script/./respawn_l2ping.sh', mac_address], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.bt = subprocess.Popen(['unbuffer', 'Script_Bash/./multiple_ping.sh'], bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 		#print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
@@ -35,8 +36,8 @@ class BluetoothProcessor:
 
 	def process(self):
 		global counter
-		global mac_address
-		CLIENT = mac_address
+		#global mac_address
+		#CLIENT = mac_address
 
 		if not self.bt:
 			self.start()
@@ -57,8 +58,7 @@ class BluetoothProcessor:
 		#setto il tempo attuale
 		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
-		#chiamo script per recuperare rssi, lq, tpl
-		log_val = subprocess.check_output(['log_script/./values_log.sh', mac_address])
+		
 
 		#un po' estremo come metodo
 		#if mac_address not in line:
@@ -69,7 +69,7 @@ class BluetoothProcessor:
 		if "Host is down" in line:
 			print "Host is down!!!"
 			print line
-			return self.client_list, False
+			return self.client_list, True
 
 		if "Send failed" in line:
 			print line
@@ -96,6 +96,18 @@ class BluetoothProcessor:
 			print "Ping in progress!"
 
 		v = re.split(r'\s{1,}', line)
+		if len(v)>3:
+			CLIENT = v[3]
+		else: 
+			return self.client_list, True
+
+		if CLIENT is not None:
+			#chiamo script per recuperare rssi, lq, tpl
+			log_val = subprocess.check_output(['log_script/./values_log.sh', CLIENT])
+		else: 
+			print "Client null: ", line
+			return self.client_list, True
+
 		echo_time = v[-2][:-2]
 
 		if echo_time == ".":

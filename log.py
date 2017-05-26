@@ -90,17 +90,17 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 
 	if csv_type == "bd":
 		data = bd_to_list(my_final_list)
-		fieldnames = "timestamp, echo_time, rssi, tpl, lq".split(",")
+		fieldnames = "timestamp, rasp, echo_time, rssi, tpl, lq".split(",")
 		path = string_path +"bluetooth.csv"
 	
 	if csv_type == "hc":
 		data = hc_to_list(my_final_list)
-		fieldnames = "mac address, RX, timestamp".split(",")
+		fieldnames = "mac address, rasp, RX, timestamp".split(",")
 		path = string_path +"hcidump.csv"
 
 	if csv_type == "wifi":
 		data = wifi_to_list(my_final_list)
-		fieldnames = "mac address, RX, timestamp, SN".split(",")
+		fieldnames = "mac address, rasp, RX, timestamp, SN".split(",")
 		path = string_path +"wifi.csv"
 
 	csv_list = []
@@ -119,6 +119,7 @@ def wifi_to_list(my_dict):
 		my_list.append(mac)
 		if my_dict[mac]["probe info"]:
 			for info in my_dict[mac]["probe info"]:
+				my_list.append(dev)
 				my_list.append(my_dict[mac]["probe info"][info]["RX"])
 				my_list.append(my_dict[mac]["probe info"][info]["TS"])
 				my_list.append(my_dict[mac]["probe info"][info]["SN"])
@@ -126,6 +127,7 @@ def wifi_to_list(my_dict):
 				my_list.remove(my_dict[mac]["probe info"][info]["RX"])
 				my_list.remove(my_dict[mac]["probe info"][info]["TS"])
 				my_list.remove(my_dict[mac]["probe info"][info]["SN"])
+				my_list.remove(dev)
 
 	return final_list
 
@@ -137,11 +139,13 @@ def hc_to_list(my_dict):
 		my_list.append(mac)
 		if my_dict[mac]["probe info"]:
 			for info in my_dict[mac]["probe info"]:
+				my_list.append(dev)
 				my_list.append(my_dict[mac]["probe info"][info]["RX"])
 				my_list.append(my_dict[mac]["probe info"][info]["TS"])
 				final_list.append(copy.deepcopy(my_list))
 				my_list.remove(my_dict[mac]["probe info"][info]["RX"])
 				my_list.remove(my_dict[mac]["probe info"][info]["TS"])
+				my_list.remove(dev)
 
 	return final_list
 
@@ -153,6 +157,7 @@ def bd_to_list(my_dict):
 		for ts in my_dict[mac]:
 			my_list = []
 			my_list.append(ts)
+			my_list.append(dev)
 			for val in my_dict[mac][ts]:
 				my_list.append(my_dict[mac][ts][val])
 			
@@ -181,18 +186,19 @@ def mysql_connector(table_name):
 						 passwd="distributedpass" # nella raspberry e' raspberry
 						)  
 
-
+	
 	bt_name = "\""+table_name+"bluetooth\"" #senza  .csv
 	wifi_name = "\""+table_name+"wifi\""
 	hci_name = "\""+table_name+"hcidump\""
 	# you must create a Cursor object. It will let you execute all the queries you need
 	cur = db.cursor()
 	cur.execute("SET sql_mode=\'ANSI_QUOTES\'")
+
 	cur.execute("USE test") #nome del database
 	# Use all the SQL you like
-	cur.execute("CREATE TABLE "+bt_name+" (timestamp VARCHAR(30), echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
-	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rx INT, timestamp VARCHAR(30), sn INT)") 
-	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rx INT, timestamp VARCHAR(30))") 
+	cur.execute("CREATE TABLE "+bt_name+" (timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
+	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
+	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30))") 
 
 
 	db.close()	
@@ -205,13 +211,15 @@ def signal_handler(signal, frame):
 	print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
 	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
-	print "WIFI DEVICES:"
+	#print "WIFI DEVICES:"
 	#pp.pprint(wifi_list)
-	print "BLUETOOTH DEVICES:"
+	#print "BLUETOOTH DEVICES:"
 	#pp.pprint(hc_list)
 	print "BLUETOOTH DUMP:"
-	#pp.pprint(bd_list)
+	pp.pprint(bd_list)
 	
+	'''
+	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
 	init_csv(starting_day, starting_time, wifi_list, "wifi")
@@ -221,25 +229,26 @@ def signal_handler(signal, frame):
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
 
+	print "Start MYSQL"
 	mysql_connector(dev+"__"+starting_time+"_")
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='timestamp,echo_time,rssi,tpl,lq' \
+								--columns='timestamp, rasp, echo_time,rssi,tpl,lq' \
 								--local -u root -p test \
 								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='mac_address, rx, timestamp' \
+								--columns='mac_address, rasp, rx, timestamp' \
 								--local -u root -p test \
 								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_hcidump.csv"], \
 								 shell=True)
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='mac_address, rx, timestamp, sn' \
+								--columns='mac_address, rasp, rx, timestamp, sn' \
 								--local -u root -p test \
 								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+dev+"__"+starting_time+"_wifi.csv"], \
 								 shell=True)
-
+	'''
 
 
 ############ MAIN ##############
@@ -285,7 +294,7 @@ if __name__ == "__main__":
 
 
 	starting_time = strftime("%H%M%S", localtime())
-	starting_day = strftime("%d-%m-%y", localtime())
+	starting_day = strftime("%d%m%y", localtime())
 	print starting_day, starting_time
 	starting_string = "Start at time " +starting_time+ "  of " +starting_day
 	print "BLEWIZI dump V 1.0", starting_string
