@@ -18,12 +18,13 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
-dev = subprocess.check_output(['cat', '../raspi-number.txt'])[:1]
 
-mac_address = subprocess.check_output(['cat', '../mac-addresses.txt']).split(",")
+dev = subprocess.check_output(['cat', '/home/pi/raspi-number.txt'])[:1]
 
-local_path = subprocess.check_output(['cat', '../local-path.txt'])
-db_config = subprocess.check_output(['cat', '../db-config.txt'])
+mac_address = subprocess.check_output(['cat', '/home/pi/mac-addresses.txt']).split(",")
+
+local_path = subprocess.check_output(['cat', '/home/pi/local-path.txt'])
+db_config = subprocess.check_output(['cat', '/home/pi/db-config.txt'])
 db_config = db_config.split(",")
 
 print "Ping on ", mac_address
@@ -242,7 +243,7 @@ def signal_handler(signal, frame):
 
 
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
-	#subprocess.check_output(['ifdown', 'wlan0'])
+	subprocess.check_output(['ifdown', 'wlan0'])
 	subprocess.check_output(['ifup', 'wlan0'])
 
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
@@ -250,18 +251,18 @@ def signal_handler(signal, frame):
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
-								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp' \
-								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
 								 shell=True)
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp, sn' \
-								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
