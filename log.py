@@ -20,13 +20,13 @@ from datetime import datetime
 
 dev = subprocess.check_output(['cat', '../raspi-number.txt'])[:1]
 
-mac_address = ["C8:14:79:31:3c:29", "88:C9:D0:1F:3E:48", "00:02:72:CE:04:71"]
-local_path = "/home/edoardesd/master_thesis/"
+mac_address = subprocess.check_output(['cat', '../mac-addresses.txt']).split(",")
 
-db_config = subprocess.check_output(['cat', '../db-config.txt'])[:-1]
+local_path = subprocess.check_output(['cat', '../local-path.txt'])
+db_config = subprocess.check_output(['cat', '../db-config.txt'])
 db_config = db_config.split(",")
 
-print mac_address
+print "Ping on ", mac_address
 
 db_host = db_config[0]
 db_pass = db_config[1]
@@ -231,8 +231,8 @@ def signal_handler(signal, frame):
 	#pp.pprint(wifi_list)
 	#print "BLUETOOTH DEVICES:"
 	#pp.pprint(hc_list)
-	print "BLUETOOTH DUMP:"
-	pp.pprint(bd_list)
+	#print "BLUETOOTH DUMP:"
+	#pp.pprint(bd_list)
 	
 	
 	print "Create CSV"
