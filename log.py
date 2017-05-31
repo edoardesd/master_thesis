@@ -11,7 +11,6 @@ import threading
 import csv
 import copy
 import MySQLdb
-
 import pprint as pp
 
 from time import strftime, localtime, sleep
@@ -19,9 +18,20 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
+dev = subprocess.check_output(['cat', '../raspi-number.txt'])[:1]
 
 mac_address = ["C8:14:79:31:3c:29", "88:C9:D0:1F:3E:48", "00:02:72:CE:04:71"]
+local_path = "/home/edoardesd/master_thesis/"
 
+db_config = subprocess.check_output(['cat', '../db-config.txt'])[:-1]
+db_config = db_config.split(",")
+
+print mac_address
+
+db_host = db_config[0]
+db_pass = db_config[1]
+db_user = db_config[2]
+db_database = db_config[3]
 
 ############ THREAD METHODS ##############
 
@@ -39,7 +49,7 @@ class myThread(threading.Thread):
 		print "Starting " + self.name + " dump!"
 		
 		if self.name == "wifi":
-			wifi_proc = ad.start(rasp)
+			wifi_proc = ad.start(rasp, wifi_string)
 		if self.name == "bluetooth":
 			bt_proc = bt.start(rasp, bt_dongle)
 		if self.name == "ping/rssi":
@@ -186,9 +196,10 @@ def csv_dict_writer(path, fieldnames, data):
 ############ START MYSQL METHODS ##############
 
 def mysql_connector(table_name):
-	db = MySQLdb.connect(host="localhost",    
-						 user="root",        	  # sempre root
-						 passwd="distributedpass" # nella raspberry e' raspberry
+	db = MySQLdb.connect(host= db_host,    
+						 user= db_user,        	  # sempre root
+						 passwd= db_pass, # nella raspberry e' raspberry
+						 db= db_database
 						)  
 
 	
@@ -199,7 +210,7 @@ def mysql_connector(table_name):
 	cur = db.cursor()
 	cur.execute("SET sql_mode=\'ANSI_QUOTES\'")
 
-	cur.execute("USE test") #nome del database
+	#cur.execute("USE test") #nome del database
 	# Use all the SQL you like
 	cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
 	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
@@ -238,27 +249,28 @@ def signal_handler(signal, frame):
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
-								--local -u root -p test \
-								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
+								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp' \
-								--local -u root -p test \
-								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
+								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
 								 shell=True)
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp, sn' \
-								--local -u root -p test \
-								/home/edoardesd/master_thesis/"+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
+								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
-
+	wifiraw_file = local_path+wifi_string+".csv"
+	if os.path.isfile(wifiraw_file):
+		subprocess.check_output(["mv "+wifi_string+".csv "+local_path+starting_day+"/"+starting_time], shell = True)
 
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
-dev = subprocess.check_output(['cat', '../raspi-number.txt'])[:1]
 
 
 if len(sys.argv) > 1:
@@ -300,6 +312,8 @@ if __name__ == "__main__":
 	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d%m%y", localtime())
 	starting_string = "Start at time " +starting_time+ "  of " +starting_day
+
+	wifi_string = "wifiraw_"+starting_day+"_"+starting_day
 	print "BLEWIZI dump V 1.0", starting_string
 	
 

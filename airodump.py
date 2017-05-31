@@ -20,15 +20,16 @@ class AirodumpProcessor:
 	def __init__(self): 
 		pass
 
-	def start(self, rasp):
+	def start(self, rasp, path):
 		mon_interface = "wlan1mon"
 		rasp_mode = False
 		if rasp == True:
 			rasp_mode = True
 			mon_interface = "wlan0mon"
 
+
 		#per scrivere su file: '-w', 'lab', '--output-format', 'csv'
-		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', 'lab', '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', path, '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		return self.fd
