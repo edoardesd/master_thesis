@@ -242,10 +242,11 @@ def signal_handler(signal, frame):
 
 
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
+	#subprocess.check_output(['ifdown', 'wlan0'])
+	subprocess.check_output(['ifup', 'wlan0'])
+
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
-
-	
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
@@ -264,10 +265,12 @@ def signal_handler(signal, frame):
 								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
-	wifiraw_file = local_path+wifi_string+".csv"
+	wifiraw_file = local_path+wifi_string+"-01.csv"
 	if os.path.isfile(wifiraw_file):
-		subprocess.check_output(["mv "+wifi_string+".csv "+local_path+starting_day+"/"+starting_time], shell = True)
+		subprocess.check_output(["mv "+wifi_string+"-01.csv "+local_path+starting_day+"/"+starting_time], shell = True)
 
+
+        
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
@@ -313,7 +316,7 @@ if __name__ == "__main__":
 	starting_day = strftime("%d%m%y", localtime())
 	starting_string = "Start at time " +starting_time+ "  of " +starting_day
 
-	wifi_string = "wifiraw_"+starting_day+"_"+starting_day
+	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
 	print "BLEWIZI dump V 1.0", starting_string
 	
 
