@@ -21,19 +21,19 @@ class BluetoothProcessor:
 	def __init__(self): 
 		pass
 
-	def start(self, mac_list):
+	def start(self, pwd, mac_list):
 		#global mac_address
 		global counter
 		counter = 0
 	
 
-		self.bt = subprocess.Popen(['unbuffer', 'Script_Bash/./multiple_ping.sh'] + mac_list, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.bt = subprocess.Popen(['unbuffer', pwd+'Script_Bash/./multiple_ping.sh'] + mac_list, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 		#print "Starting at: ", datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		return self.bt
 
-	def process(self):
+	def process(self, pwd):
 		global counter
 		#global mac_address
 		#CLIENT = mac_address
@@ -102,7 +102,7 @@ class BluetoothProcessor:
 
 		if CLIENT is not None or CLIENT is not '':
 			#chiamo script per recuperare rssi, lq, tpl
-			log_val = subprocess.check_output(['log_script/./values_log.sh', CLIENT])
+			log_val = subprocess.check_output([pwd+'log_script/./values_log.sh', CLIENT])
 		else: 
 			print "Client null: ", line
 			return self.client_list, True

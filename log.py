@@ -18,20 +18,27 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
-dev = subprocess.check_output(['cat', '../raspi-number.txt'])[:1]
+pwd = subprocess.check_output(['pwd']).rstrip() + "/"
 
-mac_address = subprocess.check_output(['cat', '../mac-addresses.txt']).split(",")
+if "master_thesis" not in pwd:
+	pwd = pwd + "master_thesis/"
+	#''.join([pwd, "/master_thesis/"])
+print pwd
 
-local_path = subprocess.check_output(['cat', '../local-path.txt'])
-db_config = subprocess.check_output(['cat', '../db-config.txt'])
-db_config = db_config.split(",")
+dev = subprocess.check_output(['cat', pwd+'config/raspi-number.txt'])[:1]
+
+mac_address = subprocess.check_output(['cat', pwd+'config/mac-addresses.txt']).split(",")
+mac_address[-1] = mac_address[-1].rstrip()
+
+#local_path = subprocess.check_output(['cat', '/local-path.txt'])
+db_config = subprocess.check_output(['cat', pwd+'config/db-config.txt']).split(",")
 
 print "Ping on ", mac_address
 
 db_host = db_config[0]
 db_pass = db_config[1]
 db_user = db_config[2]
-db_database = db_config[3]
+db_database = db_config[3].rstrip()
 
 ############ THREAD METHODS ##############
 
@@ -53,7 +60,7 @@ class myThread(threading.Thread):
 		if self.name == "bluetooth":
 			bt_proc = bt.start(rasp, bt_dongle)
 		if self.name == "ping/rssi":
-			bd_proc = bd.start(mac_address)
+			bd_proc = bd.start(pwd, mac_address)
 
 		wifi_list, hc_list, bd_list = while_dump(self.name)
 
@@ -72,7 +79,7 @@ def while_dump(threadName):
 		if threadName == "bluetooth":
 			hc_list, is_running = bt.process(rasp)
 		if threadName == "ping/rssi":
-			bd_list, is_running = bd.process()
+			bd_list, is_running = bd.process(pwd)
 
 	if not is_running:
 		if threadName == "wifi":
@@ -96,10 +103,10 @@ def make_sure_path_exists(path):
 		os.makedirs(path)
 
 def init_csv(path_day, path_time, my_final_list, csv_type):
-	make_sure_path_exists(path_day)
-	make_sure_path_exists(path_day+"/"+path_time)
+	make_sure_path_exists(pwd+"/"+path_day)
+	make_sure_path_exists(pwd+"/"+path_day+"/"+path_time)
 
-	string_path = path_day+"/"+path_time+"/"+path_time+"_"
+	string_path = pwd+"/"+path_day+"/"+path_time+"/"+path_time+"_"
 
 
 	if csv_type == "bd":
@@ -243,7 +250,7 @@ def signal_handler(signal, frame):
 
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 	#subprocess.check_output(['ifdown', 'wlan0'])
-	subprocess.check_output(['ifup', 'wlan0'])
+	#subprocess.check_output(['ifup', 'wlan0'])
 
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
@@ -251,23 +258,23 @@ def signal_handler(signal, frame):
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
 								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
-								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
+								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp' \
 								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
-								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
+								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
 								 shell=True)
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp, sn' \
 								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
-								"+local_path+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
+								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
-	wifiraw_file = local_path+wifi_string+"-01.csv"
+	wifiraw_file = pwd+wifi_string+"-01.csv"
 	if os.path.isfile(wifiraw_file):
-		subprocess.check_output(["mv "+wifi_string+"-01.csv "+local_path+starting_day+"/"+starting_time], shell = True)
+		subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
 
 
         
@@ -299,7 +306,7 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 	
-	subprocess.call(['Script_Bash/./wifi_py_config.sh'], shell=True)
+	subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 	#subprocess.call(['hcitool lescan &'], shell=True)
 	
 	# Start the airodump-ng processor
