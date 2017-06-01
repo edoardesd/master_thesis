@@ -1,1 +1,1 @@
-localhost,distributedpass,root,test
+192.168.1.12,blewizipass,root,test
