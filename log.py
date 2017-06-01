@@ -249,26 +249,28 @@ def signal_handler(signal, frame):
 
 
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
-	#subprocess.check_output(['ifdown', 'wlan0'])
-	#subprocess.check_output(['ifup', 'wlan0'])
+
+	subprocess.check_output(['ifdown', 'wlan0'])
+	subprocess.check_output(['ifup', 'wlan0'])
 
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
 		
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
-								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp' \
-								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
 								 shell=True)
+
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp, sn' \
-								--local -u "+db_user+" -p"+db_pass+" "+db_database+" \
+								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
