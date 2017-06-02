@@ -223,7 +223,7 @@ def mysql_connector(table_name):
 	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
 	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
 
-
+	print "Create table "+table_name
 	db.close()	
 
 ############ END MYSQL METHODS ##############
@@ -251,7 +251,7 @@ def signal_handler(signal, frame):
 	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
 	subprocess.check_output(['ifdown', 'wlan0'])
-	subprocess.check_output(['ifup', 'wlan0'])
+	subprocess.check_output(['ifup', '--force','wlan0'])
 
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
@@ -308,7 +308,6 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 	
-	subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 	#subprocess.call(['hcitool lescan &'], shell=True)
 	
 	# Start the airodump-ng processor
@@ -327,15 +326,17 @@ if __name__ == "__main__":
 
 	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
 	print "BLEWIZI dump V 1.0", starting_string
+
+	if dev == "1":
+		print "Start MYSQL"
+		mysql_connector(starting_time+"_")
 	
+	subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
 	thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
 	thread_bd = myThread(3, "ping/rssi")
 
-	if dev == "1":
-		print "Start MYSQL"
-		mysql_connector(starting_time+"_")
 
 	thread_bd.start()
 	thread_wifi.start()	
