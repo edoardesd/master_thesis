@@ -248,7 +248,6 @@ def signal_handler(signal, frame):
 	init_csv(starting_day, starting_time, wifi_list, "wifi")
 
 
-	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
 	subprocess.check_output(['ifdown', 'wlan0'])
 	subprocess.check_output(['ifup', '--force','wlan0'])
@@ -274,6 +273,10 @@ def signal_handler(signal, frame):
 								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
 								 shell=True)
 	
+
+	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
+
+
 	wifiraw_file = pwd+wifi_string+"-01.csv"
 	if os.path.isfile(wifiraw_file):
 		subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
