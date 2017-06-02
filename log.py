@@ -332,7 +332,7 @@ if __name__ == "__main__":
 		print "Start MYSQL"
 		mysql_connector(starting_time+"_")
 	
-	subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
+	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
 	thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
@@ -340,6 +340,6 @@ if __name__ == "__main__":
 
 
 	thread_bd.start()
-	thread_wifi.start()	
+	#thread_wifi.start()	
 	thread_hc.start()
 	
