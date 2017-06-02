@@ -38,7 +38,8 @@ print "Ping on ", mac_address
 db_host = db_config[0]
 db_pass = db_config[1]
 db_user = db_config[2]
-db_database = db_config[3].rstrip()
+db_database = db_config[3]
+db_table = db_config[4].rstrip()
 
 ############ THREAD METHODS ##############
 
@@ -106,7 +107,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 	make_sure_path_exists(pwd+"/"+path_day)
 	make_sure_path_exists(pwd+"/"+path_day+"/"+path_time)
 
-	string_path = pwd+"/"+path_day+"/"+path_time+"/"+path_time+"_"
+	string_path = pwd+"/"+path_day+"/"+path_time+"/"+db_table+"_"
 
 
 	if csv_type == "bd":
@@ -202,14 +203,14 @@ def csv_dict_writer(path, fieldnames, data):
 
 ############ START MYSQL METHODS ##############
 
-def mysql_connector(table_name):
+def mysql_connector():
 	db = MySQLdb.connect(host= db_host,    
 						 user= db_user,        	  # sempre root
 						 passwd= db_pass, # nella raspberry e' raspberry
 						 db= db_database
 						)  
 
-	
+	table_name = db_table+"_"
 	bt_name = "\""+table_name+"bluetooth\"" #senza  .csv
 	wifi_name = "\""+table_name+"wifi\""
 	hci_name = "\""+table_name+"hcidump\""
@@ -260,19 +261,19 @@ def signal_handler(signal, frame):
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
 								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
-								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_bluetooth.csv"], \
+								"+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp' \
 								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
-								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_hcidump.csv"], \
+								"+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
 								--columns='mac_address, rasp, rx, timestamp, sn' \
 								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
-								"+pwd+starting_day+"/"+starting_time+"/"+starting_time+"_wifi.csv"], \
+								"+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], \
 								 shell=True)
 	
 	wifiraw_file = pwd+wifi_string+"-01.csv"
@@ -330,7 +331,7 @@ if __name__ == "__main__":
 
 	if dev == "1":
 		print "Start MYSQL"
-		mysql_connector(starting_time+"_")
+		mysql_connector()
 	
 	subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
