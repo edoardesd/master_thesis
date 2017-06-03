@@ -1,1 +1,1 @@
-192.168.1.16,blewizipass,root,test,altrarasptestman
+192.168.1.16,blewizipass,root,alcentro,test1_centro
