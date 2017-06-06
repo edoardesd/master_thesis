@@ -50,6 +50,7 @@ class myThread(threading.Thread):
 		self.name = name
 	def run(self):
 
+
 		global hc_list
 		global wifi_list
 		global bd_list
@@ -63,26 +64,29 @@ class myThread(threading.Thread):
 		if self.name == "ping/rssi":
 			bd_proc = bd.start(pwd, mac_address)
 
-		wifi_list, hc_list, bd_list = while_dump(self.name)
+		wifi_list, hc_list, bd_list = while_dump(self, self.name)
 
 		print "Exiting " + self.name + " dump!"
 
+	def stop(self):
+		self.is_running = False
 
-def while_dump(threadName):
-	is_running = True
+
+def while_dump(self, threadName):
+	self.is_running = True
 	global hc_list
 	global wifi_list
 	global bd_list
 
-	while is_running:
+	while self.is_running:
 		if threadName == "wifi":
-			wifi_list, is_running = ad.process(rasp)
+			wifi_list, self.is_running = ad.process(rasp)
 		if threadName == "bluetooth":
-			hc_list, is_running = bt.process(rasp)
+			hc_list, self.is_running = bt.process(rasp)
 		if threadName == "ping/rssi":
-			bd_list, is_running = bd.process(pwd)
+			bd_list, self.is_running = bd.process(pwd)
 
-	if not is_running:
+	if not self.is_running:
 		if threadName == "wifi":
 			ad.stop()
 		if threadName == "bluetooth":
@@ -231,7 +235,8 @@ def mysql_connector():
 
 
 
-def signal_handler(signal, frame):
+#def signal_handler(signal, frame):
+def signal_handler():
 	print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
 	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
@@ -258,20 +263,24 @@ def signal_handler(signal, frame):
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
 		
+	#mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address, rasp, rx, timestamp', --local -u root -h 192.168.1.16 -pblewizipass alcentro test1_centro_hcidump.csv
+
+
+
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='mac_address, timestamp, rasp, echo_time,rssi,tpl,lq' \
+								--columns='mac_address,timestamp,rasp,echo_time,rssi,tpl,lq' \
 								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='mac_address, rasp, rx, timestamp' \
+								--columns='mac_address,rasp,rx,timestamp' \
 								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], \
 								 shell=True)
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, \
-								--columns='mac_address, rasp, rx, timestamp, sn' \
+								--columns='mac_address,rasp,rx,timestamp,sn' \
 								--local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" \
 								"+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], \
 								 shell=True)
@@ -344,3 +353,12 @@ if __name__ == "__main__":
 	thread_wifi.start()	
 	thread_hc.start()
 	
+	sleep(10)
+	print "spleepppato"
+	#send_signal(signal.SIGINT)
+	#sys.exit()
+
+	ad.stop()
+	bt.stop()
+	bd.stop()
+	signal_handler()
