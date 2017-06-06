@@ -301,7 +301,7 @@ if len(sys.argv) > 1:
 		bt_dongle = "0"
 
 if __name__ == "__main__":
-	signal.signal(signal.SIGINT, signal_handler)
+	#signal.signal(signal.SIGINT, signal_handler)
 
 	wifi_list = {}
 	hc_list = {}
