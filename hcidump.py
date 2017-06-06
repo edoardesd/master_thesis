@@ -33,13 +33,13 @@ class HcidumpProcessor:
 		#	self.blescan = subprocess.call(['hcitool lescan'], shell=True)
 		#except:
 		#	pass
-		self.bd = subprocess.Popen(['hcidump', '-i', 'hci'+my_dongle, '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.bt = subprocess.Popen(['hcidump', '-i', 'hci'+my_dongle, '-a'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		in_inquiry = False
 		in_BLE = False
 		
-		return self.bd
+		return self.bt
 
 	def process(self, rasp):
 		global in_inquiry
@@ -56,7 +56,7 @@ class HcidumpProcessor:
 		
 
 
-		if not self.bd:
+		if not self.bt:
 			self.start()
 
 		rasp_mode = False
@@ -64,7 +64,7 @@ class HcidumpProcessor:
 			rasp_mode = True
 
 		#recupero la stringa che sta scrivendo airodump
-		line = self.bd.stdout.readline()
+		line = self.bt.stdout.readline()
 
 		#setto il tempo attuale
 		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
@@ -162,7 +162,7 @@ class HcidumpProcessor:
 
 	def stop(self):
 		self.einq = subprocess.Popen(['hcitool', 'epinq'])
-		self.bd.kill()
+		self.bt.kill()
 		#self.blescan.kill()
 
 
