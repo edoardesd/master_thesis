@@ -19,7 +19,7 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
-sleep_time = 60
+sleep_time = 240
 
 
 pwd = subprocess.check_output(['pwd']).rstrip() + "/"
@@ -301,6 +301,7 @@ def signal_handler():
 
 	#subprocess.Popen(["sudo killall python"], shell=True)
 	print "Program ends!"
+        subprocess.Popen(['sudo pkill -f log_script/scan_python.py'], shell=True)
 
 
        
@@ -335,8 +336,8 @@ if __name__ == "__main__":
 	wifi_list = {}
 	hc_list = {}
 	bd_list = {}
-	
-	#subprocess.call(['hcitool lescan &'], shell=True)
+
+	subprocess.Popen(['sudo python log_script/scan_python.py'], shell=True)
 	
 	# Start the airodump-ng processor
 	#ad = airodump.AirodumpProcessor()
