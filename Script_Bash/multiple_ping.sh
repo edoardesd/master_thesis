@@ -12,7 +12,6 @@ do
 	if [[ $mac == $last ]]
 	then 
 		until l2ping $mac; do 
-			echo "rientro di la"
 			sleep 1
 		done
 		break
@@ -20,7 +19,6 @@ do
 
 
 	until l2ping $mac; do 
-		echo "rientro"
 		sleep 1
 	done &
 
