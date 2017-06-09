@@ -101,8 +101,12 @@ class BluetoothProcessor:
 			return self.client_list, True
 
 		if CLIENT is not None or CLIENT is not '':
+			if CLIENT.count(":")>3:
 			#chiamo script per recuperare rssi, 
-			log_val = subprocess.check_output([pwd+'log_script/./values_log.sh', CLIENT])
+				log_val = subprocess.check_output([pwd+'log_script/./values_log.sh', CLIENT])
+			else: 
+				print "Not a mac address ", line
+				return self.client_list, True
 		else: 
 			print "Client null: ", line
 			return self.client_list, True
