@@ -51,10 +51,11 @@ class BluetoothProcessor:
 
 		#killare bene le cose
 		if not line:
-			print "Finito il tutto"
+			#print "Finito il tutto"
 			return self.client_list, False
 
 		#setto il tempo attuale
+		#now = datetime.now().strftime("%H:%M:%S")
 		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		
@@ -66,7 +67,6 @@ class BluetoothProcessor:
 		#	return self.client_list, False
 
 		if "Host is down" in line:
-			print "Host is down!!!"
 			print line
 			return self.client_list, True
 
@@ -91,7 +91,7 @@ class BluetoothProcessor:
 		#Ping is ok!
 		global counter
 		counter += 1
-		if (counter % 4 == 0):
+		if (counter % 17 == 0):
 			print "Ping in progress!"
 
 		v = re.split(r'\s{1,}', line)
@@ -121,16 +121,16 @@ class BluetoothProcessor:
 		#print "log val e':", log_val
 		ck_out_vect = re.split(r'\s{4,}', log_val)
 		#check if device is connected		
-		if len(ck_out_vect)<3:
+		if len(ck_out_vect)<1:
 			print "Not Connected!"
 			print line
 			return self.client_list, True
 
 		
-		rssi = ck_out_vect[0]
-		lq = ck_out_vect[1]
-		if "\n" in ck_out_vect[2]:
-			tpl = ck_out_vect[2].replace("\n", "")
+		rssi = ck_out_vect[0].replace("\n", "")
+		#lq = ck_out_vect[1]
+		#if "\n" in ck_out_vect[2]:
+		#	tpl = ck_out_vect[2].replace("\n", "")
 
 
 		if "Usage" in rssi:
@@ -140,7 +140,7 @@ class BluetoothProcessor:
 		if not self.client_list.has_key(CLIENT):
 			self.client_list[CLIENT] = {}
 
-		self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi, "lq": lq, "tpl": tpl}
+		self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi}
 
 		return self.client_list, True
 

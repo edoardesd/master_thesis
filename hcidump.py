@@ -76,7 +76,7 @@ class HcidumpProcessor:
 
 		counter +=1
 		if (counter%177 == 0):
-			print "Bluetooth is running!"
+			print "HCIDUMP is running!"
 
 		if not line:
 			return self.client_list, False		
@@ -114,6 +114,9 @@ class HcidumpProcessor:
 					CLIENT = mac_line[1]
 					rx_power = mac_line[-1]
 					last_mac = CLIENT
+
+					if rx_power == '0x0000':
+						return self.client_list, True
 
 					#prima volta che scopro il nuovo client
 					if not self.client_list.has_key(CLIENT):

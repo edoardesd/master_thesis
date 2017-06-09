@@ -23,7 +23,6 @@ pwd = subprocess.check_output(['pwd']).rstrip() + "/"
 if "master_thesis" not in pwd:
 	pwd = pwd + "master_thesis/"
 	#''.join([pwd, "/master_thesis/"])
-print pwd
 
 dev = subprocess.check_output(['cat', pwd+'config/raspi-number.txt'])[:1]
 
@@ -33,13 +32,12 @@ mac_address[-1] = mac_address[-1].rstrip()
 #local_path = subprocess.check_output(['cat', '/local-path.txt'])
 db_config = subprocess.check_output(['cat', pwd+'config/db-config.txt']).split(",")
 
-print "Ping on ", mac_address
-
 db_host = db_config[0]
 db_pass = db_config[1]
 db_user = db_config[2]
 db_database = db_config[3]
-db_table = db_config[4].rstrip()
+#db_table = db_config[4].rstrip()
+db_table = "debug"
 
 ############ THREAD METHODS ##############
 
@@ -55,7 +53,7 @@ class myThread(threading.Thread):
 		global wifi_list
 		global bd_list
 
-		print "Starting " + self.name + " dump!"
+		#print "Starting " + self.name + " dump!"
 		
 		if self.name == "wifi":
 			wifi_proc = ad.start(rasp, wifi_string)
@@ -116,7 +114,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 
 	if csv_type == "bd":
 		data = bd_to_list(my_final_list)
-		fieldnames = "mac address, timestamp, rasp, echo_time, rssi, tpl, lq".split(",")
+		fieldnames = "mac address, timestamp, rasp, echo_time, rssi".split(",")
 		path = string_path +"bluetooth.csv"
 	
 	if csv_type == "hc":
@@ -222,14 +220,34 @@ def mysql_connector():
 	cur = db.cursor()
 	cur.execute("SET sql_mode=\'ANSI_QUOTES\'")
 
+
+	table_exists = check_if_table_exists(cur, table_name)
 	#cur.execute("USE test") #nome del database
 	# Use all the SQL you like
-	cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
-	cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
-	cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
 
-	print "Create table "+table_name
+	if not table_exists:
+		print "\nTable not exists, create a new one"
+		cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
+		cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
+		cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
+
+		print "Create table\n\n"+db_table
+
+	else:
+		print "Table already exists, going on...\n\n"
+	
+
 	db.close()	
+
+def check_if_table_exists(cursor, my_table):
+	stmt = "SHOW TABLES LIKE '"+my_table+"%'"
+
+	cursor.execute(stmt)
+	result = cursor.fetchone()
+	if result:
+		return True
+	else:
+		return False
 
 ############ END MYSQL METHODS ##############
 
@@ -237,29 +255,31 @@ def mysql_connector():
 
 #def signal_handler(signal, frame):
 def signal_handler():
-	print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
+	#print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
 	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
 	#print "WIFI DEVICES:"
 	#pp.pprint(wifi_list)
-	#print "BLUETOOTH DEVICES:"
-	#pp.pprint(hc_list)
-	#print "BLUETOOTH DUMP:"
-	#pp.pprint(bd_list)
+	print "BLUETOOTH DEVICES:"
+	pp.pprint(hc_list)
+	print "BLUETOOTH DUMP:"
+	pp.pprint(bd_list)
 	
 	
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
-	init_csv(starting_day, starting_time, wifi_list, "wifi")
+	#init_csv(starting_day, starting_time, wifi_list, "wifi")
 
 
-	subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
+	#subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
-	subprocess.check_output(['ifdown', 'wlan0'])
-	sleep( 3 )
-	subprocess.check_output(['ifup', '--force','wlan0'])
+	#subprocess.check_output(['ifdown', 'wlan0'])
+	#sleep( 3 )
+	#subprocess.check_output(['ifup', '--force','wlan0'])
 
+	#print "Restart wifi"
+	print "In teoria ora devo importare su mysql"
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
 		
@@ -273,9 +293,9 @@ def signal_handler():
 
 	#subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
 	
-	wifiraw_file = pwd+wifi_string+"-01.csv"
-	if os.path.isfile(wifiraw_file):
-		subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
+	#wifiraw_file = pwd+wifi_string+"-01.csv"
+	#if os.path.isfile(wifiraw_file):
+	#	subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
 
 
         
@@ -300,6 +320,10 @@ if len(sys.argv) > 1:
 		print "working on dongle 0 (pc)\n\n"
 		bt_dongle = "0"
 
+	if sys.argv[1] == "-t":
+				db_table = sys.argv[2]
+				print "Test name ", db_table
+
 if __name__ == "__main__":
 	#signal.signal(signal.SIGINT, signal_handler)
 
@@ -310,7 +334,7 @@ if __name__ == "__main__":
 	#subprocess.call(['hcitool lescan &'], shell=True)
 	
 	# Start the airodump-ng processor
-	ad = airodump.AirodumpProcessor()
+	#ad = airodump.AirodumpProcessor()
 
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
@@ -318,35 +342,36 @@ if __name__ == "__main__":
 	#Start the bluedump processor
 	bd = bluedump.BluetoothProcessor()
 
+	sleep_time = 50
 
 	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d%m%y", localtime())
-	starting_string = "Start at time " +starting_time+ "  of " +starting_day
+	starting_string = "\nStart at time " +starting_time+ "  of " +starting_day
 
 	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
-	print "BLEWIZI dump V 1.0", starting_string
+	print "BLEWIZI dump V 2.0", starting_string
 
 	if dev == "1":
 		print "Start MYSQL"
 		mysql_connector()
 	
-	subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
+	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
-	thread_wifi = myThread(1, "wifi")
+	#thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
 	thread_bd = myThread(3, "ping/rssi")
 
 
 	thread_bd.start()
-	thread_wifi.start()	
+	#thread_wifi.start()	
 	thread_hc.start()
 	
-	sleep(250)
-	print "spleepppato"
+	sleep(sleep_time)
+	print "\nStop, going to sleep"
 	#send_signal(signal.SIGINT)
 	#sys.exit()
 
-	ad.stop()
+	#ad.stop()
 	bt.stop()
 	bd.stop()
 	signal_handler()
