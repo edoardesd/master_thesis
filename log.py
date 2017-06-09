@@ -11,12 +11,16 @@ import threading
 import csv
 import copy
 import MySQLdb
+import bluetooth
 import pprint as pp
 
 from time import strftime, localtime, sleep
 from datetime import datetime
 
 ############ END OF IMPORT ###############
+
+sleep_time = 40
+
 
 pwd = subprocess.check_output(['pwd']).rstrip() + "/"
 
@@ -52,7 +56,7 @@ class myThread(threading.Thread):
 		global hc_list
 		global wifi_list
 		global bd_list
-
+		self.is_scan = True
 		#print "Starting " + self.name + " dump!"
 		
 		if self.name == "wifi":
@@ -65,9 +69,6 @@ class myThread(threading.Thread):
 		wifi_list, hc_list, bd_list = while_dump(self, self.name)
 
 		print "Exiting " + self.name + " dump!"
-
-	def stop(self):
-		self.is_running = False
 
 
 def while_dump(self, threadName):
@@ -262,8 +263,8 @@ def signal_handler():
 	#pp.pprint(wifi_list)
 	print "BLUETOOTH DEVICES:"
 	pp.pprint(hc_list)
-	print "BLUETOOTH DUMP:"
-	pp.pprint(bd_list)
+	#print "BLUETOOTH DUMP:"
+	#pp.pprint(bd_list)
 	
 	
 	print "Create CSV"
@@ -297,8 +298,11 @@ def signal_handler():
 	#if os.path.isfile(wifiraw_file):
 	#	subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
 
+	subprocess.Popen(["sudo killall python"], shell=True)
+	print "Program ends!"
 
-        
+
+       
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
@@ -342,7 +346,6 @@ if __name__ == "__main__":
 	#Start the bluedump processor
 	bd = bluedump.BluetoothProcessor()
 
-	sleep_time = 50
 
 	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d%m%y", localtime())
@@ -359,19 +362,23 @@ if __name__ == "__main__":
 
 	#thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
-	thread_bd = myThread(3, "ping/rssi")
+	#thread_bd = myThread(3, "ping/rssi")
 
 
-	thread_bd.start()
+
+	#thread_bd.start()
 	#thread_wifi.start()	
 	thread_hc.start()
 	
+	subprocess.Popen(["python "+pwd+"log_script/scan_python.py"], shell=True)
+
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
 	#send_signal(signal.SIGINT)
 	#sys.exit()
 
+	#thread_scan.stop_scan()
 	#ad.stop()
 	bt.stop()
-	bd.stop()
+	#bd.stop()
 	signal_handler()
