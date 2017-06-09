@@ -28,7 +28,7 @@ class HcidumpProcessor:
 		if rasp == True:
 			rasp_mode = True
 
-		#self.sinq = subprocess.Popen(['hcitool', '-i', 'hci' +my_dongle, 'spinq'])
+		self.sinq = subprocess.Popen(['hcitool', '-i', 'hci' +my_dongle, 'spinq'])
 		#try:
 		#	self.blescan = subprocess.call(['hcitool lescan'], shell=True)
 		#except:
@@ -67,15 +67,15 @@ class HcidumpProcessor:
 		line = self.bt.stdout.readline()
 
 		#setto il tempo attuale
-		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
-		#now = strftime("%H:%M:%S", localtime())
+		now = datetime.now().strftime("%H:%M:%S")
+		#now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		#per guardare output a schermo
 		#if line:
 			#elf.logger.write("L:"+line.encode('ascii', errors='ignore'))
 
 		counter +=1
-		if (counter%57 == 0):
+		if (counter%197 == 0):
 			print "HCIDUMP is running!"
 
 		if not line:
@@ -164,7 +164,8 @@ class HcidumpProcessor:
 	
 
 	def stop(self):
-		#self.einq = subprocess.Popen(['hcitool', 'epinq'])
+                #print "Try to stop hcidump"
+		self.einq = subprocess.Popen(['hcitool', 'epinq'])
 		self.bt.kill()
 		#self.blescan.kill()
 

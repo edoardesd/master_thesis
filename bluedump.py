@@ -55,8 +55,8 @@ class BluetoothProcessor:
 			return self.client_list, False
 
 		#setto il tempo attuale
-		#now = datetime.now().strftime("%H:%M:%S")
-		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+		now = datetime.now().strftime("%H:%M:%S")
+		#now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 		
 
@@ -101,7 +101,7 @@ class BluetoothProcessor:
 			return self.client_list, True
 
 		if CLIENT is not None or CLIENT is not '':
-			#chiamo script per recuperare rssi, lq, tpl
+			#chiamo script per recuperare rssi, 
 			log_val = subprocess.check_output([pwd+'log_script/./values_log.sh', CLIENT])
 		else: 
 			print "Client null: ", line

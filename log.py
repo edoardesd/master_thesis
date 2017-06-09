@@ -19,7 +19,7 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
-sleep_time = 40
+sleep_time = 60
 
 
 pwd = subprocess.check_output(['pwd']).rstrip() + "/"
@@ -298,7 +298,8 @@ def signal_handler():
 	#if os.path.isfile(wifiraw_file):
 	#	subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
 
-	subprocess.Popen(["sudo killall python"], shell=True)
+
+	#subprocess.Popen(["sudo killall python"], shell=True)
 	print "Program ends!"
 
 
@@ -362,23 +363,18 @@ if __name__ == "__main__":
 
 	#thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
-	#thread_bd = myThread(3, "ping/rssi")
+	thread_bd = myThread(3, "ping/rssi")
 
 
 
-	#thread_bd.start()
+	thread_bd.start()
 	#thread_wifi.start()	
 	thread_hc.start()
 	
-	subprocess.Popen(["python "+pwd+"log_script/scan_python.py"], shell=True)
-
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
-	#send_signal(signal.SIGINT)
-	#sys.exit()
 
-	#thread_scan.stop_scan()
 	#ad.stop()
 	bt.stop()
-	#bd.stop()
+	bd.stop()
 	signal_handler()
