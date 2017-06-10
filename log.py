@@ -229,8 +229,8 @@ def mysql_connector():
 
 	if not table_exists:
 		print "\nTable not exists, create a new one"
-		cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT, tpl INT, lq INT)") 
-		cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
+		cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT)") 
+		#cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
 		cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
 
 		print "Create table "+db_table+"\n\n"
@@ -262,8 +262,8 @@ def signal_handler():
 
 	#print "WIFI DEVICES:"
 	#pp.pprint(wifi_list)
-	print "BLUETOOTH DEVICES:"
-	pp.pprint(hc_list)
+	#print "BLUETOOTH DEVICES:"
+	#pp.pprint(hc_list)
 	#print "BLUETOOTH DUMP:"
 	#pp.pprint(bd_list)
 	
@@ -281,19 +281,20 @@ def signal_handler():
 	#subprocess.check_output(['ifup', '--force','wlan0'])
 
 	#print "Restart wifi"
-	print "In teoria ora devo importare su mysql"
+	print "Start mysql import"
 	#non mettere i numeri nel nome della tabella (db_bluetooth.csv) e' il nome della tabella
 	#test e' il nome del db
 		
-	#mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address, rasp, rx, timestamp', --local -u root -h 192.168.1.16 -pblewizipass alcentro test1_centro_hcidump.csv
 
+	#mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u root -h 192.168.1.16 -pblewizipass new_test /home/pi/master_thesis/100617/140912/test_rasp_bluetooth.csv
 
+	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], shell=True)
 
-	#subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi,tpl,lq' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], shell=True)
-
-	#subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
+	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
 
 	#subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
+
+        print "End mysql import"
 	
 	#wifiraw_file = pwd+wifi_string+"-01.csv"
 	#if os.path.isfile(wifiraw_file):
@@ -301,7 +302,7 @@ def signal_handler():
 
 
 	print "Program ends at ", datetime.now().strftime("%H:%M:%S")
-	subprocess.Popen(['sudo pkill -f log_script/scan_python.py'], shell=True)
+	subprocess.Popen(['sudo', 'pkill', '-f', pwd+'log_script/scan_python.py'])
 
 
 	   
@@ -342,7 +343,7 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 
-	subprocess.Popen(['sudo python log_script/scan_python.py'], shell=True)
+	subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
 	
 	# Start the airodump-ng processor
 	#ad = airodump.AirodumpProcessor()
