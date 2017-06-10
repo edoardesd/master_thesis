@@ -9,6 +9,7 @@ import sys
 import subprocess
 import threading
 import csv
+import getopt
 import copy
 import MySQLdb
 import bluetooth
@@ -232,7 +233,7 @@ def mysql_connector():
 		cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
 		cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
 
-		print "Create table\n\n"+db_table
+		print "Create table "+db_table+"\n\n"
 
 	else:
 		print "Table already exists, going on...\n\n"
@@ -299,36 +300,40 @@ def signal_handler():
 	#	subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
 
 
-	#subprocess.Popen(["sudo killall python"], shell=True)
-	print "Program ends!"
-        subprocess.Popen(['sudo pkill -f log_script/scan_python.py'], shell=True)
+	print "Program ends at ", datetime.now().strftime("%H:%M:%S")
+	subprocess.Popen(['sudo pkill -f log_script/scan_python.py'], shell=True)
 
 
-       
+	   
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
 
 
-if len(sys.argv) > 1:
-	if sys.argv[1] == "-r":
-		print "Rasperry Pi mode activated!\n\n"
+try:
+	opts, args = getopt.getopt(sys.argv[1:], 'r:d:t:n:h', ['raspi-mode=', 'device=', 'time=', 'name=' , 'help'])
+except getopt.GetoptError:
+	#usage()
+	print "TODO how to use"
+	sys.exit(2)
+
+for opt, arg in opts:
+	if opt in ('-h', '--help'):
+		print "TODO how to use"
+		#usage()
+		sys.exit(2)
+	elif opt in ('-r', '--raspi-mode'):
 		rasp = True
-
-	if sys.argv[1] == "-d":
-				dev = sys.argv[2]
-				print "Device number: ", dev
-				
-	if sys.argv[1] == "1":
-		print "working on dongle 1 (dikom)\n\n"
-		bt_dongle = "1"
-	else: 
-		print "working on dongle 0 (pc)\n\n"
-		bt_dongle = "0"
-
-	if sys.argv[1] == "-t":
-				db_table = sys.argv[2]
-				print "Test name ", db_table
+	elif opt in ('-d', '--device'):
+		dev = arg
+	elif opt in ('-n', '--name'):
+		db_table = arg
+	elif opt in ('-t', '--time'):
+		sleep_time = float(arg)
+	else:
+		#usage()
+		print "TODO how to use"
+		sys.exit(2)
 
 if __name__ == "__main__":
 	#signal.signal(signal.SIGINT, signal_handler)
