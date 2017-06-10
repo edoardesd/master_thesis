@@ -28,7 +28,7 @@ class HcidumpProcessor:
 		if rasp == True:
 			rasp_mode = True
 
-		self.sinq = subprocess.Popen(['hcitool', '-i', 'hci' +my_dongle, 'spinq'])
+		#self.sinq = subprocess.Popen(['hcitool', '-i', 'hci' +my_dongle, 'spinq'])
 		#try:
 		#	self.blescan = subprocess.call(['hcitool lescan'], shell=True)
 		#except:

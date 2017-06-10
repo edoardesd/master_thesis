@@ -20,7 +20,7 @@ from datetime import datetime
 
 ############ END OF IMPORT ###############
 
-sleep_time = 240
+sleep_time = 60
 
 
 pwd = subprocess.check_output(['pwd']).rstrip() + "/"
