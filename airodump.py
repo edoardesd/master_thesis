@@ -83,7 +83,7 @@ class AirodumpProcessor:
 
  			#trova le reti nello spazio in alto
 			if v[1].find(":") < 0:
-				if v[0].find(":")>0:
+				#if v[0].find(":")>0:
 					
 					#BSSID = v[0][1:]
 					#if not self.bssid_list.has_key(BSSID):
