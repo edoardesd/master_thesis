@@ -37,6 +37,8 @@ mac_address[-1] = mac_address[-1].rstrip()
 #local_path = subprocess.check_output(['cat', '/local-path.txt'])
 db_config = subprocess.check_output(['cat', pwd+'config/db-config.txt']).split(",")
 
+#db_host = "127.0.0.1"
+#db_pass = "distributedpass"
 db_host = db_config[0]
 db_pass = db_config[1]
 db_user = db_config[2]
@@ -264,8 +266,8 @@ def signal_handler():
 	#pp.pprint(wifi_list)
 	#print "BLUETOOTH DEVICES:"
 	#pp.pprint(hc_list)
-	#print "BLUETOOTH DUMP:"
-	#pp.pprint(bd_list)
+	print "BLUETOOTH DUMP:"
+	pp.pprint(bd_list)
 	
 	
 	print "Create CSV"
@@ -309,7 +311,6 @@ def signal_handler():
 ############ MAIN ##############
 rasp = False
 bt_dongle="0"
-
 
 try:
 	opts, args = getopt.getopt(sys.argv[1:], 'r:d:t:n:h', ['raspi-mode=', 'device=', 'time=', 'name=' , 'help'])
