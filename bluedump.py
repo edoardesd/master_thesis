@@ -27,7 +27,7 @@ class BluetoothProcessor:
 		global counter
 		counter = 0
 		global ping
-		ping = 0
+		ping = 1
 		
 		if ping:
 			self.bt = subprocess.Popen(['unbuffer', pwd+'Script_Bash/./multiple_ping.sh'] + mac_list, bufsize=0, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
