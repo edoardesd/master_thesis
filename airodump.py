@@ -85,10 +85,10 @@ class AirodumpProcessor:
 			if v[1].find(":") < 0:
 				if v[0].find(":")>0:
 					
-					BSSID = v[0][1:]
-					if not self.bssid_list.has_key(BSSID):
-						self.bssid_list[BSSID] = {}
-						self.bssid_list[BSSID]["ESSID"] = v[-1]
+					#BSSID = v[0][1:]
+					#if not self.bssid_list.has_key(BSSID):
+						#self.bssid_list[BSSID] = {}
+						#self.bssid_list[BSSID]["ESSID"] = v[-1]
 						#print self.bssid_list
 				return self.bssid_list, True
 
@@ -107,10 +107,10 @@ class AirodumpProcessor:
 				probe_key = 1
 				self.client_list[CLIENT]["times seen"] = 1
 				self.client_list[CLIENT]["probe info"] = {probe_key: {"SN": sn_probe, "RX": rx_power,"TS": ts_probe}}
-				self.client_list[CLIENT]["acc point"] = BSSID_client
+				#self.client_list[CLIENT]["acc point"] = BSSID_client
 				self.client_list[CLIENT]["first seen"] = ts_probe
 				self.client_list[CLIENT]["last seen"] = ts_probe
-				self.client_list[CLIENT]["probes"] = ""
+				#self.client_list[CLIENT]["probes"] = ""
 				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
 				print new_client_str
 				
@@ -120,8 +120,8 @@ class AirodumpProcessor:
 				#TODO lo split per le varie probes: bisogna considerare ogni probe diversa come stringa separaa
 				#ora la stringa delle probes e' unica anche se ne vengono inviate tante. causa piccoli probemi
 				
-				if(len(v) > 7):
-					self.client_list[CLIENT]["probes"] = v[7]
+				#if(len(v) > 7):
+				#	self.client_list[CLIENT]["probes"] = v[7]
 
 			else:
 
@@ -135,27 +135,27 @@ class AirodumpProcessor:
 					self.client_list[CLIENT]["times seen"] += 1
 
 				#controllo se la rete alla quale e' connesso e' la stessa
-				if self.client_list[CLIENT]["acc point"] != BSSID_client:
-					old_acc_point = self.client_list[CLIENT]["acc point"]
-					self.client_list[CLIENT]["acc point"] = BSSID_client
+				#if self.client_list[CLIENT]["acc point"] != BSSID_client:
+				#	old_acc_point = self.client_list[CLIENT]["acc point"]
+				#	self.client_list[CLIENT]["acc point"] = BSSID_client
 					
-					new_accpoint_str = "Client "+CLIENT+" change access point from "+old_acc_point+" to "+self.client_list[CLIENT]["acc point"]
-					print new_accpoint_str
+				#	new_accpoint_str = "Client "+CLIENT+" change access point from "+old_acc_point+" to "+self.client_list[CLIENT]["acc point"]
+				#	print new_accpoint_str
 
-					if rasp_mode:
-						mosquitto_pub(new_accpoint_str)
+				#	if rasp_mode:
+				#		mosquitto_pub(new_accpoint_str)
 						
 
 				#controllo se sta mandando probes diverse
-				if(len(v) > 7):
-					if v[7] not in self.client_list[CLIENT]["probes"]:
-						self.client_list[CLIENT]["probes"] += v[7]
-						self.client_list[CLIENT]["probes"] += "; "
-						new_probe_str = "Client "+CLIENT+" sends new probe "+v[7]
-						print new_probe_str
+				#if(len(v) > 7):
+				#	if v[7] not in self.client_list[CLIENT]["probes"]:
+				#		self.client_list[CLIENT]["probes"] += v[7]
+				#		self.client_list[CLIENT]["probes"] += "; "
+				#		new_probe_str = "Client "+CLIENT+" sends new probe "+v[7]
+				#		print new_probe_str
 
-						if rasp_mode:
-							mosquitto_pub(new_probe_str)
+				#		if rasp_mode:
+				#			mosquitto_pub(new_probe_str)
 	
 			return self.client_list, True
 
