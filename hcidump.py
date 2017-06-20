@@ -112,7 +112,7 @@ class HcidumpProcessor:
 				if v.startswith("bdaddr"):
 					mac_line = v.split()
 					CLIENT = mac_line[1]
-					rx_power = mac_line[-1]
+					rx_power = mac_line[-1].replace("\n", "")
 					last_mac = CLIENT
 
 					if rx_power == '0x0000':
