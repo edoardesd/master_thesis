@@ -262,12 +262,12 @@ def signal_handler():
 	#print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
 	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
-	#print "WIFI DEVICES:"
-	#pp.pprint(wifi_list)
+	print "WIFI DEVICES:"
+	pp.pprint(wifi_list)
 	#print "BLUETOOTH DEVICES:"
 	#pp.pprint(hc_list)
-	print "BLUETOOTH DUMP:"
-	pp.pprint(bd_list)
+	#print "BLUETOOTH DUMP:"
+	#pp.pprint(bd_list)
 	
 	
 	print "Create CSV"
@@ -347,7 +347,7 @@ if __name__ == "__main__":
 	subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
 	
 	# Start the airodump-ng processor
-	#ad = airodump.AirodumpProcessor()
+	ad = airodump.AirodumpProcessor()
 
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
@@ -369,20 +369,20 @@ if __name__ == "__main__":
 	
 	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
-	#thread_wifi = myThread(1, "wifi")
-	thread_hc = myThread(2, "bluetooth")
-	thread_bd = myThread(3, "ping/rssi")
+	thread_wifi = myThread(1, "wifi")
+	#thread_hc = myThread(2, "bluetooth")
+	#thread_bd = myThread(3, "ping/rssi")
 
 
 
-	thread_bd.start()
-	#thread_wifi.start()	
-	thread_hc.start()
+	#thread_bd.start()
+	thread_wifi.start()	
+	#thread_hc.start()
 	
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
 
-	#ad.stop()
-	bt.stop()
-	bd.stop()
+	ad.stop()
+	#bt.stop()
+	#bd.stop()
 	signal_handler()
