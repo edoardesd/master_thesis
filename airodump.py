@@ -1,4 +1,4 @@
-#!/usr/bin/python
+ #!/usr/bin/python
 
 import os
 import sys
@@ -29,7 +29,7 @@ class AirodumpProcessor:
 
 
 		#per scrivere su file: '-w', 'lab', '--output-format', 'csv'
-		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '-w', path, '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '--channel', '10', '-w', path, '--output-format', 'csv'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		return self.fd
@@ -49,19 +49,19 @@ class AirodumpProcessor:
 			self.start()
 
 		rasp_mode = False
-		if rasp == True:
-			rasp_mode = True
+		#if rasp == True:
+		#	rasp_mode = True
 
 		#recupero la stringa che sta scrivendo airodump
 		line = self.fd.stdout.readline()
-		
-		counter +=1
-		if (counter%1797 == 0):
-			print "I'm running!"
 
 		#setto il tempo attuale
 		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 		#now = strftime("%H:%M:%S", localtime())
+
+		counter +=1
+		if (counter%1797 == 0):
+			print "I'm running!"
 
 		#per guardare output di airodump a schermo
 		#if line:
@@ -90,8 +90,11 @@ class AirodumpProcessor:
 						#self.bssid_list[BSSID] = {}
 						#self.bssid_list[BSSID]["ESSID"] = v[-1]
 						#print self.bssid_list
-				return self.bssid_list, True
+				return self.client_list, True
 
+                        if "B8:27:EB" in v[1]:
+                                return self.client_list, True
+                        
 			CLIENT = v[1]
 			BSSID_client = v[0][1:]
 			ts_probe = v[6]
@@ -106,7 +109,7 @@ class AirodumpProcessor:
 
 				probe_key = 1
 				self.client_list[CLIENT]["times seen"] = 1
-				self.client_list[CLIENT]["probe info"] = {probe_key: {"SN": sn_probe, "RX": rx_power,"TS": ts_probe}}
+				self.client_list[CLIENT]["probe info"] = {probe_key: {"SN": sn_probe, "RX": rx_power,"TS": now}}
 				#self.client_list[CLIENT]["acc point"] = BSSID_client
 				self.client_list[CLIENT]["first seen"] = ts_probe
 				self.client_list[CLIENT]["last seen"] = ts_probe
@@ -115,6 +118,14 @@ class AirodumpProcessor:
 				print new_client_str
 				
 				if rasp_mode:
+
+
+
+
+
+
+
+
 					mosquitto_pub(new_client_str)
 
 				#TODO lo split per le varie probes: bisogna considerare ogni probe diversa come stringa separaa
@@ -131,7 +142,7 @@ class AirodumpProcessor:
 
 				if sn_probe != self.client_list[CLIENT]["probe info"][lenght_key]["SN"]:
 					lenght_key += 1
-					self.client_list[CLIENT]["probe info"][lenght_key] = {"SN": sn_probe, "RX": rx_power,"TS": ts_probe}
+					self.client_list[CLIENT]["probe info"][lenght_key] = {"SN": sn_probe, "RX": rx_power,"TS": now}
 					self.client_list[CLIENT]["times seen"] += 1
 
 				#controllo se la rete alla quale e' connesso e' la stessa

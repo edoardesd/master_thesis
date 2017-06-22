@@ -71,7 +71,7 @@ class myThread(threading.Thread):
 
 		wifi_list, hc_list, bd_list = while_dump(self, self.name)
 
-		print "Exiting " + self.name + " dump!"
+		print "Exit " + self.name + " dump!"
 
 
 def while_dump(self, threadName):
@@ -232,7 +232,7 @@ def mysql_connector():
 	if not table_exists:
 		print "\nTable not exists, create a new one"
 		cur.execute("CREATE TABLE "+bt_name+" (mac_address VARCHAR(30), timestamp VARCHAR(30), rasp INT, echo_time FLOAT, rssi INT)") 
-		#cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
+		cur.execute("CREATE TABLE "+wifi_name+" (mac_address VARCHAR(30), rasp INT, rx INT, timestamp VARCHAR(30), sn INT)") 
 		cur.execute("CREATE TABLE "+hci_name+" (mac_address VARCHAR(30), rasp INT, rx VARCHAR(30), timestamp VARCHAR(30))") 
 
 		print "Create table "+db_table+"\n\n"
@@ -262,8 +262,8 @@ def signal_handler():
 	#print "You pressed CTRL + C at", datetime.now().strftime("%H:%M:%S.%f")[:-3], "\n\n"
 	#einq = subprocess.Popoen(['hcitool', 'epinq'])
 
-	print "WIFI DEVICES:"
-	pp.pprint(wifi_list)
+	#print "WIFI DEVICES:"
+	#pp.pprint(wifi_list)
 	#print "BLUETOOTH DEVICES:"
 	#pp.pprint(hc_list)
 	#print "BLUETOOTH DUMP:"
@@ -273,7 +273,7 @@ def signal_handler():
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
-	#init_csv(starting_day, starting_time, wifi_list, "wifi")
+	init_csv(starting_day, starting_time, wifi_list, "wifi")
 
 
 	#subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
@@ -294,7 +294,7 @@ def signal_handler():
 
 	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
 
-	#subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
+	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
 
         print "End mysql import"
 	
@@ -370,19 +370,19 @@ if __name__ == "__main__":
 	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
 	thread_wifi = myThread(1, "wifi")
-	#thread_hc = myThread(2, "bluetooth")
-	#thread_bd = myThread(3, "ping/rssi")
+	thread_hc = myThread(2, "bluetooth")
+	thread_bd = myThread(3, "ping/rssi")
 
 
 
-	#thread_bd.start()
+	thread_bd.start()
 	thread_wifi.start()	
-	#thread_hc.start()
+	thread_hc.start()
 	
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
 
 	ad.stop()
-	#bt.stop()
-	#bd.stop()
+	bt.stop()
+	bd.stop()
 	signal_handler()
