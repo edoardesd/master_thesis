@@ -60,7 +60,7 @@ class myThread(threading.Thread):
 		global wifi_list
 		global bd_list
 		self.is_scan = True
-		#print "Starting " + self.name + " dump!"
+		print "Start " + self.name + " dump!"
 		
 		if self.name == "wifi":
 			wifi_proc = ad.start(rasp, wifi_string)
@@ -290,17 +290,17 @@ def signal_handler():
 
 	#mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u root -h 192.168.1.16 -pblewizipass new_test /home/pi/master_thesis/100617/140912/test_rasp_bluetooth.csv
 
-	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], shell=True)
+	subprocess.Popen(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], shell=True)
 
-	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
+	subprocess.Popen(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
 
-	subprocess.check_output(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
-
+	subprocess.Popen(["mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
+        sleep( 3 )
         print "End mysql import"
 	
-	#wifiraw_file = pwd+wifi_string+"-01.csv"
-	#if os.path.isfile(wifiraw_file):
-	#	subprocess.check_output(["mv "+pwd+wifi_string+"-01.csv "+pwd+starting_day+"/"+starting_time], shell = True)
+	wifiraw_file = pwd+wifi_string+"-01.csv"
+	if os.path.isfile(wifiraw_file):
+		subprocess.check_output(["mv "+pwd+"/"+wifi_string+"-01.csv "+pwd+"/"+starting_day+"/"+starting_time], shell = True)
 
 
 	print "Program ends at ", datetime.now().strftime("%H:%M:%S")
