@@ -97,7 +97,7 @@ class AirodumpProcessor:
                         
 			CLIENT = v[1]
 			BSSID_client = v[0][1:]
-			ts_probe = v[6]
+			#ts_probe = v[6]
 			sn_probe = v[5]
 			rx_power = v[2]
 			#packet = v[4]
@@ -111,8 +111,8 @@ class AirodumpProcessor:
 				self.client_list[CLIENT]["times seen"] = 1
 				self.client_list[CLIENT]["probe info"] = {probe_key: {"SN": sn_probe, "RX": rx_power,"TS": now}}
 				#self.client_list[CLIENT]["acc point"] = BSSID_client
-				self.client_list[CLIENT]["first seen"] = ts_probe
-				self.client_list[CLIENT]["last seen"] = ts_probe
+				self.client_list[CLIENT]["first seen"] = now
+				self.client_list[CLIENT]["last seen"] = now
 				#self.client_list[CLIENT]["probes"] = ""
 				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
 				print new_client_str
@@ -137,7 +137,7 @@ class AirodumpProcessor:
 			else:
 
 				#aggiorno last seen
-				self.client_list[CLIENT]["last seen"] = ts_probe
+				self.client_list[CLIENT]["last seen"] = now
 				lenght_key = self.client_list[CLIENT]["times seen"]
 
 				if sn_probe != self.client_list[CLIENT]["probe info"][lenght_key]["SN"]:
