@@ -60,8 +60,8 @@ class AirodumpProcessor:
 		#now = strftime("%H:%M:%S", localtime())
 
 		counter +=1
-		if (counter%1797 == 0):
-			print "I'm running!"
+		if (counter%7797 == 0):
+			print "WIFI is running!"
 
 		#per guardare output di airodump a schermo
 		#if line:
