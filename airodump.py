@@ -69,7 +69,7 @@ class AirodumpProcessor:
 		if not line:
 			return self.client_list, False
 		
-		try:
+		if (1):
 			v = re.split(r'\s{2,}', line)
 			
 
@@ -170,9 +170,9 @@ class AirodumpProcessor:
 	
 			return self.client_list, True
 
-		except:
-			print "Failed,",line
-			traceback.print_exc()
+		#except:
+		#	print "Failed,",line
+		#	traceback.print_exc()
 	
 
 	def stop(self):
