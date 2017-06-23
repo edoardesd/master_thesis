@@ -279,9 +279,9 @@ def signal_handler():
 
 	#subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
-	#subprocess.check_output(['ifdown', 'wlan0'])
-	#sleep( 3 )
-	#subprocess.check_output(['ifup', '--force','wlan0'])
+	subprocess.check_output(['ifdown', 'wlan0'])
+	sleep(8)
+	subprocess.check_output(['ifup', '--force','wlan0'])
 
 	#print "Restart wifi"
 	print "Start mysql import"
