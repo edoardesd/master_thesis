@@ -280,7 +280,7 @@ def signal_handler():
 	#subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
 	subprocess.check_output(['ifdown', 'wlan0'])
-	sleep(8)
+	sleep(20)
 	subprocess.check_output(['ifup', '--force','wlan0'])
 
 	#print "Restart wifi"
@@ -314,76 +314,4 @@ rasp = False
 bt_dongle="0"
 
 try:
-	opts, args = getopt.getopt(sys.argv[1:], 'r:d:t:n:h', ['raspi-mode=', 'device=', 'time=', 'name=' , 'help'])
-except getopt.GetoptError:
-	#usage()
-	print "TODO how to use"
-	sys.exit(2)
-
-for opt, arg in opts:
-	if opt in ('-h', '--help'):
-		print "TODO how to use"
-		#usage()
-		sys.exit(2)
-	elif opt in ('-r', '--raspi-mode'):
-		rasp = True
-	elif opt in ('-d', '--device'):
-		dev = arg
-	elif opt in ('-n', '--name'):
-		db_table = arg
-	elif opt in ('-t', '--time'):
-		sleep_time = float(arg)
-	else:
-		#usage()
-		print "TODO how to use"
-		sys.exit(2)
-
-if __name__ == "__main__":
-	#signal.signal(signal.SIGINT, signal_handler)
-
-	wifi_list = {}
-	hc_list = {}
-	bd_list = {}
-
-	subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
-	
-	# Start the airodump-ng processor
-	ad = airodump.AirodumpProcessor()
-
-	#Start the hcidump processor
-	bt = hcidump.HcidumpProcessor()
-
-	#Start the bluedump processor
-	bd = bluedump.BluetoothProcessor()
-
-
-	starting_time = strftime("%H%M%S", localtime())
-	starting_day = strftime("%d%m%y", localtime())
-	starting_string = "\nStart at time " +starting_time+ "  of " +starting_day
-
-	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
-	print "BLEWIZI dump V 2.0", starting_string
-
-	if dev == "1":
-		print "Start MYSQL"
-		mysql_connector()
-	
-	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
-
-	thread_wifi = myThread(1, "wifi")
-	thread_hc = myThread(2, "bluetooth")
-	thread_bd = myThread(3, "ping/rssi")
-
-
-
-	thread_bd.start()
-	thread_wifi.start()	
-	thread_hc.start()
-	
-	sleep(sleep_time)
-	print "\nStop, going to sleep"
-
-	ad.stop()
-	bt.stop()
-	bd.stop()
-	signal_handler()
+	opt
