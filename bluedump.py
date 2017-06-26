@@ -50,8 +50,8 @@ class BluetoothProcessor:
 		#recupero la stringa che sta scrivendo airodump
 		line = self.bt.stdout.readline()
 
-
-		now = datetime.now().strftime("%H:%M:%S")
+		now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
+		#now = datetime.now().strftime("%H:%M:%S")
 		
 		global ping
 		if ping:
@@ -64,9 +64,7 @@ class BluetoothProcessor:
 				#print "Finito il tutto"
 				return self.client_list, False
 
-			#setto il tempo attuale
 			
-			#now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
 
 
 			#un po' estremo come metodo

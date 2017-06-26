@@ -351,7 +351,7 @@ if __name__ == "__main__":
 	ad = airodump.AirodumpProcessor()
 
 	#Start the hcidump processor
-	bt = hcidump.HcidumpProcessor()
+	#bt = hcidump.HcidumpProcessor()
 
 	#Start the bluedump processor
 	bd = bluedump.BluetoothProcessor()
@@ -371,19 +371,19 @@ if __name__ == "__main__":
 	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
 	thread_wifi = myThread(1, "wifi")
-	thread_hc = myThread(2, "bluetooth")
+	#thread_hc = myThread(2, "bluetooth")
 	thread_bd = myThread(3, "ping/rssi")
 
 
 
 	thread_bd.start()
 	thread_wifi.start()	
-	thread_hc.start()
+	#thread_hc.start()
 	
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
 
 	ad.stop()
-	bt.stop()
+	#bt.stop()
 	bd.stop()
 	signal_handler()
