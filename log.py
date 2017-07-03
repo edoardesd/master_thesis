@@ -269,7 +269,7 @@ def signal_handler():
 	#print "BLUETOOTH DUMP:"
 	#pp.pprint(bd_list)
 	
-		sleep(5)
+	sleep(5)
 		
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
