@@ -269,8 +269,8 @@ def signal_handler():
 	#print "BLUETOOTH DUMP:"
 	#pp.pprint(bd_list)
 	
-        sleep(5)
-        
+		sleep(5)
+		
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
 	init_csv(starting_day, starting_time, hc_list, "hc")
@@ -296,9 +296,9 @@ def signal_handler():
 	subprocess.Popen(["/usr/bin/mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
 
 	subprocess.Popen(["/usr/bin/mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
-    
-    
-    print "End mysql import"
+
+
+	print "End mysql import"
 	print "/usr/bin/mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"
 
 
