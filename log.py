@@ -291,18 +291,20 @@ def signal_handler():
 
 	#mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u root -h 192.168.1.16 -pblewizipass new_test /home/pi/master_thesis/100617/140912/test_rasp_bluetooth.csv
 
-	subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local " +db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv &> /dev/null"], shell=True)
-	#except subprocess.CalledProcessError as e:
-	#	print "Error Bluetooth", e.cmd, e.returncode, e.output
+	try:
+		subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local " +db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], shell=True)
+	except subprocess.CalledProcessError as e:
+		print "Error Bluetooth", e.cmd, e.returncode, e.output
 
 	#try:
 	#	subprocess.Popen(["/usr/bin/mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_hcidump.csv"], shell=True)
 	#except subprocess.CalledProcessError as e:
 	#	print "Error Hci1", e.cmd, e.returncode, e.output
 
-	subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local " +db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv &> /dev/null"], shell=True)
-	#except subprocess.CalledProcessError as e:
-	#	print "Error Wifi", e.cmd, e.returncode, e.output
+	try: 
+		subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local " +db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
+	except subprocess.CalledProcessError as e:
+		print "Error Wifi", e.cmd, e.returncode, e.output
 
 	print "End mysql import"
 	#print "/usr/bin/mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local -u "+db_user+" -h "+db_host+ " -p"+db_pass+" "+db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"
