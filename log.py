@@ -282,6 +282,7 @@ def signal_handler():
 	subprocess.check_output(['ifdown', 'wlan0'])
 	sleep(20)
 	subprocess.check_output(['ifup', '--force','wlan0'])
+	sleep(10)
 
 	#print "Restart wifi"
 	print "Start mysql import"
