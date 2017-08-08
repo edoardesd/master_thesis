@@ -180,7 +180,6 @@ def convert_wifi_bt(wifi_data):
 		i = i + 1
 		new_matrix.append(new_line)
 
-	pp.pprint(new_matrix)
 	return new_matrix
 
 def abs_matrix(my_set):
@@ -198,7 +197,13 @@ def abs_matrix(my_set):
 wifi_set_norm, bluetooth_set_norm = parse_data("wifi_norm", "bluetooth_norm")
 wifi_set_norm_line, bluetooth_set_norm_line = parse_data("wifi_norm_line", "bluetooth_norm_line")
 wifi_set, bluetooth_set = parse_data("wifi", "bluetooth")
-		
+wifi_set, bluetooth_ratio = parse_data("wifi", "bluetooth_ratio")
+wifi_set, bluetooth_ratio2 = parse_data("wifi", "bluetooth_ratio2")
+wifi_set, bluetooth_ratio3 = parse_data("wifi", "bluetooth_ratio3")
+
+
+
+pp.pprint(bluetooth_ratio2)
 
 
 ####### NORMALIZZAZIONE SU TUTTO #########
@@ -222,8 +227,13 @@ wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_linear, bluetooth_set)
 cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear, bluetooth_set)
 
+euclidean_ratio = compute_euclidean_distance(bluetooth_set, bluetooth_ratio1)
+cosine_sim_ratio = compute_cos_sim(bluetooth_set, bluetooth_ratio1)
 
-print_results_long(cosine_similarity_conversion_linear, True)
+
+print_results_long(cosine_sim_ratio, True)
+
+
 
 
 
