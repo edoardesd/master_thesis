@@ -27,6 +27,30 @@ ipad_slope_log = 6.707
 lg_intercept_log = 51.09
 lg_slope_log = 7.57
 
+alpha_lg_wifi = 1.84 *2
+alpha_sams_wifi = 0.5 *2
+alpha_s3_wifi = 1.4 *2
+alpha_tab_wifi = 1.48 *2
+alpha_ipad_wifi = 1.11 *2
+
+alpha_lg_bt = 1.18 *2.5
+alpha_sams_bt = 0.67 *2.5
+alpha_s3_bt = 0.55 *2.5
+alpha_tab_bt = 0.44 *2.5
+alpha_ipad_bt = 0.48 *2.5
+
+lg_1metro_bt = -4.54588
+lg_1metro_wifi = -50.26878
+sams_1metro_bt = -0.0377
+sams_1metro_wifi = -63.6172
+s3_1metro_bt = -0.0083
+s3_1metro_wifi = -54.0332
+tab_1metro_bt = 0
+tab_1metro_wifi = -52.1605
+ipad_1metro_bt = 0
+ipad_1metro_wifi = -51.5707
+
+
 wifi_set_norm = []
 bluetooth_set_norm = []
 wifi_set_norm_line = []
@@ -182,6 +206,49 @@ def convert_wifi_bt(wifi_data):
 
 	return new_matrix
 
+def convert_to_distance(wifi_data, bluetooth_data):
+	new_matrix_bt = []
+	new_matrix_wifi = []
+	i = 0
+	for i in range(0,15):
+		new_line_wifi = []
+		new_line_bt = []
+
+		for j in range(0,4):
+			if ( i == 0 or i == 5 or i == 10):
+				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+lg_1metro_wifi)/(10*alpha_lg_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+lg_1metro_bt)/(10*alpha_lg_bt))
+			elif ( i == 1 or i == 6 or i == 11):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+sams_1metro_wifi)/(10*alpha_sams_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+sams_1metro_bt)/(10*alpha_sams_bt))
+
+			elif ( i == 2 or i == 7 or i == 12):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+s3_1metro_wifi)/(10*alpha_s3_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+s3_1metro_bt)/(10*alpha_s3_bt))
+
+			elif ( i == 3 or i == 8 or i == 13):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+tab_1metro_wifi)/(10*alpha_tab_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+tab_1metro_bt)/(10*alpha_tab_bt))
+
+			elif ( i == 4 or i == 9 or i == 14):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+ipad_1metro_wifi)/(10*alpha_ipad_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+ipad_1metro_bt)/(10*alpha_ipad_bt))
+			
+			if float(dist_wifi) > 15:
+				dist_wifi = 15.00000001
+
+			if float(dist_bluetooth) > 15:
+				dist_bluetooth = 15.00000001
+
+			new_line_wifi.append(dist_wifi)
+			new_line_bt.append(dist_bluetooth)
+
+		i = i + 1
+		new_matrix_wifi.append(new_line_wifi)
+		new_matrix_bt.append(new_line_bt)
+
+	return new_matrix_wifi, new_matrix_bt
+
 def abs_matrix(my_set):
 	set_abs = []
 	for line in my_set:
@@ -192,24 +259,78 @@ def abs_matrix(my_set):
 
 	return set_abs
 
+def compute_alpha(dataset_wifi, dataset_bt):
+	alpha_matrix_wifi = []
+	alpha_matrix_bt = []
+
+	for i in range (0,15):
+		alpha_line_wifi = []
+		alpha_line_bt = []
+		for j in range(0,4):
+			if ( i == 0 or i == 5 or i == 10):
+				alpha_wifi = "%.8f" % -(((float(dataset_wifi[i][j])) - lg_1metro_wifi)/10*math.log10(float(true_dist[i][j])))
+				alpha_bt = "%.8f" % -(((float(dataset_bt[i][j])) - lg_1metro_bt)/10*math.log10(float(true_dist[i][j])))
+
+			elif ( i == 1 or i == 6 or i == 11):
+				alpha_wifi = "%.8f" % -(((float(dataset_wifi[i][j])) - sams_1metro_wifi)/10*math.log10(float(true_dist[i][j])))
+				alpha_bt = "%.8f" % -(((float(dataset_bt[i][j])) - lg_1metro_bt)/10*math.log10(float(true_dist[i][j])))
+
+			elif ( i == 2 or i == 7 or i == 12):
+				alpha_wifi = "%.8f" % -(((float(dataset_wifi[i][j])) - s3_1metro_wifi)/10*math.log10(float(true_dist[i][j])))
+				alpha_bt = "%.8f" % -(((float(dataset_bt[i][j])) - lg_1metro_bt)/10*math.log10(float(true_dist[i][j])))
+
+			elif ( i == 3 or i == 8 or i == 13):
+				alpha_wifi = "%.8f" % -(((float(dataset_wifi[i][j])) - tab_1metro_wifi)/10*math.log10(float(true_dist[i][j])))
+				alpha_bt = "%.8f" % -(((float(dataset_bt[i][j])) - lg_1metro_bt)/10*math.log10(float(true_dist[i][j])))
+
+			elif ( i == 4 or i == 9 or i == 14):
+				alpha_wifi = "%.8f" % -(((float(dataset_wifi[i][j])) - ipad_1metro_wifi)/10*math.log10(float(true_dist[i][j])))
+				alpha_bt = "%.8f" % -(((float(dataset_bt[i][j])) - lg_1metro_bt)/10*math.log10(float(true_dist[i][j])))
+			
+			alpha_line_wifi.append(alpha_wifi)
+			alpha_line_bt.append(alpha_bt)
+
+		alpha_matrix_wifi.append(alpha_line_wifi)
+		alpha_matrix_bt.append(alpha_line_bt)
+
+	return alpha_matrix_wifi, alpha_matrix_bt
+
+def print_avg_line(matrix):
+	sum_tot = 0
+	i = 0
+	for line in matrix:
+		sum_avg = 0
+		for row in line:
+			sum_avg = sum_avg + float(row)
+			sum_tot = sum_tot + float(row)
+			i = i + 1
+		avg = sum_avg/4
+		#print i/4, avg
+
+	return sum_tot/i
+
 
 #dataset import
-wifi_set_norm, bluetooth_set_norm = parse_data("wifi_norm", "bluetooth_norm")
-wifi_set_norm_line, bluetooth_set_norm_line = parse_data("wifi_norm_line", "bluetooth_norm_line")
-wifi_set, bluetooth_set = parse_data("wifi", "bluetooth")
-wifi_set, bluetooth_ratio = parse_data("wifi", "bluetooth_ratio")
-wifi_set, bluetooth_ratio2 = parse_data("wifi", "bluetooth_ratio2")
-wifi_set, bluetooth_ratio3 = parse_data("wifi", "bluetooth_ratio3")
+wifi_set_norm, bluetooth_set_norm = parse_data("dataset/wifi_norm", "dataset/bluetooth_norm")
+wifi_set_norm_line, bluetooth_set_norm_line = parse_data("dataset/wifi_norm_line", "dataset/bluetooth_norm_line")
+wifi_set, bluetooth_set = parse_data("dataset/wifi", "dataset/bluetooth")
+true_dist, bluetooth_ratio = parse_data("dataset/distanze_vere", "dataset/bluetooth_ratio")
+wifi_set, bluetooth_ratio2 = parse_data("dataset/wifi", "dataset/bluetooth_ratio2")
+wifi_set, bluetooth_ratio3 = parse_data("dataset/wifi", "dataset/bluetooth_ratio3")
 
 
-
-pp.pprint(bluetooth_ratio2)
-
+###### COMPUTE ALPHA ######
+alpha_mat_wifi, alpha_mat_bt = compute_alpha(wifi_set, bluetooth_set)
+#print "wifi"
+alpha_wifi = print_avg_line(alpha_mat_wifi)
+#print "bt"
+alpha_bt = print_avg_line(alpha_mat_bt)
 
 ####### NORMALIZZAZIONE SU TUTTO #########
 euclidean_distance_norm_tot = compute_euclidean_distance(wifi_set_norm, bluetooth_set_norm)
 cos_result_tot = compute_cos_sim(wifi_set_norm, bluetooth_set_norm)
 
+#print_results_long(euclidean_distance_norm_tot, True)
 
 
 ####### NORMALIZZAZIONE SULLA LINEA #########
@@ -219,23 +340,30 @@ cos_result_line = compute_cos_sim(wifi_set_norm_line, bluetooth_set_norm_line)
 #print_results_long(euclidean_distance_norm_tot, False)
 
 
-
-
 ###### CONVERSIONE MATRICE ######
 wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 
 euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_linear, bluetooth_set)
 cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear, bluetooth_set)
 
-euclidean_ratio = compute_euclidean_distance(bluetooth_set, bluetooth_ratio1)
-cosine_sim_ratio = compute_cos_sim(bluetooth_set, bluetooth_ratio1)
+#print_results_long(euclidean_distance_conversion_linear, True)
 
 
-print_results_long(cosine_sim_ratio, True)
+###### MATRICE RAPPORTI ######
+euclidean_ratio = compute_euclidean_distance(bluetooth_set, bluetooth_ratio)
+cosine_sim_ratio = compute_cos_sim(bluetooth_set, bluetooth_ratio)
 
 
 
+###### TRASFORMAZIONE METRI ######
+wifi_distance, bluetooth_distance = convert_to_distance(wifi_set, bluetooth_set)
+euclidean_with_dist = compute_euclidean_distance(wifi_distance, bluetooth_distance)
+cosine_with_dist = compute_cos_sim(wifi_distance, bluetooth_distance)
 
+
+#pp.pprint(bluetooth_distance)
+
+#print_results_long(cosine_with_dist, True)
 
 
 
