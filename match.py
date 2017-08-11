@@ -2,9 +2,12 @@ import numpy as np
 import pprint as pp
 import math
 import copy
+from scipy.optimize import minimize
 from operator import itemgetter
 
-print_info = 2
+ap_locations = [[0, 0], [4.5, 0], [4.5, 9.5], [0, 9.5]]
+initial_location = [0,0]
+
 
 sams_intercept = -57.7674
 sams_slope = 0.9739
@@ -62,7 +65,25 @@ wifi_to_bt_linear = []
 euclidean_distance_norm_tot = {}
 euclidean_distance_norm_line = {}
 
-#euclidean_distance_conversion_linear = {}
+
+# Mean Square Error
+# ap_locations: [ (rasp1_x, rasp1_y), ... ]
+# distances: [ d_rasp1, ... ]
+def mse(x, locations, distances):
+	mse = 0.0
+	i = 0
+	for location, distance in zip(ap_locations, distances):
+		distance_calculated = euclidean_distance(x[0], x[1], float(location[0]), float(location[1]))
+		mse += math.pow(distance_calculated - float(distance), 2.0)
+		i +=1
+	result = mse/4
+	
+	return result
+
+def euclidean_distance(x1, y1, x2, y2):
+	#print x1, y1, x2, y2
+	sum_square = (x2-x1)**2 + (y2-y1)**2
+	return math.sqrt(sum_square)
 
 
 def compute_euclidean_distance(wifi_data, bluetooth_data):
@@ -361,9 +382,39 @@ euclidean_with_dist = compute_euclidean_distance(wifi_distance, bluetooth_distan
 cosine_with_dist = compute_cos_sim(wifi_distance, bluetooth_distance)
 
 
-#pp.pprint(bluetooth_distance)
+####### TRILATERATION #######
+wifi_coord = []
+for line in wifi_distance:
+	result = minimize(
+		mse,                         # The error function
+		initial_location,            # The initial guess
+		args=(ap_locations, line), # Additional parameters for mse
+		method='L-BFGS-B',           # The optimisation algorithm
+		options={
+			'ftol':1e-5,         # Tolerance
+			'maxiter': 1e+7      # Maximum iterations
+		})
+	location = result.x
+	wifi_coord.append(location)
 
-#print_results_long(cosine_with_dist, True)
+bt_coord = []
+for line in bluetooth_distance:
+	result = minimize(
+		mse,                         # The error function
+		initial_location,            # The initial guess
+		args=(ap_locations, line), # Additional parameters for mse
+		method='L-BFGS-B',           # The optimisation algorithm
+		options={
+			'ftol':1e-5,         # Tolerance
+			'maxiter': 1e+7      # Maximum iterations
+		})
+	location = result.x
+	bt_coord.append(location)
 
 
+pp.pprint(wifi_coord)
+pp.pprint(bt_coord)
 
+euc_coord = compute_euclidean_distance(wifi_coord, bt_coord)
+cosine_coord = compute_cos_sim(wifi_coord, bt_coord)
+print_results_long(cosine_coord, True)
