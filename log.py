@@ -111,10 +111,10 @@ def make_sure_path_exists(path):
 
 def init_csv(path_day, path_time, my_final_list, csv_type):
 	make_sure_path_exists(pwd+"/"+path_day)
-	make_sure_path_exists(pwd+"/"+path_day+"/"+path_time)
+	#make_sure_path_exists(pwd+"/"+path_day+"/"+path_time)
 
-	string_path = pwd+"/"+path_day+"/"+path_time+"/"+db_table+"_"
-
+	#string_path = pwd+"/"+path_day+"/"+path_time+"/"+db_table+"_"
+	string_path = pwd+"/"+path_day+"/"+db_table+"_"
 
 	if csv_type == "bd":
 		data = bd_to_list(my_final_list)
@@ -273,7 +273,7 @@ def signal_handler():
 		
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
-	init_csv(starting_day, starting_time, hc_list, "hc")
+	#init_csv(starting_day, starting_time, hc_list, "hc")
 	init_csv(starting_day, starting_time, wifi_list, "wifi")
 
 
@@ -293,7 +293,7 @@ def signal_handler():
 	#mysqlimport --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local -u root -h 192.168.1.16 -pblewizipass new_test /home/pi/master_thesis/100617/140912/test_rasp_bluetooth.csv
 
 	try:
-		subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local " +db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_bluetooth.csv"], shell=True)
+		subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,timestamp,rasp,echo_time,rssi' --local " +db_database+" "+pwd+starting_day+"/"+db_table+"_bluetooth.csv"], shell=True)
 	except subprocess.CalledProcessError as e:
 		print "Error Bluetooth", e.cmd, e.returncode, e.output
 
@@ -303,7 +303,7 @@ def signal_handler():
 	#	print "Error Hci1", e.cmd, e.returncode, e.output
 
 	try: 
-		subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local " +db_database+" "+pwd+starting_day+"/"+starting_time+"/"+db_table+"_wifi.csv"], shell=True)
+		subprocess.check_output(["/usr/bin/mysqlimport --defaults-extra-file=/home/pi/master_thesis/config/config.cnf --ignore-lines=1 --fields-terminated-by=, --columns='mac_address,rasp,rx,timestamp,sn' --local " +db_database+" "+pwd+starting_day+"/"+db_table+"_wifi.csv"], shell=True)
 	except subprocess.CalledProcessError as e:
 		print "Error Wifi", e.cmd, e.returncode, e.output
 
