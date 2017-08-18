@@ -35,14 +35,14 @@ mac_address = subprocess.check_output(['cat', pwd+'config/mac-addresses.txt']).s
 mac_address[-1] = mac_address[-1].rstrip()
 
 #local_path = subprocess.check_output(['cat', '/local-path.txt'])
-db_config = subprocess.check_output(['cat', pwd+'config/db-config.txt']).split(",")
+#db_config = subprocess.check_output(['cat', pwd+'config/db-config.txt']).split(",")
 
 #db_host = "127.0.0.1"
 #db_pass = "distributedpass"
-db_host = db_config[0]
-db_pass = db_config[1]
-db_user = db_config[2]
-db_database = db_config[3]
+#db_host = db_config[0]
+#db_pass = db_config[1]
+#db_user = db_config[2]
+#db_database = db_config[3]
 #db_table = db_config[4].rstrip()
 db_table = "debug"
 
@@ -359,7 +359,7 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 
-	subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
+	#subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
 	
 	# Start the airodump-ng processor
 	ad = airodump.AirodumpProcessor()
@@ -378,9 +378,9 @@ if __name__ == "__main__":
 	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
 	print "BLEWIZI dump V 2.0", starting_string
 
-	if dev == "1":
-		print "Start MYSQL"
-		mysql_connector()
+	#if dev == "1":
+	#	print "Start MYSQL"
+	#	mysql_connector()
 	
 	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
