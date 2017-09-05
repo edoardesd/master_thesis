@@ -30,17 +30,26 @@ ipad_slope_log = 6.707
 lg_intercept_log = 51.09
 lg_slope_log = 7.57
 
-alpha_lg_wifi = 1.84 *2
-alpha_sams_wifi = 0.5 *2
-alpha_s3_wifi = 1.4 *2
-alpha_tab_wifi = 1.48 *2
-alpha_ipad_wifi = 1.11 *2
+alpha_lg_wifi = 3.56078844211
+alpha_sams_wifi = 2.76024323583
+alpha_s3_wifi = 3.13699403395
+alpha_tab_wifi = 3.130771425
+alpha_ipad_wifi = 2
+alpha_wifi_mse =  3.15846486
+#alpha_mse_double_wifi = 9.30802122
+alpha_mse_double_wifi = 2.8
+#p0_mse_wifi = -1.11938027
+p0_mse_wifi = -56.16729551
 
-alpha_lg_bt = 1.18 *2.5
-alpha_sams_bt = 0.67 *2.5
-alpha_s3_bt = 0.55 *2.5
-alpha_tab_bt = 0.44 *2.5
-alpha_ipad_bt = 0.48 *2.5
+alpha_lg_bt = 3.64839259428
+alpha_sams_bt = 2.37049567301
+alpha_s3_bt = 2.42663571835
+alpha_tab_bt = 2.22172281136
+alpha_ipad_bt = 2.47466859867
+alpha_bt_mse = 3.07159468
+alpha_mse_double_bt = 3.11210661
+p0_mse_bt = 1.84665396
+
 
 lg_1metro_bt = -4.54588
 lg_1metro_wifi = -50.26878
@@ -237,23 +246,23 @@ def convert_to_distance(wifi_data, bluetooth_data):
 
 		for j in range(0,4):
 			if ( i == 0 or i == 5 or i == 10):
-				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+lg_1metro_wifi)/(10*alpha_lg_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+lg_1metro_bt)/(10*alpha_lg_bt))
+				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+p0_mse_wifi)/(10*alpha_mse_double_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
 			elif ( i == 1 or i == 6 or i == 11):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+sams_1metro_wifi)/(10*alpha_sams_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+sams_1metro_bt)/(10*alpha_sams_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_mse_double_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
 
 			elif ( i == 2 or i == 7 or i == 12):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+s3_1metro_wifi)/(10*alpha_s3_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+s3_1metro_bt)/(10*alpha_s3_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_mse_double_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
 
 			elif ( i == 3 or i == 8 or i == 13):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+tab_1metro_wifi)/(10*alpha_tab_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+tab_1metro_bt)/(10*alpha_tab_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_mse_double_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
 
 			elif ( i == 4 or i == 9 or i == 14):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+ipad_1metro_wifi)/(10*alpha_ipad_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+ipad_1metro_bt)/(10*alpha_ipad_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_wifi_mse))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_bt_mse))
 			
 			if float(dist_wifi) > 15:
 				dist_wifi = 15.00000001
