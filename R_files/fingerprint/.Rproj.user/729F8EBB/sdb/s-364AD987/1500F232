@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "# Year: 2017\n# Title: Cross validation\n# Goal: capire quanto è buono il dataset\n# Author: Edoardo Longo\n#\n# \n\n# Define your working directory\n# Ensure to use the forward / slash \nsetwd(\"/Users/edoardesd/Documents/R_files\")\ngetwd()\n\n#es: DATASET: rasp1 | rasp2 | rasp3 | rasp4 | location\n#              -39     -50     -78     -50       3.4\n\n#INIZIO IMPORT\n#install.packages('e1071', dependencies=TRUE)\ninstall.packages('caret', dependencies = TRUE)\nrequire(class)\nlibrary(readr)\nrequire(ggplot2)\nlibrary(caret)\nlibrary(caTools)\nlibrary(MASS, quietly=TRUE)\nlibrary(randomForest)\nsam_bt_fingerprint <- read_csv(\"~/Documents/R_files/fingerprint/data/sam_bt_fingerprint.csv\", col_types = cols(location = col_character()))\nsam_wifi_fingerprint <- read_csv(\"~/Documents/R_files/fingerprint/data/sam_wifi_fingerprint.csv\", col_types = cols(location = col_character()))\n\nDataFrameBt <- sam_bt_fingerprint\nDataFrameWifi <- sam_wifi_fingerprint\n\n## SORT DATAFRAMES\ngp <- runif(nrow(DataFrameBt))\nDataFrameBt <- DataFrameBt[order(gp),] \n\ngp2 <- runif(nrow(DataFrameWifi))\nDataFrameWifi <- DataFrameWifi[order(gp2),] \n\n#RANDOM FOREST 1 BT\ntrain_bt <- DataFrameBt[1:1200, c(\"rasp1\", \"rasp2\", \"rasp3\", \"rasp4\")]\nlabel <- as.factor(DataFrameBt$location)\n\nset.seed(1234)\n\nrf.1 <- randomForest(x = train_bt, y = label[1:1200], importance = TRUE, ntree = 1000)\nrf.1\nvarImpPlot(rf.1)\n\n#RANDOM FOREST 1 WIFI\ntrain_wifi <- DataFrameWifi[1:10000, c(\"rasp1\", \"rasp2\", \"rasp3\", \"rasp4\")]\nlabel_wifi <- as.factor(DataFrameWifi$location)\n\nset.seed(1234)\nrf.2 <- randomForest(x = train_wifi, y = label_wifi[1:10000], importance = TRUE, ntree = 700)\nrf.2\nvarImpPlot(rf.2)\n\n\n###### RANDOM FOREST 2 #####\nnames(DataFrameBt)\n\nsample.ind <- sample(2, nrow(DataFrameBt), replace = T, prob = c(0.7,0.3))\n\nbt.train <- DataFrameBt[sample.ind==1,]\nbt.val <- DataFrameBt[sample.ind==2,]\n\n\nrf.3<- randomForest(as.factor(location) ~., data = bt.train, importance=TRUE,ntree=1000)\nrf.3\n\nvarImpPlot(rf.3)\n\nPredicion <- predict(rf.3, bt.val)\n\n\n#### WIFI 2####\nsample.ind.wifi.2 <- sample(2, nrow(DataFrameWifi), replace = T, prob = c(0.7,0.3))\n\ntrain.wifi.2 <- DataFrameWifi[sample.ind==1,]\nval.wifi.2 <- DataFrameWifi[sample.ind==2,]\n\n\nrf.4<- randomForest(as.factor(location) ~., data = train.wifi.2, importance=TRUE,ntree=1000)\nrf.4\n\nvarImpPlot(rf.4)\n\nPredicion <- predict(rf.4, val.wifi.2)\n\n\n#### TEST KNN ####\nknn_bt_target  <- bt.train$location\nsam_knn <- knn(bt.train , bt.val , knn_bt_target , k=5)\nsam_knn\n\nmean(sam_knn == bt.val$location)\n\nknn_wifi_target <-train.wifi.2$location\nsam_knn_wifi <- knn(train.wifi.2, val.wifi.2, knn_wifi_target, k=1)\nmean(sam_knn_wifi == val.wifi.2$location)\n\n\nknn_err<-numeric()\n\nprop.table(table(sam_knn, bt.val$location))\n\nfor(i in 1:60){\n  sam_knn_bis <- knn(bt.train , bt.val , knn_bt_target , k=i)\n  sam_err_bis <- c(knn_err, mean(sam_knn_bis == bt.val$location))\n}\n\nplot(1-sam_err_bis,type=\"l\",ylab=\"Error Rate\",\n     xlab=\"K\",main=\"Error Rate for LG Normalized With Varying K\")\n\ninstall.packages(\"gmodels\")\n",
+    "created" : 1504706692979.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3170575251",
+    "id" : "1500F232",
+    "lastKnownWriteTime" : 1504796678,
+    "last_content_update" : 1504796678207,
+    "path" : "~/Documents/R_files/fingerprint/script/cross_validation.R",
+    "project_path" : "script/cross_validation.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 2,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}

@@ -1,0 +1,21 @@
+{
+    "collab_server" : "",
+    "contents" : "######## IPAD ####### \n#generating the data\n\nx = ipad_pos$rssi\ny = ipad_pos$rx\n#plot the data\nplot(y~x)\n    \n#fit log model\nfit <- lm(y~log(x))\n#Results of the model\nsummary(fit)\n    \n\nlm(formula = y ~ log(x))\n\n#plot \nx=seq(from=1,to=n,length.out=1000)\ny=predict(fit,newdata=list(x=seq(from=1,to=n,length.out=1000)), interval=\"confidence\")\nmatlines(x,y,lwd=2)\n      \n######## lg ####### \n#generating the data\n\nggplot(data = lg_pos,aes(x = rssi,y = rx)) + stat_sum() + ggtitle(\"LG precisione decimo secondi\")\n\nx = lg_pos$rssi\ny = lg_pos$rx\n#plot the data\nplot(y~x)\n\n#fit log model\nfit <- lm(y~log(x))\n#Results of the model\nsummary(fit)\n\n\nlm(formula = y ~ log(x))\n\n#plot \nx=seq(from=1,to=n,length.out=1000)\ny=predict(fit,newdata=list(x=seq(from=1,to=n,length.out=1000)), interval=\"confidence\")\nmatlines(x,y,lwd=2)\n\n\n\n      ",
+    "created" : 1500013656793.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3287372609",
+    "id" : "4A3D6B85",
+    "lastKnownWriteTime" : 1502120157,
+    "last_content_update" : 1502120157990,
+    "path" : "~/Documents/R_files/RSSIvsWIFI/script/log_regression.r",
+    "project_path" : "script/log_regression.r",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "relative_order" : 6,
+    "source_on_save" : false,
+    "source_window" : "",
+    "type" : "r_source"
+}
