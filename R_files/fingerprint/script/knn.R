@@ -5,9 +5,8 @@ require(class)
 train.wifi.sam
 test.wifi.sam
 train.bt.sam
-test.bt.sam$location[421] = 2.2
-train.bt.sam$location[619] = 2.2
-train.bt.sam$location[1016] = 2.2
+test.wifi.sam
+
 set.seed(1234)
 
 
