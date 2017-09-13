@@ -359,7 +359,7 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 
-	#000'++ùààà• m,i i n-subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
+ 	#subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
 	
 	# Start the airodump-ng processor
 	ad = airodump.AirodumpProcessor()
