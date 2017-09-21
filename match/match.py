@@ -256,9 +256,8 @@ def convert_to_distance(wifi_data, bluetooth_data):
 	i = 0
 	for i in range(0,15):
 		new_line_wifi = []
-		new_line_bt = []
-
-		for j in range(0,4):
+		new_line_bt = [] 
+		for j in range(0,len(wifi_data[0])):
 			if ( i == 0 or i == 5 or i == 10):
 				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+p0_mse_wifi)/(10*alpha_mse_double_wifi))
 				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
@@ -514,14 +513,14 @@ alpha_bt = print_avg_line(alpha_mat_bt)
 euclidean_distance_norm_tot = compute_euclidean_distance(wifi_set_norm, bluetooth_set_norm)
 cos_result_tot = compute_cos_sim(wifi_set_norm, bluetooth_set_norm)
 
-#print_results_long(euclidean_distance_norm_tot, True)
+#print_results_long(euclidean_distance_norm_tot, False)
 
 
 ####### NORMALIZZAZIONE SULLA LINEA #########
 euclidean_distance_norm_line = compute_euclidean_distance(wifi_set_norm_line, bluetooth_set_norm_line)
 cos_result_line = compute_cos_sim(wifi_set_norm_line, bluetooth_set_norm_line)
 
-#print_results_long(euclidean_distance_norm_tot, False)
+#print_results_long(euclidean_distance_norm_line, False)
 
 
 ###### CONVERSIONE MATRICE ######
@@ -530,12 +529,12 @@ wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_linear, bluetooth_set)
 cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear, bluetooth_set)
 
-#print_results_long(euclidean_distance_conversion_linear, True)
+#print_results_long(euclidean_distance_conversion_linear, False)
 
 
 ###### MATRICE RAPPORTI ######
-euclidean_ratio = compute_euclidean_distance(bluetooth_set, bluetooth_ratio)
-cosine_sim_ratio = compute_cos_sim(bluetooth_set, bluetooth_ratio)
+#euclidean_ratio = compute_euclidean_distance(bluetooth_set, bluetooth_ratio)
+#cosine_sim_ratio = compute_cos_sim(bluetooth_set, bluetooth_ratio)
 
 
 
@@ -543,6 +542,9 @@ cosine_sim_ratio = compute_cos_sim(bluetooth_set, bluetooth_ratio)
 wifi_distance, bluetooth_distance = convert_to_distance(wifi_set, bluetooth_set)
 euclidean_with_dist = compute_euclidean_distance(wifi_distance, bluetooth_distance)
 cosine_with_dist = compute_cos_sim(wifi_distance, bluetooth_distance)
+
+print_results_long(euclidean_with_dist, False)
+
 
 ####### TRILATERATION #######
 wifi_coord = []
@@ -612,10 +614,48 @@ pp.pprint(best_3_wifi)
 print "---------------------------------"
 pp.pprint(best_3_bt)
 '''
+print "------------------------------------------"
 
 ###############   RASP 5 e RASP 6   #############
 
+wifi_set_56, bluetooth_set_56 = parse_data("../dataset/df_completo_wifi", "../dataset/df_completo_bt")
+wifi_norm_line_56, bluetooth_norm_line_56 = parse_data("../dataset/df_completo_norm_line_wifi", "../dataset/df_completo_norm_line_bt")
+wifi_norm_56, bluetooth_norm_56 = parse_data("../dataset/df_completo_norm_wifi", "../dataset/df_completo_norm_bt")
 
 
+wifi_norm_line_3, bluetooth_norm_line_3 = parse_data("../dataset/df_norm_line_wifi_3", "../dataset/df_norm_line_bt_3")
 
 
+####### NORMALIZZAZIONE SULLA LINEA #########
+euclidean_distance_norm_line = compute_euclidean_distance(wifi_norm_line_56, bluetooth_norm_line_56)
+cos_result_line = compute_cos_sim(wifi_norm_line_56, bluetooth_norm_line_56)
+
+#print_results_long(cos_result_line, True)
+
+####### NORMALIZZAZIONE SULLA LINEA ######### SOLO PRIME 3 RASP
+euclidean_distance_norm_line_3 = compute_euclidean_distance(wifi_norm_line_3, bluetooth_norm_line_3)
+cos_result_line_3 = compute_cos_sim(wifi_norm_line_3, bluetooth_norm_line_3)
+
+print_results_long(euclidean_distance_norm_line_3, False)
+
+
+####### NORMALIZZAZIONE SU TUTTO #########
+euclidean_distance_norm_tot = compute_euclidean_distance(wifi_norm_56, bluetooth_norm_56)
+cos_result_tot = compute_cos_sim(wifi_norm_56, bluetooth_norm_56)
+
+#print_results_long(cos_result_tot, True)
+
+###### CONVERSIONE MATRICE ######
+wifi_to_bt_linear_56 = convert_wifi_bt(wifi_set_56)
+
+euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_linear_56, bluetooth_set_56)
+cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear_56, bluetooth_set_56)
+
+#print_results_long(cosine_similarity_conversion_linear, True)
+
+###### TRASFORMAZIONE METRI ######
+wifi_distance_56, bluetooth_distance_56 = convert_to_distance(wifi_set_56, bluetooth_set_56)
+euclidean_with_dist = compute_euclidean_distance(wifi_distance_56, bluetooth_distance_56)
+cosine_with_dist = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
+
+#print_results_long(euclidean_with_dist, False)
