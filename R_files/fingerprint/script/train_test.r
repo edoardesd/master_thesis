@@ -9,6 +9,36 @@ sam_bt_ok <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sam_bt
 sam_wifi_ok <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sam_wifi_ok.csv", 
                         col_types = cols(location = col_character()))
 
+s3_bluetooth_ok <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_bluetooth_ok.csv")
+s3_wifi_dup <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_wifi_dup.csv")
+lg_wifi_v1 <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/lg_wifi_v1.csv")
+lg_wifi_v2 <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/lg_wifi_v2.csv")
+lg_bt_avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/lg_bt_avg.csv")
+
+
+#import rasp separate
+sam_rasp1_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_wifi_avg/sams_wifi_avg_rasp1.csv")
+sam_rasp2_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_wifi_avg/sams_wifi_avg_rasp2.csv")
+sam_rasp3_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_wifi_avg/sams_wifi_avg_rasp3.csv")
+sam_rasp4_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_wifi_avg/sams_wifi_avg_rasp4.csv")
+
+sam_rasp1_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_bt_avg/sams_bt_avg_rasp1.csv")
+sam_rasp2_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_bt_avg/sams_bt_avg_rasp2.csv")
+sam_rasp3_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_bt_avg/sams_bt_avg_rasp3.csv")
+sam_rasp4_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/sams_bt_avg/sams_bt_avg_rasp4.csv")
+
+s3_rasp1_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_bt_avg/s3_bt_avg_rasp1.csv")
+s3_rasp2_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_bt_avg/s3_bt_avg_rasp2.csv")
+s3_rasp3_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_bt_avg/s3_bt_avg_rasp3.csv")
+s3_rasp4_bt.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_bt_avg/s3_bt_avg_rasp4.csv")
+
+
+s3_rasp1_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_wifi_avg/s3_wifi_rasp1.csv")
+s3_rasp2_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_wifi_avg/s3_wifi_rasp2.csv")
+s3_rasp3_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_wifi_avg/s3_wifi_rasp3.csv")
+s3_rasp4_wifi.avg <- read_csv("~/Documents/master_thesis/R_files/fingerprint/data/s3_wifi_avg/s3_wifi_rasp4.csv")
+
+
 #remove errors in location
 sam_bt_ok$location[sam_bt_ok$location == "”2.2”"] = 2.2
 #check for duplicates
@@ -329,8 +359,61 @@ sam_bt.mean <- sam_bt.mean[,c(2,3,4,5,1)]
 sam_wifi.mean = aggregate(.~location, data=sam_wifi_ok, mean)
 sam_wifi.mean <- sam_wifi.mean[,c(2,3,4,5,1)]
 
+lg_wifi_v1.mean = aggregate(.~location, data=lg_wifi_v1, mean)
+lg_wifi_v2.mean = aggregate(.~location, data=lg_wifi_v2, mean)
+
+
+
+s3_bt.mean = aggregate(.~location, data=s3_bluetooth_ok, mean)
+s3_bt.mean <- s3_bt.mean[,c(2,3,4,5,1)]
+s3_wifi_dup.avg = aggregate(.~location, data=s3_wifi_dup, mean)
+s3_wifi_dup.avg <- s3_wifi_dup.avg[,c(2,3,4,5,1)]
+
+#merge rasp avg
+s3_bt.avg.all = cbind(s3_rasp1_bt.avg[1], s3_rasp2_bt.avg[1], s3_rasp3_bt.avg[1], s3_rasp4_bt.avg)
+s3_wifi.avg.all = cbind(s3_rasp1_wifi.avg[1], s3_rasp2_wifi.avg[1], s3_rasp3_wifi.avg[1], s3_rasp4_wifi.avg)
+
+sams_wifi.avg.all = cbind(sam_rasp1_wifi.avg[1], sam_rasp2_wifi.avg[1], sam_rasp3_wifi.avg[1], sam_rasp4_wifi.avg)
+sams_bt.avg.all = cbind(sam_rasp1_bt.avg[1], sam_rasp2_bt.avg[1], sam_rasp3_bt.avg[1], sam_rasp4_bt.avg)
 #export file
 write.csv(sam_bt.mean, file = "fingerprint_sam_bt_mean.csv",row.names=FALSE)
 write.csv(sam_wifi.mean, file = "fingerprint_sam_wifi_mean.csv",row.names=FALSE)
 write.csv(sam_bt.mean, file = "fingerprint_sam_bt_mean.txt",row.names=FALSE)
 write.csv(sam_wifi.mean, file = "fingerprint_sam_wifi_mean.txt",row.names=FALSE)
+
+write.csv(sams_wifi.avg.all, file = "sams_avg_all_wifi.txt",row.names=FALSE)
+write.csv(sams_bt.avg.all, file = "sams_avg_all_bt.txt",row.names=FALSE)
+
+write.csv(s3_bt.avg.all, file = "s3_bt_avg.txt",row.names=FALSE)
+write.csv(s3_wifi.avg.all, file = "s3_wifi_avg.txt",row.names=FALSE)
+write.csv(s3_bt.mean, file = "s3_bt_ist.txt",row.names=FALSE)
+
+
+sam_wifi.mean[-5] - sams_wifi.avg.all[-5]
+sam_bt.mean[-5] - sams_bt.avg.all[-5]
+
+s3_bt.avg.all[-5] - s3_bt.mean[-5]
+
+lg_wifi_v1.mean[-1] - lg_wifi_v2.mean[-1]
+
+lg_wifi_v1.mean <- lg_wifi_v1.mean[,c(2,3,4,5,1)]
+
+write.csv(lg_wifi_v1.mean, file = "lg_wifi_avg.txt",row.names=FALSE)
+
+s3_wifi_avg <- s3_wifi.avg.all
+lg_wifi_avg <- lg_wifi_v1.mean
+sams_wifi_avg <- sams_wifi.avg.all
+sams_bt_avg <- sams_bt.avg.all
+s3_bt_avg <- s3_bt.avg.all
+
+wifi_avg <- (s3_wifi_avg[-5] + lg_wifi_avg[-5] + sams_wifi_avg[-5])/3
+bt_avg <- (s3_bt_avg[-5] + lg_bt_avg[-5]+  sams_bt_avg[-5])/3
+bt_avg <- cbind(bt_avg, s3_bt_avg[5])
+wifi_avg <- cbind(wifi_avg, s3_wifi_avg[5])
+
+
+write.csv(wifi_avg, file = "fingerprint_wifi_avg.txt",row.names=FALSE)
+write.csv(bt_avg, file = "fingerprint_bt_avg.txt",row.names=FALSE)
+
+
+s3_bt_avg[,1]
