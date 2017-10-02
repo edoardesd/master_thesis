@@ -35,7 +35,7 @@ class AirodumpProcessor:
 
 
 		#per scrivere su file: '-w', 'lab', '--output-format', 'csv', '--channel', '10'
-		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '--channel', '1,6,11'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '--channel', '10'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		return self.fd
