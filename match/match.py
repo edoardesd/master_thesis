@@ -75,6 +75,32 @@ euclidean_distance_norm_tot = {}
 euclidean_distance_norm_line = {}
 
 
+## PARAMS COL LOG
+log_s3_wifi_alpha = -8.548477 
+log_s3_wifi_p0 = -56.408953
+log_s3_bt_alpha = -3.501016  
+log_s3_bt_p0 = 1.825424
+
+log_tab_wifi_alpha = -14.84325
+log_tab_wifi_p0 = -47.85378 
+log_tab_bt_alpha = -11.04428
+log_tab_bt_p0 = 1.91026
+
+log_ipad_wifi_alpha = -9.685008
+log_ipad_wifi_p0 = -51.133262
+log_ipad_bt_alpha = -3.229079 
+log_ipad_bt_p0 = -1.050359
+
+log_lg_wifi_alpha = -15.54680
+log_lg_wifi_p0 = -48.22862
+log_lg_bt_alpha = -12.2877089 
+log_lg_bt_p0 = -0.6120409
+
+log_sams_wifi_alpha = -21.89181
+log_sams_wifi_p0 = -42.07718
+log_sams_bt_alpha = -8.2023639
+log_sams_bt_p0 = -0.1713258
+
 # Mean Square Error
 # ap_locations: [ (rasp1_x, rasp1_y), ... ]
 # distances: [ d_rasp1, ... ]
@@ -85,7 +111,7 @@ def mse(x, locations, distances):
 		distance_calculated = euclidean_distance(x[0], x[1], float(location[0]), float(location[1]))
 		mse += math.pow(distance_calculated - float(distance), 2.0)
 		i +=1
-	result = mse/4
+	result = mse/i
 	
 	return result
 
@@ -157,9 +183,53 @@ def parse_data(wifi_data, bluetooth_data):
 def print_results_long(distance_dict, rev):
 	#rev = True -> descending order
 	#rev = False -> ascending order
+	results_in_order = {}
 	for i in range(1, len(distance_dict)+1):
-		print "\nDevice",i,": "
-		pp.pprint(sorted(distance_dict[i].items(), key=itemgetter(1), reverse=rev))
+		#print "\nDevice",i,": "
+		#pp.pprint(sorted(distance_dict[i].items(), key=itemgetter(1), reverse=rev))
+		results_in_order[i] = sorted(distance_dict[i].items(), key=itemgetter(1), reverse=rev)
+
+	return results_in_order
+
+def create_treshold_set(dataset, treshold):
+	treshold_dict = {}
+	for dev in dataset:
+		treshold_dict[dev] = None
+		#print "Device", dev, ":"
+		under_treshold = []
+		for i in range (0, len(dataset)):
+			if (dataset[dev][i][1] < treshold):
+				under_treshold.append(dataset[dev][i])
+				#print dataset[dev][i]
+
+		treshold_dict[dev] = under_treshold
+
+	return treshold_dict
+
+def check_ros(data, dataset_full):
+	sotto_soglia = 0
+	true_pos = 0
+	false_pos = 0
+	false_neg = 0
+	true_neg = 0
+	for dev in data:
+		if len(data[dev])>0:
+			#print dev, ":", data[dev][0]
+			if (data[dev][0][0] == dev):
+				true_pos +=1
+			else: 
+				false_pos +=1
+		else:
+			sotto_soglia+=1
+			if(dataset_full[dev][0][0] == dev):
+				false_neg +=1
+			else: 
+				true_neg +=1
+
+
+	#print "Veri pos: ",true_pos, "    Falsi pos:",false_pos, "    Sotto soglia:", sotto_soglia, "Veri neg:",true_neg, "Falsi neg:", false_neg
+	result_ros = [true_pos, false_pos, true_neg, false_neg]
+	return result_ros
 
 
 def print_results_short(distance_dict, rev, print_res):
@@ -259,23 +329,67 @@ def convert_to_distance(wifi_data, bluetooth_data):
 		new_line_bt = [] 
 		for j in range(0,len(wifi_data[0])):
 			if ( i == 0 or i == 5 or i == 10):
-				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+p0_mse_wifi)/(10*alpha_mse_double_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
+				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+lg_1metro_wifi)/(10*alpha_lg_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+lg_1metro_bt)/(10*alpha_lg_bt))
 			elif ( i == 1 or i == 6 or i == 11):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_mse_double_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+sams_1metro_wifi)/(10*alpha_sams_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+sams_1metro_bt)/(10*alpha_sams_bt))
 
 			elif ( i == 2 or i == 7 or i == 12):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_mse_double_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+s3_1metro_wifi)/(10*alpha_s3_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+s3_1metro_bt)/(10*alpha_s3_bt))
 
 			elif ( i == 3 or i == 8 or i == 13):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_mse_double_wifi))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_mse_double_bt))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+tab_1metro_wifi)/(10*alpha_tab_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+tab_1metro_bt)/(10*alpha_tab_bt))
 
 			elif ( i == 4 or i == 9 or i == 14):
-				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+p0_mse_wifi)/(10*alpha_wifi_mse))
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+p0_mse_bt)/(10*alpha_bt_mse))
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+ipad_1metro_wifi)/(10*alpha_ipad_wifi))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+ipad_1metro_bt)/(10*alpha_ipad_bt))
+			
+			if float(dist_wifi) > 15:
+				dist_wifi = 15.00000001
+
+			if float(dist_bluetooth) > 15:
+				dist_bluetooth = 15.00000001
+
+			new_line_wifi.append(dist_wifi)
+			new_line_bt.append(dist_bluetooth)
+
+		i = i + 1
+		new_matrix_wifi.append(new_line_wifi)
+		new_matrix_bt.append(new_line_bt)
+
+	return new_matrix_wifi, new_matrix_bt
+
+
+
+def convert_to_distance_new_method(wifi_data, bluetooth_data):
+	new_matrix_bt = []
+	new_matrix_wifi = []
+	i = 0
+	for i in range(0,15):
+		new_line_wifi = []
+		new_line_bt = [] 
+		for j in range(0,len(wifi_data[0])):
+			if ( i == 0 or i == 5 or i == 10):
+				dist_wifi = "%.8f" % 10**((-float(wifi_data[i][j])+log_lg_wifi_p0)/(10*log_lg_wifi_alpha))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+log_lg_bt_p0)/(10*log_lg_bt_alpha))
+			elif ( i == 1 or i == 6 or i == 11):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+log_sams_wifi_p0)/(10*log_sams_wifi_alpha))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+log_sams_bt_p0)/(10*log_sams_bt_alpha))
+
+			elif ( i == 2 or i == 7 or i == 12):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+log_s3_wifi_p0)/(10*log_s3_wifi_alpha))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+log_s3_bt_p0)/(10*log_s3_bt_alpha))
+
+			elif ( i == 3 or i == 8 or i == 13):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+log_tab_wifi_p0)/(10*log_tab_wifi_alpha))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+log_tab_bt_p0)/(10*log_tab_bt_alpha))
+
+			elif ( i == 4 or i == 9 or i == 14):
+				dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+log_ipad_wifi_p0)/(10*log_ipad_wifi_alpha))
+				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+log_ipad_bt_p0)/(10*log_ipad_bt_alpha))
 			
 			if float(dist_wifi) > 15:
 				dist_wifi = 15.00000001
@@ -439,7 +553,7 @@ def calculate_dist_finger_DIFF_DEV(real_data, wifi):
 
 	return euclidean_dist
 
-
+#non serve
 def calculate_dist_finger_DIFF_DEV_WIFI(real_data):
 	euclidean_dist = {}
 	i = 1
@@ -477,7 +591,8 @@ def calculate_dist_finger_DIFF_DEV_WIFI(real_data):
 		i += 1
 
 	return euclidean_dist
-def convert_cells(dataset):
+
+def convert_cells(dataset, labels):
 	for key, value in dataset.items():
 		for i in range(0, len(dataset[key])):
 			dataset[key][i] =list(dataset[key][i])
@@ -486,21 +601,53 @@ def convert_cells(dataset):
 
 	return dataset
 
+def fingerprint_result(wifi_finger, bt_finger, diff_device):
 
+	labels = []
+	for line in wifi_finger:
+		labels.append(line[-1])
+
+	formatted_wifi = format_data(wifi_finger)
+	formatted_bt = format_data(bt_finger)
+
+	if (not diff_device):
+		wifi_cells = calculate_dist_finger(wifi_set, formatted_wifi)
+		bt_cells = calculate_dist_finger(bluetooth_set, formatted_bt)
+	if diff_device:
+
+	#try with mixed df for fingerprint 
+		wifi_cells = calculate_dist_finger_DIFF_DEV(wifi_set, True)
+		bt_cells = calculate_dist_finger_DIFF_DEV(bluetooth_set, False)
+
+
+	best_3_wifi = print_results_short(wifi_cells, False, False)
+	best_3_bt = print_results_short(bt_cells, False, False)
+
+	best_3_wifi = convert_cells(best_3_wifi, labels)
+	best_w_bt = convert_cells(best_3_bt, labels)
+
+
+	return best_3_wifi, best_3_bt
+
+def treshold_test(low, high, passo, order_dataset):
+	matrix_with_different_treshold = []
+	for i in np.arange(low, high, passo):
+		dataset_treshold = create_treshold_set(order_dataset, i)
+	#pp.pprint(norm_treshold)
+		ros_array = check_ros(dataset_treshold, order_dataset)
+		matrix_with_different_treshold.append(ros_array)
+
+	return matrix_with_different_treshold
 
 #dataset import
 wifi_set_norm, bluetooth_set_norm = parse_data("../dataset/wifi_norm", "../dataset/bluetooth_norm")
 wifi_set_norm_line, bluetooth_set_norm_line = parse_data("../dataset/wifi_norm_line", "../dataset/bluetooth_norm_line")
 wifi_set, bluetooth_set = parse_data("../dataset/wifi", "../dataset/bluetooth")
-wifi_avg_all, bluetooth_avg_all = parse_data("../dataset/sams_avg_all_wifi", "../dataset/sams_avg_all_bt")
+wifi_avg_all, bluetooth_avg_all = parse_data("../dataset/fingerprint/sams_avg_all_wifi", "../dataset/fingerprint/sams_avg_all_bt")
 true_dist, bluetooth_ratio = parse_data("../dataset/distanze_vere", "../dataset/bluetooth_ratio")
 wifi_set, bluetooth_ratio2 = parse_data("../dataset/wifi", "../dataset/bluetooth_ratio2")
 wifi_set, bluetooth_ratio3 = parse_data("../dataset/wifi", "../dataset/bluetooth_ratio3")
-sams_wifi_fingerprint, sams_bt_fingerprint = parse_data("../dataset/fingerprint_sam_wifi_mean", "../dataset/fingerprint_sam_bt_mean")
-s3_wifi_fingerprint, s3_bt_fingerprint = parse_data("../dataset/s3_wifi_avg", "../dataset/s3_bt_ist")
-lg_wifi_fingerprint, lg_bt_fingerprint = parse_data("../dataset/lg_wifi_avg", "../dataset/lg_bt_avg")
 
-avg_wifi_fingerprint, avg_bt_fingerprint = parse_data("../dataset/fingerprint_wifi_avg", "../dataset/fingerprint_bt_avg")
 
 ###### COMPUTE ALPHA ######
 alpha_mat_wifi, alpha_mat_bt = compute_alpha(wifi_set, bluetooth_set)
@@ -520,9 +667,9 @@ cos_result_tot = compute_cos_sim(wifi_set_norm, bluetooth_set_norm)
 euclidean_distance_norm_line = compute_euclidean_distance(wifi_set_norm_line, bluetooth_set_norm_line)
 cos_result_line = compute_cos_sim(wifi_set_norm_line, bluetooth_set_norm_line)
 
-#print_results_long(euclidean_distance_norm_line, False)
+norm_order = print_results_long(euclidean_distance_norm_line, False)
 
-
+#pp.pprint(treshold_test(0, 1.5, 0.1, norm_order))
 ###### CONVERSIONE MATRICE ######
 wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 
@@ -543,8 +690,7 @@ wifi_distance, bluetooth_distance = convert_to_distance(wifi_set, bluetooth_set)
 euclidean_with_dist = compute_euclidean_distance(wifi_distance, bluetooth_distance)
 cosine_with_dist = compute_cos_sim(wifi_distance, bluetooth_distance)
 
-print_results_long(euclidean_with_dist, False)
-
+#print_results_long(euclidean_with_dist, False)
 
 ####### TRILATERATION #######
 wifi_coord = []
@@ -576,44 +722,11 @@ for line in bluetooth_distance:
 	bt_coord.append(location)
 
 
-
 euc_coord = compute_euclidean_distance(wifi_coord, bt_coord)
 cosine_coord = compute_cos_sim(wifi_coord, bt_coord)
 #print_results_long(cosine_coord, True)
 
 
-####### FINGERPRINT ######
-labels = []
-for line in lg_wifi_fingerprint:
-	labels.append(line[-1])
-
-formatted_wifi = format_data(avg_wifi_fingerprint)
-formatted_bt = format_data(avg_bt_fingerprint)
-#wifi_avg_all = format_data(wifi_avg_all)
-
-#pp.pprint(formatted_bt)
-
-#wifi_cells = calculate_dist_finger(wifi_set, formatted_wifi)
-#bt_cells = calculate_dist_finger(bluetooth_set, formatted_bt)
-
-#try with different df for fingerprint 
-wifi_cells = calculate_dist_finger_DIFF_DEV(wifi_set, True)
-bt_cells = calculate_dist_finger_DIFF_DEV(bluetooth_set, False)
-
-
-
-best_3_wifi = print_results_short(wifi_cells, False, False)
-best_3_bt = print_results_short(bt_cells, False, False)
-
-
-best_3_wifi = convert_cells(best_3_wifi)
-best_w_bt = convert_cells(best_3_bt)
-
-'''
-pp.pprint(best_3_wifi)
-print "---------------------------------"
-pp.pprint(best_3_bt)
-'''
 print "------------------------------------------"
 
 ###############   RASP 5 e RASP 6   #############
@@ -630,13 +743,15 @@ wifi_norm_line_3, bluetooth_norm_line_3 = parse_data("../dataset/df_norm_line_wi
 euclidean_distance_norm_line = compute_euclidean_distance(wifi_norm_line_56, bluetooth_norm_line_56)
 cos_result_line = compute_cos_sim(wifi_norm_line_56, bluetooth_norm_line_56)
 
-#print_results_long(cos_result_line, True)
+line_norm_56 = print_results_long(euclidean_distance_norm_line, False)
+#pp.pprint(treshold_test(0, 1.5, 0.1, line_norm_56))
+
 
 ####### NORMALIZZAZIONE SULLA LINEA ######### SOLO PRIME 3 RASP
 euclidean_distance_norm_line_3 = compute_euclidean_distance(wifi_norm_line_3, bluetooth_norm_line_3)
 cos_result_line_3 = compute_cos_sim(wifi_norm_line_3, bluetooth_norm_line_3)
 
-print_results_long(euclidean_distance_norm_line_3, False)
+#print_results_long(euclidean_distance_norm_line_3, False)
 
 
 ####### NORMALIZZAZIONE SU TUTTO #########
@@ -651,7 +766,9 @@ wifi_to_bt_linear_56 = convert_wifi_bt(wifi_set_56)
 euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_linear_56, bluetooth_set_56)
 cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear_56, bluetooth_set_56)
 
-#print_results_long(cosine_similarity_conversion_linear, True)
+conversione_56 = print_results_long(euclidean_distance_conversion_linear, False)
+pp.pprint(conversione_56)
+pp.pprint(treshold_test(0, 30, 2, conversione_56))
 
 ###### TRASFORMAZIONE METRI ######
 wifi_distance_56, bluetooth_distance_56 = convert_to_distance(wifi_set_56, bluetooth_set_56)
@@ -659,3 +776,76 @@ euclidean_with_dist = compute_euclidean_distance(wifi_distance_56, bluetooth_dis
 cosine_with_dist = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
 
 #print_results_long(euclidean_with_dist, False)
+
+
+
+#### FINGERPRINT ####
+
+avg_wifi_fingerprint_6, avg_bt_fingerprint_6 = parse_data("../dataset/fingerprint/f_6_all_wifi", "../dataset/fingerprint/f_6_all_bt")
+sams_wifi_fingerprint_6, sams_bt_fingerprint_6 = parse_data("../dataset/fingerprint/f_6_sams_wifi", "../dataset/fingerprint/f_6_sams_bt")
+s3_wifi_fingerprint_6, s3_bt_fingerprint_6 = parse_data("../dataset/fingerprint/f_6_s3_wifi", "../dataset/fingerprint/f_6_s3_bt")
+lg_wifi_fingerprint_6, lg_bt_fingerprint_6 = parse_data("../dataset/fingerprint/f_6_lg_wifi", "../dataset/fingerprint/f_6_lg_bt")
+
+sams_wifi_fingerprint, sams_bt_fingerprint = parse_data("../dataset/fingerprint/fingerprint_sam_wifi_mean", "../dataset/fingerprint/fingerprint_sam_bt_mean")
+s3_wifi_fingerprint, s3_bt_fingerprint = parse_data("../dataset/fingerprint/s3_wifi_avg", "../dataset/fingerprint/s3_bt_ist")
+lg_wifi_fingerprint, lg_bt_fingerprint = parse_data("../dataset/fingerprint/lg_wifi_avg", "../dataset/fingerprint/lg_bt_avg")
+avg_wifi_fingerprint, avg_bt_fingerprint = parse_data("../dataset/fingerprint/fingerprint_wifi_avg", "../dataset/fingerprint/fingerprint_bt_avg")
+
+
+
+finger_wifi, finger_bt = fingerprint_result(avg_wifi_fingerprint, avg_bt_fingerprint, True)
+
+for i in range (1, 16):
+	check = False
+	if (finger_wifi[i][0][0] == finger_bt[i][0][0]):
+		check = True
+	#print i, ")", finger_wifi[i][0][0], "---", finger_bt[i][0][0], check
+	check = False
+
+
+###### TRASFORMAZIONE METRI ######
+wifi_distance_56, bluetooth_distance_56 = convert_to_distance_new_method(wifi_set, bluetooth_set)
+euclidean_with_dist_56 = compute_euclidean_distance(wifi_distance_56, bluetooth_distance_56)
+cosine_with_dist_56 = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
+
+#print_results_long(euclidean_with_dist_56, False)
+
+####### TRILATERATION #######
+wifi_coord = []
+for line in wifi_distance_56:
+	result = minimize(
+		mse,                         # The error function
+		initial_location,            # The initial guess
+		args=(ap_locations, line), # Additional parameters for mse
+		method='L-BFGS-B',           # The optimisation algorithm
+		options={
+			'ftol':1e-5,         # Tolerance
+			'maxiter': 1e+7      # Maximum iterations
+		})
+	location = result.x
+	wifi_coord.append(location)
+
+bt_coord = []
+for line in bluetooth_distance_56:
+	result = minimize(
+		mse,                         # The error function
+		initial_location,            # The initial guess
+		args=(ap_locations, line), # Additional parameters for mse
+		method='L-BFGS-B',           # The optimisation algorithm
+		options={
+			'ftol':1e-5,         # Tolerance
+			'maxiter': 1e+7      # Maximum iterations
+		})
+	location = result.x
+	bt_coord.append(location)
+
+
+euc_coord = compute_euclidean_distance(wifi_coord, bt_coord)
+cosine_coord = compute_cos_sim(wifi_coord, bt_coord)
+#print_results_long(cosine_coord, True)
+
+
+
+
+
+
