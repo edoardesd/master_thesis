@@ -203,10 +203,9 @@ def create_treshold_set(dataset, treshold):
 				#print dataset[dev][i]
 
 		treshold_dict[dev] = under_treshold
-
 	return treshold_dict
 
-def check_ros(data, dataset_full):
+def check_roc(data, dataset_full):
 	sotto_soglia = 0
 	true_pos = 0
 	false_pos = 0
@@ -228,8 +227,8 @@ def check_ros(data, dataset_full):
 
 
 	#print "Veri pos: ",true_pos, "    Falsi pos:",false_pos, "    Sotto soglia:", sotto_soglia, "Veri neg:",true_neg, "Falsi neg:", false_neg
-	result_ros = [true_pos, false_pos, true_neg, false_neg]
-	return result_ros
+	result_roc = [true_pos, false_pos, true_neg, false_neg]
+	return result_roc
 
 
 def print_results_short(distance_dict, rev, print_res):
@@ -634,11 +633,26 @@ def treshold_test(low, high, passo, order_dataset):
 	for i in np.arange(low, high, passo):
 		dataset_treshold = create_treshold_set(order_dataset, i)
 	#pp.pprint(norm_treshold)
-		ros_array = check_ros(dataset_treshold, order_dataset)
-		matrix_with_different_treshold.append(ros_array)
+		roc_array = check_roc(dataset_treshold, order_dataset)
+		matrix_with_different_treshold.append(roc_array)
 
 	return matrix_with_different_treshold
 
+def create_data_roc(order_dataset,name):
+	file = open("../R_files/roc/data/"+name+".txt","w") 
+	file.write("treshold,true_false")
+
+	for key in order_dataset:
+		if(key==order_dataset[key][0][0]):
+			print order_dataset[key][0][1], 1
+			str_file = "\n"+str(order_dataset[key][0][1]) + ",1"
+			
+		else: 
+			print order_dataset[key][0][1], 0
+			str_file = "\n"+str(order_dataset[key][0][1]) + ",0"
+		file.write(str_file)
+	
+	file.close() 
 #dataset import
 wifi_set_norm, bluetooth_set_norm = parse_data("../dataset/wifi_norm", "../dataset/bluetooth_norm")
 wifi_set_norm_line, bluetooth_set_norm_line = parse_data("../dataset/wifi_norm_line", "../dataset/bluetooth_norm_line")
@@ -744,6 +758,8 @@ euclidean_distance_norm_line = compute_euclidean_distance(wifi_norm_line_56, blu
 cos_result_line = compute_cos_sim(wifi_norm_line_56, bluetooth_norm_line_56)
 
 line_norm_56 = print_results_long(euclidean_distance_norm_line, False)
+
+create_data_roc(line_norm_56,"df.line_norm_56")
 #pp.pprint(treshold_test(0, 1.5, 0.1, line_norm_56))
 
 
@@ -767,15 +783,18 @@ euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_lin
 cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear_56, bluetooth_set_56)
 
 conversione_56 = print_results_long(euclidean_distance_conversion_linear, False)
-pp.pprint(conversione_56)
-pp.pprint(treshold_test(0, 30, 2, conversione_56))
+#pp.pprint(conversione_56)
+#pp.pprint(treshold_test(0, 30, 2, conversione_56))
+create_data_roc(conversione_56,"df.conversione_56")
 
 ###### TRASFORMAZIONE METRI ######
 wifi_distance_56, bluetooth_distance_56 = convert_to_distance(wifi_set_56, bluetooth_set_56)
 euclidean_with_dist = compute_euclidean_distance(wifi_distance_56, bluetooth_distance_56)
 cosine_with_dist = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
 
-#print_results_long(euclidean_with_dist, False)
+metri_lineare_56 = print_results_long(euclidean_with_dist, False)
+create_data_roc(metri_lineare_56,"df.metri_lineare_56")
+
 
 
 
@@ -803,12 +822,13 @@ for i in range (1, 16):
 	check = False
 
 
-###### TRASFORMAZIONE METRI ######
+###### TRASFORMAZIONE METRI LOG ######
 wifi_distance_56, bluetooth_distance_56 = convert_to_distance_new_method(wifi_set, bluetooth_set)
 euclidean_with_dist_56 = compute_euclidean_distance(wifi_distance_56, bluetooth_distance_56)
 cosine_with_dist_56 = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
 
-#print_results_long(euclidean_with_dist_56, False)
+metri_log_56 = print_results_long(euclidean_with_dist_56, False)
+create_data_roc(metri_log_56,"df.metri_log_56")
 
 ####### TRILATERATION #######
 wifi_coord = []
