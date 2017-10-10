@@ -68,10 +68,13 @@ def compute_euclidean_distance(wifi_data, bluetooth_data):
 def print_results_long(distance_dict, rev):
 	#rev = True -> descending order
 	#rev = False -> ascending order
+	results_in_order = {}
 	for i in range(1, len(distance_dict)+1):
-		print "\nDevice",i,": "
-		pp.pprint(sorted(distance_dict[i].items(), key=itemgetter(1), reverse=rev))
+		#print "\nDevice",i,": "
+		#pp.pprint(sorted(distance_dict[i].items(), key=itemgetter(1), reverse=rev))
+		results_in_order[i] = sorted(distance_dict[i].items(), key=itemgetter(1), reverse=rev)
 
+	return results_in_order
 def data_to_dist(dataset, wifi):
 	new_matrix = []
 	i = 0
@@ -159,6 +162,23 @@ def euclidean_distance(x1, y1, x2, y2):
 	return math.sqrt(sum_square)
 
 
+def create_data_roc(order_dataset,name):
+	file = open("../R_files/roc/data/"+name+".txt","w") 
+	file.write("pred,survived")
+
+	for key in order_dataset:
+		if(key==order_dataset[key][0][0]):
+			str_file = "\n"+str(order_dataset[key][0][1]) + ",1"
+			
+		else: 
+			str_file = "\n"+str(order_dataset[key][0][1]) + ",0"
+		
+		#print str_file
+		file.write(str_file)
+	
+	file.close() 
+
+
 wifi_set, bluetooth_set = parse_data("../dataset/wifi", "../dataset/bluetooth")
 wifi_set_56, bluetooth_set_56 = parse_data("../dataset/df_completo_wifi", "../dataset/df_completo_bt")
 wifi_set_3, bluetooth_set_3 = parse_data("../dataset/wifi_3", "../dataset/bluetooth_3")
@@ -166,7 +186,9 @@ wifi_set_3, bluetooth_set_3 = parse_data("../dataset/wifi_3", "../dataset/blueto
 distance_wifi =  data_to_dist(wifi_set_56, True)
 distance_bt =  data_to_dist(bluetooth_set_56, False)
 
-#print_results_long(compute_euclidean_distance(distance_wifi, distance_bt), False)
+dist_new = print_results_long(compute_euclidean_distance(distance_wifi, distance_bt), False)
+create_data_roc(dist_new,"df.metri_lin_new")
+
 #print_results_long(compute_cos_sim(distance_wifi, distance_bt), True)
 
 ####### TRILATERATION #######

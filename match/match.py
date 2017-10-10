@@ -191,19 +191,19 @@ def print_results_long(distance_dict, rev):
 
 	return results_in_order
 
-def create_treshold_set(dataset, treshold):
-	treshold_dict = {}
+def create_threshold_set(dataset, threshold):
+	threshold_dict = {}
 	for dev in dataset:
-		treshold_dict[dev] = None
+		threshold_dict[dev] = None
 		#print "Device", dev, ":"
-		under_treshold = []
+		under_threshold = []
 		for i in range (0, len(dataset)):
-			if (dataset[dev][i][1] < treshold):
-				under_treshold.append(dataset[dev][i])
+			if (dataset[dev][i][1] < threshold):
+				under_threshold.append(dataset[dev][i])
 				#print dataset[dev][i]
 
-		treshold_dict[dev] = under_treshold
-	return treshold_dict
+		threshold_dict[dev] = under_threshold
+	return threshold_dict
 
 def check_roc(data, dataset_full):
 	sotto_soglia = 0
@@ -628,31 +628,56 @@ def fingerprint_result(wifi_finger, bt_finger, diff_device):
 
 	return best_3_wifi, best_3_bt
 
-def treshold_test(low, high, passo, order_dataset):
-	matrix_with_different_treshold = []
+def threshold_test(low, high, passo, order_dataset):
+	matrix_with_different_threshold = []
 	for i in np.arange(low, high, passo):
-		dataset_treshold = create_treshold_set(order_dataset, i)
-	#pp.pprint(norm_treshold)
-		roc_array = check_roc(dataset_treshold, order_dataset)
-		matrix_with_different_treshold.append(roc_array)
+		dataset_threshold = create_threshold_set(order_dataset, i)
+	#pp.pprint(norm_threshold)
+		roc_array = check_roc(dataset_threshold, order_dataset)
+		matrix_with_different_threshold.append(roc_array)
 
-	return matrix_with_different_treshold
+	return matrix_with_different_threshold
 
 def create_data_roc(order_dataset,name):
 	file = open("../R_files/roc/data/"+name+".txt","w") 
-	file.write("treshold,true_false")
+	file.write("pred,survived")
 
 	for key in order_dataset:
 		if(key==order_dataset[key][0][0]):
-			print order_dataset[key][0][1], 1
 			str_file = "\n"+str(order_dataset[key][0][1]) + ",1"
 			
 		else: 
-			print order_dataset[key][0][1], 0
 			str_file = "\n"+str(order_dataset[key][0][1]) + ",0"
+		
+		#print str_file
 		file.write(str_file)
 	
 	file.close() 
+
+
+def max_min(dataset):
+	max_r = 0
+	min_r = 9999999
+	for key in dataset:
+		for tup in dataset[key]:
+			if(tup[1]>max_r):
+				max_r = tup[1]
+			if(tup[1]<min_r):
+				min_r = tup[1]
+	return max_r, min_r
+
+def dataset_normalizza(dataset):
+	max_l, min_l = max_min(dataset)
+	diff = max_l-min_l
+	dict2 = copy.deepcopy(dataset)
+	for key in dataset:
+		for i in range(0, len(dataset[key])):
+			print key, dataset[key][i]
+			dict2[key][i] =list(dict2[key][i])
+			dataset[key][i] = list(dataset[key][i])
+			dict2[key][i][1] = "%.4f" % float((dataset[key][i][1]-min_l)/diff)
+			dict2[key][i] = tuple(dict2[key][i])
+	return dict2
 #dataset import
 wifi_set_norm, bluetooth_set_norm = parse_data("../dataset/wifi_norm", "../dataset/bluetooth_norm")
 wifi_set_norm_line, bluetooth_set_norm_line = parse_data("../dataset/wifi_norm_line", "../dataset/bluetooth_norm_line")
@@ -682,8 +707,8 @@ euclidean_distance_norm_line = compute_euclidean_distance(wifi_set_norm_line, bl
 cos_result_line = compute_cos_sim(wifi_set_norm_line, bluetooth_set_norm_line)
 
 norm_order = print_results_long(euclidean_distance_norm_line, False)
-
-#pp.pprint(treshold_test(0, 1.5, 0.1, norm_order))
+#pp.pprint(norm_order)
+#pp.pprint(threshold_test(0, 1.5, 0.1, norm_order))
 ###### CONVERSIONE MATRICE ######
 wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 
@@ -760,7 +785,8 @@ cos_result_line = compute_cos_sim(wifi_norm_line_56, bluetooth_norm_line_56)
 line_norm_56 = print_results_long(euclidean_distance_norm_line, False)
 
 create_data_roc(line_norm_56,"df.line_norm_56")
-#pp.pprint(treshold_test(0, 1.5, 0.1, line_norm_56))
+
+#pp.pprint(threshold_test(0, 1.5, 0.1, line_norm_56))
 
 
 ####### NORMALIZZAZIONE SULLA LINEA ######### SOLO PRIME 3 RASP
@@ -784,8 +810,12 @@ cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear_56, blue
 
 conversione_56 = print_results_long(euclidean_distance_conversion_linear, False)
 #pp.pprint(conversione_56)
-#pp.pprint(treshold_test(0, 30, 2, conversione_56))
+#pp.pprint(threshold_test(0, 30, 2, conversione_56))
 create_data_roc(conversione_56,"df.conversione_56")
+
+
+
+dataset_normalizza(conversione_56)
 
 ###### TRASFORMAZIONE METRI ######
 wifi_distance_56, bluetooth_distance_56 = convert_to_distance(wifi_set_56, bluetooth_set_56)

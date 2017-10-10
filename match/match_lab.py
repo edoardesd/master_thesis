@@ -24,6 +24,8 @@ ipad_intercept = [-2.9839, 2.73879]
 avg_slope=[-0.19416, -0.26359]
 avg_intercept = [-8.94302,1.715838]
 
+lab_slope_new = [-0.1371, -0.3261]
+lab_intercept_new = [-3.7802, 0.9348]
 
 ## PARAMS COL LOG
 log_s3_wifi_alpha = -8.548477 
@@ -50,6 +52,12 @@ log_sams_wifi_alpha = -21.89181
 log_sams_wifi_p0 = -42.07718
 log_sams_bt_alpha = -8.2023639
 log_sams_bt_p0 = -0.1713258
+
+log_lab_wifi_alpha = -8.716259
+log_lab_wifi_p0 = -42.860182
+log_lab_bt_alpha = -3.425640
+log_lab_bt_p0 = -3.624601 
+
 log_avg_wifi_p0 = (log_s3_wifi_p0 + log_ipad_wifi_p0 + log_tab_wifi_p0 + log_lg_wifi_p0 + log_sams_wifi_p0)/5
 log_avg_wifi_alpha = (log_s3_wifi_alpha + log_ipad_wifi_alpha + log_tab_wifi_alpha + log_lg_wifi_alpha + log_sams_wifi_alpha)/5
 log_avg_bt_p0 = (log_s3_bt_p0 + log_ipad_bt_p0 + log_tab_bt_p0 + log_lg_bt_p0 + log_sams_bt_p0)/5
@@ -212,7 +220,7 @@ def data_to_dist(dataset, wifi):
 		for row in line:
 			#if ( i == 0 or i == 5 or i == 10):
 			#	y = "%.4f" % (float(row) * lg_slope[k] + lg_intercept[k])
-			y = "%.4f" % (float(row) * avg_slope[k] + avg_intercept[k])
+			y = "%.4f" % (float(row) * lab_slope_new[k] + lab_intercept_new[k])
 
 			
 			new_line.append(y)
@@ -231,10 +239,10 @@ def convert_to_distance_new_method(wifi_data, bluetooth_data):
 		new_line_bt = [] 
 		for j in range(0,len(wifi_data[0])):
 			
-			dist_wifi = "%.8f" % 10**((-float((wifi_data[i][j]))+wifi_tesi_p0)/(10*wifi_tesi_alpha))
+			dist_wifi = "%.8f" % 10**((float((wifi_data[i][j]))+60+6.837576)/(10*(1.941791)))
 
 			if(len(bluetooth_data)>i):
-				dist_bluetooth = "%.8f" % 10**((-float(bluetooth_data[i][j])+bt_tesi_p0)/(10*bt_tesi_alpha))
+				dist_bluetooth = "%.8f" % 10**((float(bluetooth_data[i][j])+15+6.127945)/(10*(1.836184)))
 
 			if float(dist_wifi) > 15:
 				dist_wifi = 15.00000001
@@ -281,25 +289,43 @@ def convert_bt_labels(data):
 
 	return best_lab
 
+def create_data_roc(order_dataset,name):
+	file = open("../R_files/roc/data/"+name+".txt","w") 
+	file.write("pred,survived")
+	for key in order_dataset:
+		if(key[18:]==order_dataset[key][0][0][18:]):
+			str_file = "\n"+str(order_dataset[key][0][1]) + ",1"
+			
+		else: 
+			str_file = "\n"+str(order_dataset[key][0][1]) + ",0"
+		
+		print str_file
+		file.write(str_file)
+	
+	file.close() 
 
-wifi_set, bluetooth_set = parse_data("../dataset/lab/full_wifi_lab_tarocco", "../dataset/lab/piu_rid_bluetooth_lab_tarocco")
+wifi_set, bluetooth_set = parse_data("../dataset/lab/full_wifi_lab", "../dataset/lab/piu_rid_bluetooth_lab")
 labels_wifi = extract_labels(wifi_set)
 labels_bt = extract_labels(bluetooth_set)
 wifi_set, bluetooth_set = reparse_data(wifi_set, bluetooth_set)
-wifi_norm_line, bluetooth_norm_line = parse_data("../dataset/lab/norm_wifi_tarocco", "../dataset/lab/norm_bluetooth_tarocco")
-
+wifi_norm_line, bluetooth_norm_line = parse_data("../dataset/lab/norm_wifi_lab", "../dataset/lab/norm_bluetooth_lab")
 ### NORMALIZZAZIONE RIGHE ###
 lab_norm = calculate_dist_finger(bluetooth_norm_line, wifi_norm_line)
 best_norm = print_results_short(lab_norm, False, False)
 best_norm = convert_cells(best_norm, labels_wifi)
-#pp.pprint(best_norm)
+best_norm = convert_bt_labels(best_norm)
+create_data_roc(best_norm,"df.lab_norm")
+
+
 ### CONVERSIONE MATRICE ###
 wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 euclidean_distance_conversion_matrix = calculate_dist_finger(bluetooth_set, wifi_to_bt_linear)
 #cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear, bluetooth_set)
 best_conv = print_results_short(euclidean_distance_conversion_matrix, False, False)
 best_conv = convert_cells(best_conv, labels_wifi)
-#pp.pprint(best_conv)
+best_conv = convert_bt_labels(best_conv)
+create_data_roc(best_conv,"df.lab_conv")
+
 
 ### CONVERSIONE DISTANZA LINEARE
 wifi_distance = data_to_dist(wifi_set, True)
@@ -308,14 +334,18 @@ euclidean_distance_conversion_linear = calculate_dist_finger(bluetooth_distance,
 best_linear = print_results_short(euclidean_distance_conversion_linear, False, False)
 best_linear = convert_cells(best_linear, labels_wifi)
 #pp.pprint(wifi_distance)
-#pp.pprint(best_linear)
+
+best_linear = convert_bt_labels(best_linear)
+create_data_roc(best_linear,"df.lab_linear")
 
 ### CONVERSIONE DISTANZA LOG
 wifi_distance_log, bluetooth_distance_log= convert_to_distance_new_method(wifi_set, bluetooth_set)
 euclidean_distance_conversion_log = calculate_dist_finger(bluetooth_distance_log, wifi_distance_log)
 best_log = print_results_short(euclidean_distance_conversion_log, False, False)
 best_log = convert_cells(best_log, labels_wifi)
-#pp.pprint(best_log)
+#pp.pprint(bluetooth_distance_log)
+best_log = convert_bt_labels(best_log)
+create_data_roc(best_log,"df.lab_log")
 
 ####### TRILATERATION #######
 wifi_coord = []
@@ -350,7 +380,6 @@ for line in bluetooth_distance_log:
 euc_coord = calculate_dist_finger(bt_coord, wifi_coord)
 best_tri = print_results_short(euc_coord, False, False)
 best_tri = convert_cells(best_tri, labels_wifi)
-#pp.pprint(best_tri)
 
 
-pp.pprint(convert_bt_labels(best_tri))
+#pp.pprint(convert_bt_labels(best_tri))
