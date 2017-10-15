@@ -1,12 +1,7 @@
 library(readr)
 require(ggplot2)
 
-roc_df_norm <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.line_norm_56.txt")
-roc_df_conversione <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.conversione_56.txt")
-
-roc_df_conversione <- transform(roc_df_conversione, pred = (pred - min(pred)) / (max(pred) - min(pred)))
-
-
+##### FUNCTIONS #####
 plot_pred_type_distribution <- function(df, threshold) {
   v <- rep(NA, nrow(df))
   v <- ifelse(df$pred >= threshold & df$survived == 1, "TP", v)
@@ -24,8 +19,8 @@ plot_pred_type_distribution <- function(df, threshold) {
     labs(title=sprintf("Threshold at %.2f", threshold))
 }
 
-
-calculate_roc <- function(df, cost_of_fp, cost_of_fn, n=100) {
+#### calc roc ####
+calculate_roc <- function(df, cost_of_fp, cost_of_fn, n) {
   tpr <- function(df, threshold) {
     sum(df$pred >= threshold & df$survived == 1) / sum(df$survived == 1)
   }
@@ -57,8 +52,10 @@ plot_roc <- function(roc, threshold, cost_of_fp, cost_of_fn) {
   
   col_ramp <- colorRampPalette(c("green","orange","red","black"))(100)
   col_by_cost <- col_ramp[ceiling(norm_vec(roc$cost)*99)+1]
-  p_roc <- ggplot(roc, aes(fpr,tpr)) + 
-    geom_line(color=rgb(0,0,1,alpha=0.3)) +
+  
+  p_roc <- ggplot(roc, aes(x=fpr,y=tpr)) + 
+    geom_path()+
+    #geom_line(color=rgb(0,0,1,alpha=0.3)) +
     geom_point(color=col_by_cost, size=4, alpha=0.5) +
     coord_fixed() +
     geom_line(aes(threshold,threshold), color=rgb(0,0,1,alpha=0.5)) +
@@ -68,7 +65,7 @@ plot_roc <- function(roc, threshold, cost_of_fp, cost_of_fn) {
   
   p_cost <- ggplot(roc, aes(threshold, cost)) +
     geom_line(color=rgb(0,0,1,alpha=0.3)) +
-    geom_point(color=col_by_cost, size=4, alpha=0.5) +
+    geom_point(color=col_by_cost, size=1, alpha=0.5) +
     labs(title = sprintf("cost function")) +
     geom_vline(xintercept=threshold, alpha=0.5, linetype="dashed")
   
@@ -77,11 +74,50 @@ plot_roc <- function(roc, threshold, cost_of_fp, cost_of_fn) {
   grid.arrange(p_roc, p_cost, ncol=2, sub=textGrob(sub_title, gp=gpar(cex=1), just="bottom"))
 }
 
+##### DATA IMPORT #######
+roc_df_norm <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.line_norm_56.txt")
+roc_df_conversione <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.conversione_56.txt")
+roc_df_metri_lineare <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.metri_lineare_56.txt")
+roc_df_metri_log <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.metri_log_56.txt")
+roc_df_metri_lin_new <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.metri_lin_new.txt")
 
-plot_pred_type_distribution(roc_df_norm, 2)
-roc <- calculate_roc(roc_df_norm, 1, 2, n = 100)
-roc_conv <- calculate_roc(roc_df_conversione,1,2, n=100)
-plot_roc(roc_conv, 0.5, 1, 2)
+roc_df_norm <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.norm_norm.txt")
+roc_df_conversione <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.conversione_norm.txt")
+roc_df_metri_lineare <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.metri_lineare_norm.txt")
+roc_df_metri_log <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.metri_log_norm.txt")
+
+roc_lab_norm <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.lab_norm.txt")
+roc_lab_conv <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.lab_conv.txt")
+roc_lab_linear <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.lab_linear.txt")
+roc_lab_log <- read_csv("~/Documents/master_thesis/R_files/roc/data/df.lab_log.txt")
+
+
+#### LINEARIZZO
+roc_df_conversione <- transform(roc_df_conversione, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+roc_df_metri_lineare <- transform(roc_df_metri_lineare, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+roc_df_metri_log <- transform(roc_df_metri_log, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+roc_df_metri_lin_new <- transform(roc_df_metri_lin_new, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+
+roc_lab_norm <- transform(roc_lab_norm, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+roc_lab_conv <- transform(roc_lab_conv, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+roc_lab_linear <- transform(roc_lab_linear, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+roc_lab_log <- transform(roc_lab_log, pred = (pred - min(pred)) / (max(pred) - min(pred)))
+
+#### BIND
+roc_bind <- rbind(roc_df_conversione, roc_df_norm, roc_df_metri_lineare, roc_df_metri_log)
+View(roc_bind)
+roc_bind_lab <- rbind(roc_lab_conv, roc_lab_linear, roc_lab_norm, roc_lab_log)
+
+plot_pred_type_distribution(roc_bind_lab, 0.47)
+
+roc <- calculate_roc(roc_df_norm, 1, 2, n = 1000)
+roc
+roc_conv <- calculate_roc(roc_bind,1,2, n=100)
+roc_conv_lab <- calculate_roc(roc_bind_lab,1,2, n=100)
+
+plot_roc(roc, 0.505, 1, 2)
+plot_roc(roc_conv_lab, 0.01, 1, 2)
+
 
 library(pROC)
-auc(roc_df_norm$survived, roc_df_norm$pred)
+auc(roc_bind_lab$survived, roc_bind_lab$pred)
