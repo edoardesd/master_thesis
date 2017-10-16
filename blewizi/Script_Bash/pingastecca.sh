@@ -2,5 +2,5 @@
 
 while : 
 	do
-		nohup sudo l2ping -f F4:E3:FB:85:53:1D
+		nohup sudo l2ping -f DC:A9:04:4F:D9:36
 done
