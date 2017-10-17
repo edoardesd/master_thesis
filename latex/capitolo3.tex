@@ -1,0 +1,48 @@
+\chapter{Technical Overview}
+\label{chapter 3}
+\thispagestyle{empty}
+
+
+\noindent In questa sezione si deve descrivere l'obiettivo della ricerca, le problematiche affrontate ed eventuali definizioni preliminari nel caso la tesi sia di carattere teorico.
+
+general introduction( i.e.: the spread of mobile phone, connectivity everywhere, data exchange.....)
+two main technologies: wifi and bluetooth
+
+\section{Wi-Fi}
+four pages (more or less)
+what is wifi...
+why wifi...
+\subsection{Request}
+the probe request: meaning
+active/passive
+channels
+probe request structure (fields)
+how many probe request
+
+
+\section{Bluetooth}
+Bluetooth, known as IEEE 802.15.1, is a wireless technology standard for exchanging data over short distances from fixed and mobile devices, and building personal area networks (PANs).
+Bluetooth was originated in 1994, when Jaap Haartsen, an electro technician employed at Ericsson Sweden, developed it in cooperation with Sven Mattisson. The name is based on the Danish word Bl\r{a}tand, the tenth-century king of Denmark and Norway. \\
+The purpose of Bluetooth is replace cables with short-range and cheap radio connection that permits communication between mobile phones and peripherals.\\
+Bluetooth is an open and royalty-free standard and, thanks to this, it is the standard for short-range wireless communication in WPAN (Wireless Personal Area Network) situations.
+It operates in the universally unlicensed (but not unregulated) Industrial, Scientific and Medical (ISM) band at 2.4 GHz.
+In the available frequency band, 79 sub-frequencies are used to transmit data hoping from a frequency to another 1600 times per second in a pseudo random way.\\
+\linebreak
+The range of communication of Bluetooth and the transmission power are determined by their Class. As we can see in the table number XYZ Class 1 radios has the longest range of transmission (100 meters), instead Class 3 have a range of up to 1 meter. 
+In this research, the used devices are mostly belonging to Class 2 (i.e. smart phones, tablets, laptops).
+TABLE!!!
+
+\subsection{find bt device (inquiry)}
+In order to start Bluetooth connections between devices, the target device must be turned on and visible. The device can be also turned on, but not visible. In this case the pairing process is possible only if the target address is known.\\
+For discovery visible devices, an inquiry mode has been defined. Basically, a device which wants to set up a Bluetooth connection with another one, sends out an inquiry packet and the other visible devices listening for them can answer.\\
+A single Bluetooth inquiry process can last until 13.5 seconds
+
+
+packet structure
+
+bluez
+rssi, tpl, lq
+structure of rssi....
+inquiry and rssi (golden range ...)
+
+ping (l2ping) and echo time
