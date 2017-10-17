@@ -22,27 +22,48 @@ how many probe request
 
 \section{Bluetooth}
 Bluetooth, known as IEEE 802.15.1, is a wireless technology standard for exchanging data over short distances from fixed and mobile devices, and building personal area networks (PANs).
-Bluetooth was originated in 1994, when Jaap Haartsen, an electro technician employed at Ericsson Sweden, developed it in cooperation with Sven Mattisson. The name is based on the Danish word Bl\r{a}tand, the tenth-century king of Denmark and Norway. \\
+Bluetooth was originated in 1994, when Jaap Haartsen, an electro technician employed at Ericsson, developed it in cooperation with Sven Mattisson. The name is based on the Danish word Bl\r{a}tand, the tenth-century king of Denmark and Norway. \\
 The purpose of Bluetooth is replace cables with short-range and cheap radio connection that permits communication between mobile phones and peripherals.\\
-Bluetooth is an open and royalty-free standard and, thanks to this, it is the standard for short-range wireless communication in WPAN (Wireless Personal Area Network) situations.
+Bluetooth is an open and royalty-free and, thanks to this, it is the standard for short-range wireless communication in WPAN (Wireless Personal Area Network) situations.
 It operates in the universally unlicensed (but not unregulated) Industrial, Scientific and Medical (ISM) band at 2.4 GHz.
 In the available frequency band, 79 sub-frequencies are used to transmit data hoping from a frequency to another 1600 times per second in a pseudo random way.\\
 \linebreak
 The range of communication of Bluetooth and the transmission power are determined by their Class. As we can see in the table number XYZ Class 1 radios has the longest range of transmission (100 meters), instead Class 3 have a range of up to 1 meter. 
-In this research, the used devices are mostly belonging to Class 2 (i.e. smart phones, tablets, laptops).
+In this research, the used devices are mostly belonging to Class 2 (e.g. smart phones, tablets, laptops).
 TABLE!!!
 
 \subsection{find bt device (inquiry)}
 In order to start Bluetooth connections between devices, the target device must be turned on and visible. The device can be also turned on, but not visible. In this case the pairing process is possible only if the target address is known.\\
 For discovery visible devices, an inquiry mode has been defined. Basically, a device which wants to set up a Bluetooth connection with another one, sends out an inquiry packet and the other visible devices listening for them can answer.\\
-A single Bluetooth inquiry process can last until 13.5 seconds
+A single Bluetooth inquiry process can last until 10.24 seconds(cit. BT and Wifi crowd data collection) and, at the end of the scan, zero or more devices can be discovered. 
+The inquiry contains information about:
+\begin{itemize}
+\item device name: the name that the owner assign to the device.
+\item device profile: type of the device (e.g.: phone, laptop, bluetooth headset, etc.)
+\item supported services: ???
+\item unique MAC address: a physical address assigned uniquely to each device
+\item timestamp: the date and the time of the discovery
+\item signal strength(RSSI): the measurement of the power present in a received radio signal (devo mettere la cit?)
+\end{itemize}
+trovare packet structure dell'inqury
 
+\subsection{Bluez}
+In the Linux kernel-based family operating system, the Bluetooth stack is Bluez.
+The most useful command of Bluez is \textit{hcitool}. Hcitool (Host Controller Interface Tool) is used to configure Bluetooth connections and send some special command to Bluetooth devices, e.g. inquire a remote device.
+Also, hcitool provide access to the RSSI, the LQ and the TPL of a connected device, three fundamental status parameters.
 
-packet structure
+\paragraph{Received Signal Strength Indicator (RSSI):}
+According to the Bluetooth Core Specification, the RSSI is an 8-bit signed integer that indicates the difference between the received (RX - real RSSI, non so come chiamarlo) power level and the Golden Receiver Power Range (GRPR). 
+Using the command \textit{hcitool rssi <bdaddr>} a value between +15dBm and -35dBm is obtained. 
+A positive RSSI value indicates how many dB the RSSI is above the upper limit; a negative value indicates how many dB the RSSI is below the lower limit. The value zero indicates that the RSSI is inside the Golden Receive Power Range.
 
-bluez
-rssi, tpl, lq
-structure of rssi....
-inquiry and rssi (golden range ...)
+\paragraph{Transmit Power Level (TPL):}
+TPL is an 8-bit signed integer which specifies the Bluetooth module's transmit power level (in dBm). Every Bluetooth class has a fixed value and it doesn't change during a Bluetooth connection. For example, Class 2 devices has +4 dBm as maximum power, Class 3 has 0 dBm and Class 1 has +20 dBm.
+
+\paragraph{Link Quality (LQ):}
+Link Quality is a value from 0-255, which represents the quality of the link between two devices. The higher the value, the better the link quality is. For most Bluetooth modules, it is derived from the average bit error rate (BER) seen at the receiver, and is constantly updated as packets are received.
+
+structure of rssi.... (no)
+inquiry vs rssi (golden range ...)
 
 ping (l2ping) and echo time
