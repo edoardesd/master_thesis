@@ -8,6 +8,7 @@
 general introduction( i.e.: the spread of mobile phone, connectivity everywhere, data exchange.....)
 two main technologies: wifi and bluetooth
 
+
 \section{Wi-Fi}
 four pages (more or less)
 what is wifi...
@@ -26,44 +27,65 @@ Bluetooth was originated in 1994, when Jaap Haartsen, an electro technician empl
 The purpose of Bluetooth is replace cables with short-range and cheap radio connection that permits communication between mobile phones and peripherals.\\
 Bluetooth is an open and royalty-free and, thanks to this, it is the standard for short-range wireless communication in WPAN (Wireless Personal Area Network) situations.
 It operates in the universally unlicensed (but not unregulated) Industrial, Scientific and Medical (ISM) band at 2.4 GHz.
-In the available frequency band, 79 sub-frequencies are used to transmit data hoping from a frequency to another 1600 times per second in a pseudo random way.\\
+In the available frequency band, 79 sub-frequencies are used to transmit data, hopping from a frequency to another 1600 times per second in a pseudo random way.\\
 \linebreak
-The range of communication of Bluetooth and the transmission power are determined by their Class. As we can see in the table number XYZ Class 1 radios has the longest range of transmission (100 meters), instead Class 3 have a range of up to 1 meter. 
+The range of communication of Bluetooth and the transmission power are determined by their Class. As we can see in the table number XYZ Class 1 radios has the longest range of transmission (100 meters), instead Class 3 has a range of up to 1 meter. 
 In this research, the used devices are mostly belonging to Class 2 (e.g. smart phones, tablets, laptops).
 TABLE!!!
+\\
+Bluetooth architecture is based on master/slave model. A single master device can be connected up to seven different slave devices to generate a network, called piconet. The master shares his clock with the slaves and coordinates and manage the connection in the piconet. The master also sends and requests data to the slaves.
 
 \subsection{find bt device (inquiry)}
-In order to start Bluetooth connections between devices, the target device must be turned on and visible. The device can be also turned on, but not visible. In this case the pairing process is possible only if the target address is known.\\
-For discovery visible devices, an inquiry mode has been defined. Basically, a device which wants to set up a Bluetooth connection with another one, sends out an inquiry packet and the other visible devices listening for them can answer.\\
-A single Bluetooth inquiry process can last until 10.24 seconds(cit. BT and Wifi crowd data collection) and, at the end of the scan, zero or more devices can be discovered. 
-The inquiry contains information about:
+In order to start Bluetooth connections between devices, the target device must be turned on and be visible. The device can be also turned on, but not be visible; in this case the pairing process is possible only if the target address is known.\\
+To discovery visible devices, an inquiry mode has been defined. Basically, a device which wants to set up a Bluetooth connection with another one, sends out an inquiry packet and the other visible devices listening for them can answer.\\
+A single Bluetooth inquiry scan process can last until 10.24 seconds(cit. BT and Wifi crowd data collection) and, at the end of the scan, zero or more devices can be discovered. \\
+The inquiry scan, called \textit{Inquiry with RSSI}, contains information about:
 \begin{itemize}
-\item device name: the name that the owner assign to the device.
-\item device profile: type of the device (e.g.: phone, laptop, bluetooth headset, etc.)
-\item supported services: ???
-\item unique MAC address: a physical address assigned uniquely to each device
-\item timestamp: the date and the time of the discovery
-\item signal strength(RSSI): the measurement of the power present in a received radio signal (devo mettere la cit?)
+\item \textbf{device name:} the name that the owner assigns to the device;
+\item \textbf{device profile:} type of the device (e.g.: phone, laptop, bluetooth headset, etc.);
+\item \textbf{supported services:} the Bluetooth services provided by the device (e.g.: Advanced Audio Distribution Profile (A2DP), Audio Video Remote Control Profile (AVRCP), Basic Imaging Profile (BIP);
+\item \textbf{unique MAC address:} a physical address assigned uniquely to each device;
+\item \textbf{timestamp:} the date and the time of the discovery;
+\item \textbf{signal strength (RSSI):} the measurement of the power present in a received radio signal (devo mettere la cit?).
 \end{itemize}
 trovare packet structure dell'inqury
 
 \subsection{Bluez}
-In the Linux kernel-based family operating system, the Bluetooth stack is Bluez.
+In the Linux kernel-based family operating system, the Bluetooth stack is managed by Bluez.
 The most useful command of Bluez is \textit{hcitool}. Hcitool (Host Controller Interface Tool) is used to configure Bluetooth connections and send some special command to Bluetooth devices, e.g. inquire a remote device.
-Also, hcitool provide access to the RSSI, the LQ and the TPL of a connected device, three fundamental status parameters.
+Also, hcitool provide access to the RSSI, the LQ and the TPL of a connected device, three fundamental status parameters.\\
+To obtain the previously mentioned values an active connection between the master device and the slave is needed.
 
 \paragraph{Received Signal Strength Indicator (RSSI):}
-According to the Bluetooth Core Specification, the RSSI is an 8-bit signed integer that indicates the difference between the received (RX - real RSSI, non so come chiamarlo) power level and the Golden Receiver Power Range (GRPR). 
-Using the command \textit{hcitool rssi <bdaddr>} a value between +15dBm and -35dBm is obtained. 
+According to the Bluetooth Core Specification, the RSSI is an 8-bit signed integer that indicates the difference between the received (RX = real RSSI, non so come chiamarlo) power level and the Golden Receiver Power Range (GRPR). \\
+Using the command \textit{hcitool rssi <bdaddr>} a value between +15dBm and -35dBm is obtained. \\
 A positive RSSI value indicates how many dB the RSSI is above the upper limit; a negative value indicates how many dB the RSSI is below the lower limit. The value zero indicates that the RSSI is inside the Golden Receive Power Range.
 
 \paragraph{Transmit Power Level (TPL):}
 TPL is an 8-bit signed integer which specifies the Bluetooth module's transmit power level (in dBm). Every Bluetooth class has a fixed value and it doesn't change during a Bluetooth connection. For example, Class 2 devices has +4 dBm as maximum power, Class 3 has 0 dBm and Class 1 has +20 dBm.
 
 \paragraph{Link Quality (LQ):}
-Link Quality is a value from 0-255, which represents the quality of the link between two devices. The higher the value, the better the link quality is. For most Bluetooth modules, it is derived from the average bit error rate (BER) seen at the receiver, and is constantly updated as packets are received.
+Link Quality is a value from 0 to 255, which represents the quality of the link between two devices. The higher the value, the better the link quality is. For most Bluetooth modules, it is derived from the average bit error rate (BER) seen at the receiver, and is constantly updated as packets are received.
 
-structure of rssi.... (no)
-inquiry vs rssi (golden range ...)
+\subsubsection{inquiry vs rssi (golden range ...)}
+As explained in section 3.XYZ, using hcitool of Bluez we can obtain two different types of RSSI values.
+The first value is the RSSI obtained from the inquiry scan (\textit{inqury with RSSI}), the second one is the RSSI obtained directly from a connected device.\\
+This two values are strictly related with a linear dependence; the relation is further analyzed in section X.Y.Z. 
+To be clearer, from now on, the value obtained from the inquiry scan will be called RX. On the other hand, the value obtained from a connected device will be simply called RSSI.
 
-ping (l2ping) and echo time
+\subsection{ping (l2ping) and echo time}
+The Linux Bluetooth stack also permits to ping a Bluetooth device.\\
+Ping is a utility used to test the reachability of an host, in our case a Bluetooth machine. It measures the round-trip time for messages sent from the originating host to a destination that are echoed back to the source.\\
+In particular, for Bluetooth is used the command \textit{l2ping}. L2ping sends a L2CAP echo request to the Bluetooth MAC address (cit man page), and wait and echo response from the target device.
+The ping feature is useful to understand if a Bluetooth device is in a particular range. If so, l2ping utility starts to send several echo requests to the target. If not, an error message is shown.\\
+
+In particular, if the echo request is successful l2ping starts to ping the Bluetooth target device. In the default mode these fields are shown:\\
+\begin{itemize}
+\item the size of the single packet of the echo request (default 44 bytes)
+\item the mac address of the target
+\item the id of the packet
+\item the echo response time (in milliseconds)
+\end{itemize}
+
+\section{Mac Address}
+
