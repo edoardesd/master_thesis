@@ -10,19 +10,42 @@ two main technologies: wifi and bluetooth
 
 
 \section{Wi-Fi}
-four pages (more or less)
-what is wifi...
-why wifi...
-\subsection{Request}
-the probe request: meaning
-active/passive
-channels
-probe request structure (fields)
-how many probe request
+Wi-Fi is a technology for wireless local area networking with devices based on the IEEE 802.11 standards. Wi-Fi operates at 2.4 GHz (802.11b/g) over 11 channels (in the US and EU), three of which are not overlapping (1, 6, 11). Recently WiFi supports also 5 GHz (802.11n) with 21 channels with higher capacity, but a shorter range compared to 2.4 GHz. Modern device can switch between 2.4 GHz and 5 GHz, using a technique called \textit{band steering}, depending on traffic demand.\\
+\linebreak
+Mobile devices, with WiFi interface turned on, regularly broadcast Wi-Fi probe requests, in order to advertise their presence and actively discover Wi-Fi access points in proximity. This mechanism is called active scan and permits devices to have a list of near Access Point (AP). IEEE 802.11 define another mechanism to discover WiFi AP: a passive mechanism, in which APs periodically advertise their presence to mobile devices using beacons.
+\paragraph{Passive Scanning}
+When a device performs passive scanning, it starts to listen over the 11 Wi-Fi channels hopping periodically from one to another passively detect nearby APs. When a beacon is captured the mobile device responds with a Wi-Fi association frame. The beacons contain network configuration parameters, such as the Service Set Identifier (SSID), the type of encryption and the supported data rates. Most APs set a beaconing interval of about 100ms, but it depends on the hardware specification.
+The main disadvantage of the passive scanning is listening on all the channel, this operation is time consuming and do not ensure all the beacon are captured.
+\paragraph{Active Scanning}
+During the active scanning, the mobile device stimulates its nearby access points sending probe requests. The probe packet includes the device unique identifier, the device supported standards, the probe sequence number (SN) and can be directed to all the AP (broadcast) or to a specific access point by indicating the SSID. 
+Active scanning is particularly helpful in scenarios where a mobile device roams across APs, it's also faster and less energy consuming than passive scanning.
+Also, active scanning is the only method to connect to hidden network.
+ 
+\subparagraph{probe request structure}
+Figure number XY represent the packet structure of a probe request. The interesting fields are:
+\begin{itemize}
+\item Address 1: receiver MAC address (usually broadcast)
+\item Address 2: sender MAC address
+\item Address 3: AP MAC address (BSSID)
+\item Sequence Control: the sequence number (SN) that represent the probe request
+\item Payload: the list of the mobile devices SSID
+\item FCS: a redundant check code 
+\end{itemize}
 
+In table number XY is shown a credible example of probe request. It follows the IEEE 802.11 standard so it's not encrypted. In our case, a device with MAC address xx:xx:xx:xx:xx is broadcasting a probe request with SSID "polimi-protected" and SN 12.\\
+
+\subparagraph{Probe request number}
+The number of probe requests sent by a mobile phone is very variable among devices. On average some mobile devices send probe requests as often as 55 times per hour, but it might broadcast about 2000 probes per hour.(cit how talkative is your device).\\
+The frequency of the probe request depends on:
+\begin{itemize}
+\item Wi-Fi chipset: the vendor can set up different parameters depending the company policies;
+\item device operating system: the version of the OS and the device settings can affect the number of probe. For example, a fast speed connection can send an high number of probe or an energy saving setting can emit a low number of them;
+\item number of services or app installed: 
+\item frequency of screen unlocking
+\end{itemize}
 
 \section{Bluetooth}
-Bluetooth, known as IEEE 802.15.1, is a wireless technology standard for exchanging data over short distances from fixed and mobile devices, and building personal area networks (PANs).
+Bluetooth (IEEE 802.15.1) is a wireless technology standard for exchanging data over short distances from fixed and mobile devices, and building personal area networks (PANs).
 Bluetooth was originated in 1994, when Jaap Haartsen, an electro technician employed at Ericsson, developed it in cooperation with Sven Mattisson. The name is based on the Danish word Bl\r{a}tand, the tenth-century king of Denmark and Norway. \\
 The purpose of Bluetooth is replace cables with short-range and cheap radio connection that permits communication between mobile phones and peripherals.\\
 Bluetooth is an open and royalty-free and, thanks to this, it is the standard for short-range wireless communication in WPAN (Wireless Personal Area Network) situations.
