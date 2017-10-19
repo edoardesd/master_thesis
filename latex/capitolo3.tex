@@ -6,42 +6,44 @@
 \noindent In questa sezione si deve descrivere l'obiettivo della ricerca, le problematiche affrontate ed eventuali definizioni preliminari nel caso la tesi sia di carattere teorico.
 
 general introduction( i.e.: the spread of mobile phone, connectivity everywhere, data exchange.....)
+The use of smartphone, tablet, laptop and other smart device has become fundamental in everyday life. Data traffic grows rapidly People need a connection, Wi-Fi or mobile, to work, study and so on. Also the data exchange bet
 two main technologies: wifi and bluetooth
-
+mac address
+goal
+how wifi and bt signals are related and in particular how wifi and bt mac address can be coupled each other
 
 \section{Wi-Fi}
-Wi-Fi is a technology for wireless local area networking with devices based on the IEEE 802.11 standards. Wi-Fi operates at 2.4 GHz (802.11b/g) over 11 channels (in the US and EU), three of which are not overlapping (1, 6, 11). Recently WiFi supports also 5 GHz (802.11n) with 21 channels with higher capacity, but a shorter range compared to 2.4 GHz. Modern device can switch between 2.4 GHz and 5 GHz, using a technique called \textit{band steering}, depending on traffic demand.\\
+Wi-Fi is a technology for wireless local area networking with devices based on the IEEE 802.11 standards. In the US and in Europe, Wi-Fi operates at 2.4 GHz (802.11b/g) over 11 channels, three of which are not overlapping (1, 6, 11). Recently WiFi supports also 5 GHz (802.11n) with 21 channels with higher capacity, but a shorter range compared to 2.4 GHz. Modern device can switch between 2.4 GHz and 5 GHz, using a technique called \textit{band steering}, depending on traffic demand.\\
 \linebreak
-Mobile devices, with WiFi interface turned on, regularly broadcast Wi-Fi probe requests, in order to advertise their presence and actively discover Wi-Fi access points in proximity. This mechanism is called active scan and permits devices to have a list of near Access Point (AP). IEEE 802.11 define another mechanism to discover WiFi AP: a passive mechanism, in which APs periodically advertise their presence to mobile devices using beacons.
+Every devices, with WiFi interface turned on, regularly broadcast Wi-Fi probe requests, in order to advertise their presence and actively discover Wi-Fi access points (AP) in proximity. This mechanism is called active scan and permits devices to have a list of near access point. IEEE 802.11 define another mechanism to discover WiFi AP: a passive mechanism, in which APs periodically advertise their presence to mobile devices using beacons.
 \paragraph{Passive Scanning}
-When a device performs passive scanning, it starts to listen over the 11 Wi-Fi channels hopping periodically from one to another passively detect nearby APs. When a beacon is captured the mobile device responds with a Wi-Fi association frame. The beacons contain network configuration parameters, such as the Service Set Identifier (SSID), the type of encryption and the supported data rates. Most APs set a beaconing interval of about 100ms, but it depends on the hardware specification.
-The main disadvantage of the passive scanning is listening on all the channel, this operation is time consuming and do not ensure all the beacon are captured.
+When a device performs passive scanning, it starts to listen over the 11 Wi-Fi channels hopping periodically from one to another passively detect nearby APs. When a beacon is captured, the mobile device responds with a Wi-Fi association frame. The beacons contain network configuration parameters, such as the Service Set Identifier (SSID), the type of encryption and the supported data rates. Most APs set a beaconing interval of about 100ms, but it depends on the hardware specification.\\
+The main disadvantage of the passive scanning is listening on all 11 the channels, this operation is time consuming and do not ensure all the beacon are captured.
 \paragraph{Active Scanning}
-During the active scanning, the mobile device stimulates its nearby access points sending probe requests. The probe packet includes the device unique identifier, the device supported standards, the probe sequence number (SN) and can be directed to all the AP (broadcast) or to a specific access point by indicating the SSID. 
-Active scanning is particularly helpful in scenarios where a mobile device roams across APs, it's also faster and less energy consuming than passive scanning.
+During the active scanning, the mobile device stimulates its nearby access points sending probe requests. The probe packet includes the device unique identifier, the device supported standards, the probe sequence number (SN) and other fields. The probe can be directed to all the AP (broadcast) or to a specific access point by indicating the SSID. \\
+Active scanning is particularly helpful in scenarios where a mobile device roams across APs. It's also faster and less energy consuming than passive scanning.\\
 Also, active scanning is the only method to connect to hidden network.
- 
 \subparagraph{probe request structure}
 Figure number XY represent the packet structure of a probe request. The interesting fields are:
 \begin{itemize}
 \item Address 1: receiver MAC address (usually broadcast)
 \item Address 2: sender MAC address
 \item Address 3: AP MAC address (BSSID)
-\item Sequence Control: the sequence number (SN) that represent the probe request
+\item Sequence Control: the sequence number (SN) that represent a probe request
 \item Payload: the list of the mobile devices SSID
 \item FCS: a redundant check code 
 \end{itemize}
 
-In table number XY is shown a credible example of probe request. It follows the IEEE 802.11 standard so it's not encrypted. In our case, a device with MAC address xx:xx:xx:xx:xx is broadcasting a probe request with SSID "polimi-protected" and SN 12.\\
+In table number XY is shown a credible example of probe request. It follows the IEEE 802.11 standard so it's not encrypted. In our case, a device with MAC address xx:xx:xx:xx:xx is broadcasting a probe request with SSID "polimi-protected" and sequence number equal to 12.
 
 \subparagraph{Probe request number}
 The number of probe requests sent by a mobile phone is very variable among devices. On average some mobile devices send probe requests as often as 55 times per hour, but it might broadcast about 2000 probes per hour.(cit how talkative is your device).\\
 The frequency of the probe request depends on:
 \begin{itemize}
 \item Wi-Fi chipset: the vendor can set up different parameters depending the company policies;
-\item device operating system: the version of the OS and the device settings can affect the number of probe. For example, a fast speed connection can send an high number of probe or an energy saving setting can emit a low number of them;
-\item number of services or app installed: 
-\item frequency of screen unlocking
+\item device operating system: the version of the OS and the device settings can affect the number of probe. For example, a fast speed connection setting can send an high number of probe or an energy saving mode can emit a low number of them;
+\item frequency of screen unlocking: unlock the screen stimulates the probes activity.
+\item number of applications: (forse)
 \end{itemize}
 
 \section{Bluetooth}
@@ -111,4 +113,24 @@ In particular, if the echo request is successful l2ping starts to ping the Bluet
 \end{itemize}
 
 \section{Mac Address}
+Mac Address is the acronym of Media Access Control Address. It is an unique identifier of a IEEE 802 network interface. Some examples of IEEE 802 standards are: ethernet, Wi-Fi, ZigBee, FDDI (Fiber Distributed Data Interface) and Bluetooth. \\
+In our case MAC address is a fundamental information because it identifies uniquely a particular network interface of the device. Considering that a smartphone is equipped with Wi-Fi and Bluetooth chipset, a device is characterized by a couple of MAC Address: one MAC for the Wi-Fi interface and the other one for the Bluetooth interface.\\
+In both cases the structure is the same: a 12 digit (48 bit or 6 bytes) address, usually written it the following three format: 
+\begin{itemize}
+\item MM:MM:MM:SS:SS:SS
+\item MM-MM-MM-SS-SS-SS
+\item MMM.MMM.SSS.SSS
+\end{itemize}
+The leftmost 6 digits (24 bits) called prefix is associated with the adapter manufacturer. Each vendor registers and obtains MAC prefixes as assigned by the IEEE. Vendors often possess many prefix numbers associated with their different products.\\
+The rightmost digits of a MAC address represent an identification number for the specific device. Among all devices manufactured with the same vendor prefix, each is given their own unique 24-bit number.\\
+A real example of MAC address of the same device is:
+\begin{itemize}
+\item Wi-Fi address: F4:E3:FB:85:53:1D
+\item Bluetooth address: F4:E3:FB:A5:66:D8
+\end{itemize}
+In the example above the the vendors digits are the same, but often happens that the same device has two completely different Wi-Fi and Bluetooth prefixes.
 
+\subsubsection{Privacy implications}
+Due to the fact the MAC address identify uniquely a device, it can be used to identify a person. As explained in Section 2 (Related Work) this can rise a great privacy issue. In fact (as explained in section 3.x and 3.y toglibile) both Wi-Fi and Bluetooth address are easy to obtain: the first one is sent in clear with the probe request and the Bluetooth Address is visible during the inquiry scan.\\
+But Wi-Fi MAC address and Bluetooth MAC address are completely unconnected. It is not possible to deduce if two MAC addresses are of the same device.\\
+The goal of this thesis is find an algorithm to couple a Wi-Fi MAC address to a Bluetooth MAC Address and vice versa.
