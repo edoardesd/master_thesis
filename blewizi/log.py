@@ -269,7 +269,7 @@ def signal_handler():
 	#print "BLUETOOTH DUMP:"
 	#pp.pprint(bd_list)
 	
-	sleep(5)
+	sleep(2)
 		
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
@@ -280,7 +280,7 @@ def signal_handler():
 	#subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
 	subprocess.check_output(['ifdown', 'wlan0'])
-	sleep(20)
+	sleep(5)
 	subprocess.check_output(['ifup', '--force','wlan0'])
 	#sleep(10)
 
@@ -362,7 +362,7 @@ if __name__ == "__main__":
  	subprocess.Popen(['sudo', 'hcitool', 'spinq'])
 	
 	# Start the airodump-ng processor
-	#ad = airodump.AirodumpProcessor()
+	ad = airodump.AirodumpProcessor()
 
 	#Start the hcidump processor
 	bt = hcidump.HcidumpProcessor()
@@ -384,20 +384,20 @@ if __name__ == "__main__":
 	
 	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
-	#thread_wifi = myThread(1, "wifi")
+	thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
 	thread_bd = myThread(3, "ping/rssi")
 
 
 
 	thread_bd.start()
-	#thread_wifi.start()	
+	thread_wifi.start()	
 	thread_hc.start()
 	
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
 
-	#ad.stop()
+	ad.stop()
 	bt.stop()
 	bd.stop()
 	signal_handler()
