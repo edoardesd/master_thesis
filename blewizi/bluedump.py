@@ -139,9 +139,9 @@ class BluetoothProcessor:
 
 			
 			rssi = ck_out_vect[0].replace("\n", "")
-			#lq = ck_out_vect[1]
-			#if "\n" in ck_out_vect[2]:
-			#	tpl = ck_out_vect[2].replace("\n", "")
+			lq = ck_out_vect[1]
+			if "\n" in ck_out_vect[2]:
+				tpl = ck_out_vect[2].replace("\n", "")
 
 
 			if "Usage" in rssi:
@@ -151,7 +151,7 @@ class BluetoothProcessor:
 			if not self.client_list.has_key(CLIENT):
 				self.client_list[CLIENT] = {}
 
-			self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi}
+			self.client_list[CLIENT][now] = {"echo_time": echo_time, "rssi": rssi, "lq": lq, "tpl": tpl}
 
 		else:
 
@@ -201,9 +201,9 @@ class BluetoothProcessor:
 
 			
 			rssi = ck_out_vect[0].replace("\n", "")
-			#lq = ck_out_vect[1]
-			#if "\n" in ck_out_vect[2]:
-			#	tpl = ck_out_vect[2].replace("\n", "")
+			lq = ck_out_vect[1]
+			if "\n" in ck_out_vect[2]:
+				tpl = ck_out_vect[2].replace("\n", "")
 
 
 			if "Usage" in rssi:
@@ -216,9 +216,8 @@ class BluetoothProcessor:
 			if not self.client_list.has_key(CLIENT):
 				self.client_list[CLIENT] = {}
 
-			self.client_list[CLIENT][now] = {"rssi": rssi}
+			self.client_list[CLIENT][now] = {"rssi": rssi, "lq": lq, "tpl": tpl}
 			
-
 
 		return self.client_list, True
 
