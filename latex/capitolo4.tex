@@ -2,7 +2,7 @@
 \label{Chapter 4}
 \thispagestyle{empty}
 During this thesis was implemented a tool capable of capture Wi-Fi probes and collect Bluetooth parameters.\\
-For this purpose was used, depending on the test, up to 6 Raspberry Pis 3 equipped with a NETGEAR N150 Wireless USB Adapter. The Raspberry Pis running Raspbian Jessy version 4.9.24 and all of them are synchronized with NTP server. They are remotely controlled through ssh over the Wi-Fi network.\\
+For this purpose was used, depending on the test, up to 6 Raspberry Pis 3 equipped with a NETGEAR N150 Wireless USB Adapter. The Raspberry Pis running Raspbian Jessy version 4.9.24 and all of them are synchronized with NTP server. They are remotely controlled through ssh (Secure Shell) over the Wi-Fi network. This facilitated the experimenter to have complete control over the whole system from remote.\\
 \linebreak
 The Raspberry Pis run a Python script. Besides the ease with which Python manipulates data and variables, this programming language was also used in view of the immediacy in launching Linux bash scripts.\\
 Launching the program the main function creates three different threads. The first one gathers Wi-Fi probes; the second one starts to inquiry the Bluetooth devices; and the last one collects RSSI, TPL and LQ. As soon as a new client is found, the script outputs in real time a message containing the MAC Address of the device; in the meantime it stores in a dictionary all the data regarding that client.
@@ -15,7 +15,7 @@ In order to capture Wi-Fi probes Aircrack-ng was used. Aircrack-ng is an open-so
 
 \paragraph{Other Bluetooth parameters}
 Received signal strength indicator (RSSI), link quality (LQ) and transmit power level (TPL) are three fundamental parameters about Bluetooth connection. In order to obtain these data, a connection is required.\\
-Ping the Bluetooth MAC address (\texttt{l2ping} command in Linux environment) permits to establish a sort of connection between the Raspberry Pi and the target device. During the ping process is possible to gather RSSI, LQ and TPL using \texttt{hcitool}.\\
+Ping the Bluetooth MAC address (\texttt{l2ping} command in Linux environment) permits to establish a sort of connection between the Raspberry Pi and the target device. During the ping process is possible to gather RSSI, LQ and TPL using \texttt{hcitool}. Also the Echo Round Trip Time is collected.\\
 \linebreak
 After capturing probes and the Bluetooth data the program creates three \textit{.csv} files, one for each category explained before. The csv files contain the MAC address of the device, the timestamp of the capture and all the useful data regarding Wi-Fi or Bluetooth.\\
 The last operation is import the files in a MySql database and the removal of corrupted data.

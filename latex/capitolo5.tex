@@ -1,0 +1,76 @@
+\chapter{Experiments}
+\label{capitolo5}
+\thispagestyle{empty}
+
+In this section, are first described the experimental test-bed and the devices used during the experiment. Then the analysis of the device's Wi-Fi and Bluetooth parameters are presented along with discussions and graphics. After the study and the choice of the parameters, the real matching experiment is explained. Successively the coupling algorithms and the methodology are described. In the and there is the interpretation of the results. (ampliare meglio e segnare le sezioni mano a mano che lo scrivo)\\
+
+- dichiarazioni su che esperimenti sono stati fatti
+
+\section{Preliminary experiments}
+\subsection{Data collection}
+In this experiment we capture the Wi-Fi probes and the Bluetooth signals (RSSI, TPL, LQ, echo response time).
+The goal is understand the correlation between distance and signals originating from the devices which is fundamental to determine the positions of the smartphones.
+\subsubsection{The environment}
+The preliminary experiments were held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
+During the first phase of the experiment, the home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise. In addition, it was also crucial to have a direct path between the studied devices.\\
+\subsubsection{The devices}
+The target devices used in during this experiment were a LG-E450 with Android Kit Kat 4.4.2 (credo) (Ultra Slim custom ROM) and an Ipad ?? with iOs ???. \\
+\linebreak
+A Raspberry Pi 3 was used to capture Wi-Fi probes and Bluetooth signals. The Wi-Fi module was a NETGEAR W150 and the Bluetooth module was the internal one. The presence of the Raspberry Pi's case doesn't influence the strength of the signals.
+\subsubsection{Execution (o Implementation?)}
+The Raspberry Pi were placed in a fixed point, while the target devices were moved in different distances every 10 minutes. The path between the Raspberry Pi and the devices has a straight line without any obstacle in the middle.\\
+In the end, our script made the average of all the values to obtain a single value for each position.
+\subsection{Results}
+As explained before, we want to understand if the collected parameters are in relation with the distance, how we can infer the distance from an RSSI value and study the other variable in order to understand if they are useful in our case.\\
+\subsubsection{Bluetooth}
+The Bluetooth signals used in this part of the experiment are the connection based RSSI, the TPL (Transmit Power Level), the LQ (Link Quality), the echo response time (obtain from ping) and the RX power level (obtained from inquiry with RSSI).\\
+From figure X, the following observations can be made:
+\paragraph{Connection based RSSI:} The Received Signal Strength Indicator strongly depends to the distance. It starts from 0 dBm, which means that the target device is inside the GRPR and goes down. As we can note from the image, the iPad chipset is more powerful than the LG one. In fact it's easy to imagine that after ten meters the LG smartphone lose the connection (-35 dBm is the maximum for RSSI value), instead the iPad can move apart and be connected yet. So, the RSSI value strongly depends from the device model.\\
+Finally, we supposed the curves follows a logarithmic trend as all the decibel values. This is in part true, but not so evident as we imagine. However is evident that is possible to infer the distance starting from RSSI.
+\paragraph{LQ:} The link quality, as specification said, start from 255 if the connection is strong and goes down until 0 when the connection is poor. In our experiment the LQ values poorly correlates with the distance. When the devices are near and distant from the Raspberry Pi the value is respectively high and low, but in the middle distance it is not meaningful. For these reasons, for our measurement LQ is discarded.
+\paragraph{TPL:} 
+Fig. X shows a horizontal straight line for Transmit Power Level values. The iPad and LG lines are overlapping in 12. This fact makes impossible use TPL in our calculation.
+\paragraph{Echo Round Trip Time}: This value is obtained pinging the target device and it measures the round-trip time (RTT) for messages sent from the originating host to a destination computer that are echoed back to the source.\\
+We have imagined the more is the distance and the more is the round-trip time, but this supposition is not completely true. In fact, the iPad has a RTT of approximately 120ms during all the phases of the experiment; the LG RTT decrease until 4 meters and then rapidly increase. In figure X are shown the trends of the round trip time of echo requests.
+\paragraph{RX Power Level}
+The Raspberry Pi Bluetooth chipset provide absolute RX power level through inquiry, instead of the relative RSSI values as suggested by Bluetooth specification that depends on the GRPR range. Fig. X certainly establishes the RX power level shows a great correlation with distance. Also in this case, there are evident difference between the LG RX power level and the iPad RX.
+
+\subsubsection{Bluetooth RSSI vs Bluetooth RX Power Level}
+As we have seen before, the two principal Bluetooth signals parameters are the RSSI and the RX Power Level. 
+They represent the same value, but the first one includes the presence of the GRPR. \\
+In figure Y is shown the relation between the two. Their dependence is linear, so it possible to easily convert the RX power level in RSSI  and vice versa.\\
+In the following experiment we decide to use only the RSSI. Whilst the RX seems more precise, the RSSI collects many more values than RX. This permits to be more precise and reduce the time of the experiments thinking also of a real scenario. In fact, as we can see in figure XYZ,  during a ten minutes measurement, the number of RSSI values are almost ten times more than the RX values obtained from the inquiry. The RSSI can be request every seconds, while the RX is affected to the duration of the inquiry. 
+Fare grafico numero di valori di rss e rx (istogramma)\\
+In addition, the RSSI can be also obtained for non-visible devices, while the RX is only for visible ones. In a real world scenario, the value for unseen devices is a big advantage.
+
+\subsubsection{Wi-Fi}
+- wifi vs distanza
+
+\subsection{Parametri per l'esperimento sala}
+dopo tutta sta pappardella di grafici piu o meno interessanti si passa alla stima dei parametri per il set di dispositivi utilizzato, quindi:
+- distanza vs rssi per ogni dispositivo sullo stesso grafico (sia lineare sia logaritmica)
+- conversione rssi a wifi
+
+\section{Esperimento sala}
+-come ho fatto (sparpagliati per tot tempo)
+- quante raspberry (prima 4 e poi 6)
+- immagini pianta
+- il dataset: mostrare la matrice 15 x 6 o 15 x4
+
+\section{Algoritmi}
+intro algoritmi, se ne sono provati tanti. i migliori sono: 
+- normalizzazione
+- conversione da bt a wifi
+- conversione da wifi/bt a distanza con retta
+- conversione da wifi/bt a distanza con logaritmo
+- trilateration
+- fingerprint
+
+\section{miglioramento con 6 raspe}
+
+\section{Approci: top k best e falsi positivi/neg	}
+
+
+\section{Results}
+grafici tipo a barre con tutti gli algoritmi per i vari top.
+roc
