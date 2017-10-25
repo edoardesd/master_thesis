@@ -44,18 +44,43 @@ Fare grafico numero di valori di rss e rx (istogramma)\\
 In addition, the RSSI can be also obtained for non-visible devices, while the RX is only for visible ones. In a real world scenario, the value for unseen devices is a big advantage.
 
 \subsubsection{Wi-Fi}
-- wifi vs distanza
+The last preliminary experiment is the relation between Wi-Fi and distance. As said previously, Wi-Fi probes have a field containing the RSSI. After capturing it and averaging the data on the basis of the distance, the graphic in figure X was been created.\\GRAFICO\\
+Wi-Fi RSSI follows a logarithmic distribution depending on the distance. It is quite obvious due to the fact that RSSI represents the power of a signal in logarithmic scale. Thus, as we imagine, Wi-Fi RSSI is a good indicator of the distance of a device.\\
+The distribution of Wi-Fi RSSI is rather similar to the distribution of the Bluetooth RX power, but the signal strength is higher in Wi-Fi. This is due to the fact that the Wi-Fi range is greater than that of Bluetooth, which is only about 10 meters for a Class 2 device.
+
 
 \subsection{Parametri per l'esperimento sala}
-dopo tutta sta pappardella di grafici piu o meno interessanti si passa alla stima dei parametri per il set di dispositivi utilizzato, quindi:
-- distanza vs rssi per ogni dispositivo sullo stesso grafico (sia lineare sia logaritmica)
-- conversione rssi a wifi
-
+In the previous sections, we have analyzed which parameters fit better with the distance. The choices has been Wi-RSSI, Bluetooth RSSI and Bluetooth RX power. As regards Bluetooth was chosen only the RSSI due to the fact its high number of collectible values and the possibility of capturing data also in non-visible mode.\\
+Thus, in the following experiment we will only consider Bluetooth RSSI and Wi-Fi RSSI.\\
+In the experiment above, we understand that different devices have different RSSI-distance logarithmic curve. This is due to the different internal chipset of the devices. In figure X are shown the different logarithmic trends of five different smartphones and tablets. (Grafico con tutte le curve logaritmiche dei device, uno per bt e l'altro per wifi) piccole considerazioni sui grafici (es. lg e' il piu' scarso, quest'altro e' il piu' forte. i samsung sono simili...)\\
+\linebreak
+It is also important understand the relation between Wi-Fi and Bluetooth RSSI. It is plotted in the following graph (figure X). Thus, the dependence between Wi-Fi and Bluetooth is linear and it is possible to convert the Bluetooth in Wi-Fi and vice versa. Also in this case every device model has a different characteristic curve trend, so a model for each device is created.\\
+This relation is fundamental in the matching of Wi-Fi and Bluetooth MAC address.
 \section{Esperimento sala}
--come ho fatto (sparpagliati per tot tempo)
-- quante raspberry (prima 4 e poi 6)
-- immagini pianta
-- il dataset: mostrare la matrice 15 x 6 o 15 x4
+Starting from the previous data and considerations, now we can explain the real MAC address coupling experiment.\\
+\subsection{Data collection}
+In this experiment we only capture the Wi-Fi probes and the Bluetooth RSSI.
+The goal, as the main goal of the thesis, is pair two MAC Address, one coming from Wi-Fi and the other one coming from Bluetooth, to identify uniquely a device.\\
+During this phase we test various algorithm to understand which algorithm is better as matching one.
+\subsubsection{The environment}
+Also this phase was held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
+The home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise and it was also crucial to have a direct path between the  devices.\\
+In the figure X is shown the planimetry of the room. It is divided in 50 squares of side 0.9 m and an area of 8.1 m\textsuperscript{2}.
+\subsubsection{The devices}
+In the environment we place in a random way five different target devices. Those devices are moved in three different random position in order to simulate the presence of 15 different devices.\\
+In addition to the two previously used devices they are utilized:
+\begin{itemize}
+\item a Samsung S advance with Android ??? (CyanogenMOD)
+\item a Samsung S 3 mini with Adroid 5.??? (CyanogenMOD)
+\item a Samsung Tablet ???
+\end{itemize}
+//modificare
+During this first phase 4 Raspberry Pis with the NETGEAR dongle were used at the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
+This configuration permits to cover all the zone of the room and to have different capturing angles.
+\subsubsection{Execution (o Implementation?)}
+Even during this experiment the Raspberry Pi stay in a fixed point and the target devices where placed in three different positions every 10 minutes. \\
+At the end of the capturing phase the script deletes the corrupted data and generates a Wi-Fi dataset and a Bluetooth one. The datasets are composed of a column for each Raspberry Pi (4 or 6 columsn, depending on the configuration) containing the RSSI value captured by the respectively Raspberry Pi, a MAC Address column (Wi-Fi or Bluetooth, depending on the dataset) indicating the MAC address device, and a timestamp column indicating the time of capture. Each row represents a tuple of values captured in the same instant, thus a dataset with \textit{n} rows and 6 columns (in case of 4 Raspberry Pis configuration).\\
+After this process, we calculate the average of the RSSI of each device for each Raspberry Pi. The two datasets have now a row for each device and the each row represents the position of a device. In figure is represented an example of dataset.
 
 \section{Algoritmi}
 intro algoritmi, se ne sono provati tanti. i migliori sono: 

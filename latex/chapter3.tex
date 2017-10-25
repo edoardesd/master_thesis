@@ -2,17 +2,22 @@
 \thispagestyle{empty}
 
 The use of smartphones, tablets, laptops and other smart devices has become fundamental in everyday life. Data traffic grows rapidly and in every moment people exchange photos, video, document and data of any kind. The two technologies most involved in this process are \textit{Wi-Fi} and \textit{Bluetooth}.\\
+The main purpose of Wi-Fi is provides Internet access to devices that are within the range of a wireless network that is connected to the Internet.\\
+Bluetooth deals with communications between a mobile phone and other systems like handsfree headset, car stereo system, wireless speakers, keyboard or mouse. It also permits data transfer and internet tethering.\\
 \linebreak
-Each device has integrated Wi-Fi and Bluetooth chipsets that send signals over the air. These communications can be easily intercept showing a unique \textbf{Media Access Control Address} (\textit{MAC Address}). In particular a couple of MAC address for each device, one for Wi-Fi network and one for Bluetooth. \\
+Each modern device has integrated Wi-Fi and Bluetooth chipsets that send signals over the air. These communications can be easily intercept showing a unique \textbf{Media Access Control Address} (\textit{MAC Address}). In particular a couple of MAC address for each device, one for Wi-Fi network and one for Bluetooth. \\
 That is a privacy issue; in fact the MAC address identify uniquely a device, so it can be used to associate a smartphone to a person.\\
 \linebreak
-The goal of this thesis is understand how Wi-Fi and Bluetooth signals are related and, in particular, how Wi-Fi and Bluetooth MAC addresses can be coupled each other.
+The goal of this thesis is understand how Wi-Fi and Bluetooth signals are related and, in particular, how Wi-Fi and Bluetooth MAC addresses can be coupled each other. In fact, as we will explain below, a Bluetooth and a Wi-Fi MAC address coming from the same device cannot be immediately related each other because the two addresses are different.\\
+The possibility to pair two different MAC addresses opens to different implications. It can create a more accurate indoor localization system, the use of two technologies can increase the precision of the position. In addition, it is a malicious attackers weapon. The malicious hacker can commit attacks on both two interfaces creating denial of services (DOS) or exploit other vulnerabilities.
 
 \section{Wi-Fi}
-Wi-Fi is a technology for wireless local area networking with devices based on the \textit{IEEE 802.11} standards. In the US and in Europe, Wi-Fi operates at 2.4 GHz (\textit{802.11b/g}) over 11 channels, three of which are not overlapping (1, 6, 11).\\
+Wi-Fi is a technology for wireless local area networking with devices based on the \textit{IEEE 802.11} standards. In the US and in Europe, Wi-Fi operates at 2.4 GHz (\textit{802.11b/g}) over 11 channels, three of which are not overlapping (1, 6, 11). In figure X is shown how the channels are arranged: they may only be separated by 5MHz but the spread spectrum uses 25MHz centred on each channel. The use of different non-overlapping channels permits to reduce the collision between Wi-Fi packets. (figura con i canali)\\
+\linebreak
 Recently Wi-Fi supports also 5 GHz (\textit{802.11n}) with 21 channels with higher capacity, but a shorter range compared to 2.4 GHz. Modern device can switch between 2.4 GHz and 5 GHz, using a technique called \textit{band steering}, depending on traffic demand.\\
 \linebreak
-Every devices, with Wi-Fi interface turned on, regularly broadcast some Wi-Fi probe requests, in order to advertise their presence and actively discover \textit{Wi-Fi access points} (AP) in proximity. This mechanism is called active scan and permits devices to have a list of nearby access points. \\
+When a smartphone or a laptop want to connect to connect to the internet through Wi-Fi needs to connect to an \textit{Access Point} (AP).\\
+So, every device with Wi-Fi interface turned on, regularly broadcast some Wi-Fi probe requests in order to advertise their presence and actively discover Wi-Fi access points  in proximity. This mechanism is called active scan and permits devices to have a list of nearby access points. \\
 IEEE 802.11 define another mechanism to discover Wi-Fi AP: a passive mechanism, in which APs periodically advertise their presence to mobile devices using beacons.
 \subsection{Passive Scanning}
 When a device performs passive scanning, it starts to listen over the 11 Wi-Fi channels hopping periodically from one to another and passively detect nearby APs. When a beacon is captured, the mobile device responds with a Wi-Fi association frame.\\
@@ -20,22 +25,23 @@ The beacons contain network configuration parameters, such as the Service Set Id
 The beacon interval is not a fixed number: most APs set an interval every 100ms, but it depends on the hardware specification.\\
 The main disadvantage of the passive scanning is listening on all the eleven channels. This operation is time consuming and do not ensure all the beacon are captured.
 \subsection{Active Scanning}
-During the active scanning, the mobile device stimulates its nearby access points sending probe requests. The probe packet includes the device unique identifier, the device supported standards, the probe sequence number (SN) and other fields. The probe can be directed to all the APs (broadcast) or to a specific access point by indicating the SSID. \\
-Active scanning is particularly helpful in scenarios where a mobile device roams across APs. It's also faster and less energy consuming than passive scanning.\\
-Also, active scanning is the only method to connect to an hidden network.
-\newpage
+During the active scanning, the mobile device stimulates its nearby access points sending probe requests. The probe packet includes the device unique identifier, the device supported standards, the probe sequence number (SN) and other fields. The probe can be directed to all the APs (broadcast) or to a specific access point by indicating its SSID. \\
+Active scanning is particularly helpful in scenarios where a mobile device roams across APs. It's also faster and less energy consuming than passive scanning because less packets are lost.\\
+Also, active scanning is the only method to connect to an hidden network indicating the access point SSID.
 \subsection{Probe Request Structure}
-Figure number XY represent the packet structure of a probe request. The interesting fields are:
+Figure number X represent the packet structure of a probe request. The interesting fields are:
 \begin{itemize}
-\item \textbf{Address 1:} receiver MAC address (usually broadcast)
-\item \textbf{Address 2:} sender MAC address
-\item \textbf{Address 3:} Access Point MAC address (BSSID)
-\item \textbf{Sequence Control:} the sequence number (SN) that represent a single probe request
-\item \textbf{Payload:} the list of the mobile devices SSID
-\item \textbf{FCS:} a redundant check code 
+\item \textbf{Frame Ctrl:} the type of the frame, usually 0x00;
+\item \textbf{Address 1:} receiver MAC address, usually broadcast (FF:FF:FF:FF:FF:FF);
+\item \textbf{Address 2:} sender MAC address, the device MAC address;
+\item \textbf{Address 3:} Access Point MAC address (BSSID);
+\item \textbf{Sequence Control:} the sequence number (SN) that represent a single probe request;
+\item \textbf{Payload:} the list of the mobile devices SSID;
+\item \textbf{FCS:} a redundant check code.
 \end{itemize}
-
-In table number XY is shown a credible example of probe request. It follows the \textit{IEEE 802.11} standard so it's not encrypted.\\
+In the payload is present a list containing the Wi-Fi APs on which the device was connected. This permits a faster connection between device and access point, but permits to understand the origin of the device and the places his owner visited.\\
+\linebreak
+In table number Y is shown a credible example of probe request. It follows the \textit{IEEE 802.11} standard so it's not encrypted.\\
 In our case, a device with MAC address \textit{14:10:9F:d5:04:01} is broadcasting a probe request with SSID \textbf{polimi-protected} and sequence number equal to 12.
 
 \begin{tabularx}{\textwidth}{|l|l|l|l|l|l|l|l|}
@@ -50,9 +56,9 @@ The number of probe requests sent by a mobile phone is very variable among devic
 The frequency of the probe request depends on:
 \begin{itemize}
 \item \textbf{Wi-Fi chipset:} the vendor can set up different parameters depending on the company policies;
-\item \textbf{Device operating system:} the OS version and the device settings can affect the number of probes. For example, a fast speed connection setting can send an high number of probes or an energy saving mode can emit a low number;
-\item \textbf{Frequency of screen unlocking:} unlock the screen stimulates the probes activity;
-\item \textbf{Number of applications running on the device.}
+\item \textbf{Device operating system:} the OS version and the device settings can affect the number of probes. For example, a fast speed connection setting can send an high number of probes or an energy saving mode can emit a low number; (parlare del fatto che un custom OS manda molto piu' probe di uno stock?)
+\item \textbf{Frequency of screen unlocking:} unlock the screen stimulates the probes activity, this permits a faster connection of the device;
+\item \textbf{Number of applications running on the device:} the more is the number of applications and programs that use Wi-Fi, the more the device is forced to send probe requests to maintain available that services.
 \end{itemize}
 
 \section{Bluetooth}
@@ -99,9 +105,10 @@ Also, hcitool provide access to the RSSI, the LQ and the TPL of a connected devi
 To obtain the previously mentioned values an active connection between the master device and the slave is needed.
 
 \paragraph{Received Signal Strength Indicator (RSSI):}
-According to the Bluetooth Core Specification, the RSSI is an 8-bit signed integer that indicates the difference between the received (RX = real RSSI, non so come chiamarlo) power level and the \textit{Golden Receiver Power Range} (GRPR). \\
+According to the Bluetooth Core Specification, the RSSI is an 8-bit signed integer that indicates the difference between the received power level and the \textit{Golden Receiver Power Range} (GRPR). \\
 Using the command \texttt{hcitool rssi \textless bdaddr\textgreater} a value between +15dBm and -35dBm is obtained. \\
-A positive RSSI value indicates how many dB the RSSI is above the upper limit; a negative value indicates how many dB the RSSI is below the lower limit. The value zero indicates that the RSSI is inside the Golden Receive Power Range. (cit bluetoot core v5.0)
+A positive RSSI value indicates how many dB the RSSI is above the upper limit; a negative value indicates how many dB the RSSI is below the lower limit. The value zero indicates that the RSSI is inside the Golden Receive Power Range. (cit bluetoot core v5.0)\\
+The Golden Receive Power Range a zone in which a raw bit error rate is better than 0.1 \% (BER <= 10-3).
 
 \paragraph{Transmit Power Level (TPL):}
 TPL is an 8-bit signed integer which specifies the Bluetooth module's transmit power level (in dBm). Every Bluetooth class has a fixed value and it doesn't change during a Bluetooth connection. For example, Class 2 devices has +4 dBm as maximum power, Class 3 has 0 dBm and Class 1 has +20 dBm.
@@ -111,9 +118,9 @@ Link Quality is a value from 0 to 255, which represents the quality of the link 
 
 \subsection{Inquiry with RSSI and hcitool RSSI}
 As explained in section 3.2.1 and 3.2.2, using hcitool of Bluez we can obtain two different types of RSSI values.
-The first value is the RSSI obtained from the inquiry scan (\textit{inqury with RSSI}), the second one is the RSSI obtained directly from a connected device.\\
+The first value is the RSSI obtained from the inquiry scan (\textit{inqury with RSSI}) and identify the power level of the Bluetooth target device that the receiver sees; the second one is the RSSI obtained directly from a connected device.\\
 This two values are strictly related with a linear dependence; the relation is further analyzed in section 5.Y.Z. \\
-To be clearer, from now on, the value obtained from the inquiry scan will be called RX. On the other hand, the value obtained from a connected device will be simply called RSSI.
+To be clearer, from now on, the value obtained from the inquiry scan will be called RX. On the other hand, the value obtained from a connected device will be simply called RSSI.\\
 
 \subsection{l2ping}
 The Linux Bluetooth stack also permits to ping a Bluetooth device.\\
