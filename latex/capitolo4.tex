@@ -5,13 +5,16 @@ During this thesis was implemented a tool capable of capture Wi-Fi probes and co
 For this purpose was used, depending on the test, up to 6 Raspberry Pis 3 equipped with a NETGEAR N150 Wireless USB Adapter. The Raspberry Pis running Raspbian Jessy version 4.9.24 and all of them are synchronized with NTP server. They are remotely controlled through ssh (Secure Shell) over the Wi-Fi network. This facilitated the experimenter to have complete control over the whole system from remote.\\
 \linebreak
 The Raspberry Pis run a Python script. Besides the ease with which Python manipulates data and variables, this programming language was also used in view of the immediacy in launching Linux bash scripts.\\
-Launching the program the main function creates three different threads. The first one gathers Wi-Fi probes; the second one starts to inquiry the Bluetooth devices; and the last one collects RSSI, TPL and LQ. As soon as a new client is found, the script outputs in real time a message containing the MAC Address of the device; in the meantime it stores in a dictionary all the data regarding that client.
+\linebreak
+The program consist in a main function that creates three different threads. The first one gathers Wi-Fi probes; the second one starts to inquiry the Bluetooth devices; and the last one collects RSSI, TPL and LQ. As soon as a new client is found, the script outputs in real time a message containing the MAC Address of the device; in the meantime the main process stores in a dictionary all the data regarding the clients.
 
 \paragraph{Wi-Fi probes collection}
-In order to capture Wi-Fi probes Aircrack-ng was used. Aircrack-ng is an open-source suite of tools, written in C language, to assess WiFi network security. In particular the command \texttt{airodump-ng \textless wlan interface\textgreater} is used for packet capturing of raw 802.11 frames. For this purpose, the source code of Airodump was modified to show the sequence number and the timestamp of the capture of the packets.
+In order to capture Wi-Fi probes Aircrack-ng was used. Aircrack-ng is an open-source suite of tools, written in C language, to assess WiFi network security. In particular the command \texttt{airodump-ng \textless wlan interface\textgreater} is used for packet capturing of raw 802.11 frames. For this purpose, the source code of Airodump was modified to show the sequence number and the timestamp of the capture of the packets.\\
+In order to run Airodump-ng the Wi-Fi interface must be in monitor mode, the NETGEAR dongles are used for this purpose. Monitor mode, allows the Raspberry Pi to monitor all traffic received from the wireless network and listen the probes.
+
 
 \paragraph{Inquiry with RSSI}
-\texttt{spinq} of hcitool permits to inquire automatically other Bluetooth devices. In parallel, \texttt{hcidump} analyze the raw data gathering the useful information.
+\texttt{spinq} of hcitool permits to inquire automatically other Bluetooth devices. In parallel, \texttt{hcidump} analyze the raw data gathering the useful information. 
 
 \paragraph{Other Bluetooth parameters}
 Received signal strength indicator (RSSI), link quality (LQ) and transmit power level (TPL) are three fundamental parameters about Bluetooth connection. In order to obtain these data, a connection is required.\\
