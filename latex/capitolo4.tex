@@ -6,7 +6,9 @@ For this purpose was used, depending on the test, up to 6 Raspberry Pis 3 equipp
 \linebreak
 The Raspberry Pis run a Python script. Besides the ease with which Python manipulates data and variables, this programming language was also used in view of the immediacy in launching Linux bash scripts.\\
 \linebreak
-The program consist in a main function that creates three different threads. The first one gathers Wi-Fi probes; the second one starts to inquiry the Bluetooth devices; and the last one collects RSSI, TPL and LQ. As soon as a new client is found, the script outputs in real time a message containing the MAC Address of the device; in the meantime the main process stores in a dictionary all the data regarding the clients.
+The program consist in a main function that creates three different threads. The first one gathers Wi-Fi probes; the second one starts to inquiry the Bluetooth devices; and the last one collects RSSI, TPL and LQ. As soon as a new client is found, the script outputs in real time a message containing the MAC Address of the device; in the meantime the main process stores in a dictionary all the data regarding the clients.\\
+\linebreak
+immagine del tool
 
 \paragraph{Wi-Fi probes collection}
 In order to capture Wi-Fi probes Aircrack-ng was used. Aircrack-ng is an open-source suite of tools, written in C language, to assess WiFi network security. In particular the command \texttt{airodump-ng \textless wlan interface\textgreater} is used for packet capturing of raw 802.11 frames. For this purpose, the source code of Airodump was modified to show the sequence number and the timestamp of the capture of the packets.\\
@@ -14,13 +16,19 @@ In order to run Airodump-ng the Wi-Fi interface must be in monitor mode, the NET
 
 
 \paragraph{Inquiry with RSSI}
-\texttt{spinq} of hcitool permits to inquire automatically other Bluetooth devices. In parallel, \texttt{hcidump} analyze the raw data gathering the useful information. 
+Bluetooth RX power level is obtained through \texttt{spinq} of hcitool. It permits to inquire automatically other Bluetooth devices endlessly. In parallel, \texttt{hcidump} retrieves the raw data and the python script parses the useful information. In figure X is shown an example of hcidump raw data.
 
 \paragraph{Other Bluetooth parameters}
 Received signal strength indicator (RSSI), link quality (LQ) and transmit power level (TPL) are three fundamental parameters about Bluetooth connection. In order to obtain these data, a connection is required.\\
-Ping the Bluetooth MAC address (\texttt{l2ping} command in Linux environment) permits to establish a sort of connection between the Raspberry Pi and the target device. During the ping process is possible to gather RSSI, LQ and TPL using \texttt{hcitool}. Also the Echo Round Trip Time is collected.\\
-\linebreak
+As explained in section 3.X,Y during the ping process a L2CAP connection between the Raspberry Pi and the target device is established. Thanks to it is possible to obtain  RSSI, LQ and TPL.\\
+The used commands was:
+\begin{itemize}
+\item \texttt{l2ping \textless mac address\textgreater} in order to ping the Bluetooth MAC address
+\item \texttt{hcitool rssi  \textless mac address\textgreater} in order to gather the RSSI
+\item \texttt{hcitool tpl  \textless mac address\textgreater} in order to gather the Transmit Power Level
+\item \texttt{hcitool lq  \textless mac address\textgreater} in order to gather the Link Quality
+\end{itemize}
 After capturing probes and the Bluetooth data the program creates three \textit{.csv} files, one for each category explained before. The csv files contain the MAC address of the device, the timestamp of the capture and all the useful data regarding Wi-Fi or Bluetooth.\\
-The last operation is import the files in a MySql database and the removal of corrupted data.
+The last operation is import the files in a MySql database and remove the corrupted data.
 
 aggiungere immagini dello script, del csv/db?
