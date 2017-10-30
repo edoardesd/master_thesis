@@ -74,7 +74,7 @@ The used devices they are:
 \item an iPad with iOs 10
 \item a Samsung Tablet ???
 \end{itemize}
-During this first phase 4 Raspberry Pis with the NETGEAR dongle were used at the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
+During this first phase, as probe catcher we use 4 Raspberry Pis, with the NETGEAR dongle, at the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
 This configuration permits to cover all the zone of the room and to have different capturing angles.
 
 \subsubsection{Execution (o Implementation?)}
@@ -89,18 +89,53 @@ The datasets are composed of:
 Each row represents a tuple of values captured in the same instant (same timestamp).
 In this way was created a dataset with \textit{n} rows and 6 columns (in case of 4 Raspberry Pis configuration), one for the Wi-Fi and one for the Bluetooth.\\
 \linebreak
-After this process, we calculate the average of the RSSI of each device for each Raspberry Pi in the two different dataset. As a result, we have two different dataset (Bluetooth and Wi-Fi) with 15 lines, one for each device. In figure X is represented an example of Bluetooth dataset. There are 4 columns with the RSSI and one column with the MAC Address. In the first line there is the BOOOH1 device, its rasp1 RSSI is -666, rasp2 RSSI is -66 and so on.
+After this process, we calculate the average of the RSSI of each device for each Raspberry Pi in the two datasets. As a result, we have two different datasets (Bluetooth and Wi-Fi) with 15 lines, one for each device. (In figure X is represented an example of Bluetooth dataset. There are 4 columns with the RSSI and one column with the MAC Address. In the first line there is the BOOOH1 device, its rasp1 RSSI is -666, rasp2 RSSI is -66 and so on. sistemare qua, mettere un immagine con i due dataset separati cosi si capisce un po' meglio.)
 
 \section{Algoritmi}
-intro algoritmi, se ne sono provati tanti. i migliori sono: 
-- normalizzazione
-- conversione da bt a wifi
-- conversione da wifi/bt a distanza con retta
-- conversione da wifi/bt a distanza con logaritmo
-- trilateration
-- fingerprint
+After the capturing phase and the manipulation of the datasets, we focused on the matching algorithms. Various approaches were tested, the best ones are:
+\begin{itemize}
+\item normalization;
+\item RSSI conversion from Bluetooth to Wi-Fi;
+\item RSSI conversion from Bluetooth/Wi-Fi to distance;
+\item trilateration;
+\item fingerprint.
+\end{itemize}
+In all of these algorithms our goal is pair a line of the Wi-Fi dataset with one of the Bluetooth dataset or vice versa. In fact, each line in the Wi-Fi dataset represents the Wi-Fi signal of a device and we want to find its equivalent in the Bluetooth dataset finding its most similar line.
 
-\section{miglioramento con 6 raspe}
+\paragraph{Euclidean Distance}
+In order to find the most similar line we use the euclidean distance. It is the straight-line distance between two, or more, points in euclidean space. In our case, we have 4 points, one for each Raspberry Pi. The euclidean distance in calculated as follows:\\
+\(d(w,b) = \sqrt{(w_1 - b_1)^2 + (w_2 - b_2)^2 +... + (w_i - b_i)^2 + ... + (w_n - b_n)^2}\)
+where \(w_i\) is the \(i^{th}\) Wi-Fi RSSI and \(b_i\) is  is the \(i^{th}\) Bluetooth RSSI, with \(i = 1, 2, ..., n\) and \(n = 4\) or \( n = 6 \) depending on the configuration.\\
+\(d(w,b)\) is close to 0 if the two lines are very similar and became greater if the lines are different.\\
+\linebreak
+Every time we use an algorithm, at the end of the process, we compare each Wi-Fi line with each Bluetooth line using the euclidean distance. It permits to create for each Wi-Fi address a list of Bluetooth addresses. The list is in increasing order based on the euclidean distance, the value more similar to zero is the first of the list, the greatest value is the last one. So, on top of list we have the Bluetooth MAC addresses that are more similar to the Wi-Fi MAC address. Presumably there will be his correspondent and then we can match them.
+
+\subsection{Normalization}
+The simplest algorithm we have implemented is the normalization of each line.\\
+The normalization is a process that adjust values measured on different scales to a common scale, e.g. between 0 and 1.\\
+Both the Wi-Fi RSSI and the Bluetooth one represent the strength of the respective signal, but they are on different scales (i.e. the Wi-Fi RSSI is more powerful than the Bluetooth one). Thanks to normalization we can take back these two values on the same 0 and 1 scale.\\
+\linebreak
+We have normalized separately each line of the two datasets in order to standardize Wi-Fi and Bluetooth data for the same device.\\
+The normalization formula is:\\
+\( z_i = \frac{x_i-min(x)}{max(x)-min(x)} \)\\
+where \( x=(x_1,..., x_n)\) and \(z_i\) is the \(i^{th}\) normalized data.\\
+\linebreak
+After normalizing the data, we obtain two datasets of values between 0 and 1 representing the Wi-Fi RSSI and the Bluetooth RSSI in a common scale. Now is possible compare the data and match the device lines.
+
+\subsection{RSSI conversion from Bluetooth to Wi-Fi}
+In section 5.X we talked about the linear relation between the Wi-Fi RSSI and the Bluetooth RSSI. This relation was used to convert the Bluetooth values in the Bluetooth dataset in Wi-Fi values. As mentioned above, every device has a different trend, so five different functions were used during the conversion.\\
+Thanks to that, we obtain two Wi-Fi datasets (the real one and the fake one). The last part of the algorithm is to compare each line of the datasets using the euclidean distance and pair the addresses.
+
+\subsection{RSSI conversion from Bluetooth/Wi-Fi to distance}
+Starting from the dependence between RSSI (Bluetooth or Wi-Fi) and the distance we elaborate this algorithm. The idea is to convert the RSSI of the two datasets in distance and then, using the euclidean distance, matching the line that are more similar between them.\\
+\linebreak
+In order to convert the RSSI in distance we create a different curve for each device and for each technology used (Wi-Fi or Bluetooth). It is useful due to the differences of power among the devices.\\
+\linebreak
+Of course, the choice curve was the logarithmic one (we analyzed the behaviour in the previous sections).\\
+We also use a linear model to convert the RSSI to the distance and the results are not so different.
+
+\subsection{Trilateration}
+Trilateration is trigonometric approach for tracking mobile objects considering the concept of triangles. Since the device knows distance from a minimum of three known Raspberry Pi, triangulation is performed to determine its coordinates. 
 
 \section{Approci: top k best e falsi positivi/neg	}
 
@@ -108,3 +143,5 @@ intro algoritmi, se ne sono provati tanti. i migliori sono:
 \section{Results}
 grafici tipo a barre con tutti gli algoritmi per i vari top.
 roc
+
+\section{miglioramento con 6 raspe}
