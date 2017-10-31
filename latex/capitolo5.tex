@@ -1,14 +1,24 @@
 \chapter{Experiments}
 \label{capitolo5}
 \thispagestyle{empty}
+A smartphone with the Wi-Fi turned on emits a number of probe requests. If the Bluetooth is turned on, we can stimulate the smartphone to emit some Bluetooth signals. Both the probes and the Bluetooth signals are identify by two different MAC addresses based on the wireless communication that we are using.\\
+Pair the Wi-Fi MAC address and the Bluetooth MAC address permits to identify uniquely a mobile device. In fact those two signals derive from the same device but they are not immediately related. As we will see below, the found values are completely different, but they represent the same information: the distance.\\
+\linebreak
+The distance between the two mobile devices can be expresses in different way:
+\begin{itemize}
+\item \textbf{Time of arrival (ToA):} the estimation of the distance is obtained by measuring the signal propagation time. {The Time of Flight is \(T_f = \frac{d}{c}\). \(d\) is the distance between the nodes and \(c\) is the speed propagation (c = 299792, 458km/s)} <- evitabile;
+\item \textbf{Time Difference of Arrival (TDoA):} in TDoA the receivers deduce the distance from instant differences and propagation speeds;
+\item \textbf{Angle of Arrival (AoA):} In AoA there are directional antennas to estimate the signal arrival angle and deduce the distance;
+\item \textbf{Received Signal Strength Indicator (RSSI):} RSSI use the signal attenuation to infer the distance, in fact a signal attenuates during propagation.
+\end{itemize}
+Line-Of-Sight (LOS) propagation is a characteristic of signals propagation which means waves which travel in a direct path from the source to the receiver. In closed environments is difficult to have a straight line between a sender and a receiver.
 sistemare l'inizio
-In this section, are first described the experimental test-bed and the devices used during the experiment. Then the analysis of the device's Wi-Fi and Bluetooth parameters are presented along with discussions and graphics. After the study and the choice of the parameters, the real matching experiment is explained. Successively the coupling algorithms and the methodology are described. In the and there is the interpretation of the results. (ampliare meglio e segnare le sezioni mano a mano che lo scrivo)\\
+In this section, are first described the experimental test-bed and the devices used during the experiment. Then the analysis of the device's Wi-Fi and Bluetooth parameters are presented along with discussions and graphics. After the study and the choice of the parameters, the real matching experiment is explained. Successively the coupling algorithms and the methodology are described. In the end there is the interpretation of the results. (ampliare meglio e segnare le sezioni mano a mano che lo scrivo)\\
 
-- dichiarazioni su che esperimenti sono stati fatti
-
+- dichiarazioni su che esperimenti sono stati fatti\\
 \section{Preliminary experiments}
-In this experiment we have captured the Wi-Fi probes and the Bluetooth signals (RSSI, TPL, LQ, echo response time).\\
-The goal is understand the correlation between distance and the signals originating from the target devices. It is fundamental to determine the positions of the smartphones.
+In this experiment we have captured the Wi-Fi probes (containing the Wi-Fi RSSI) and the Bluetooth signals (RSSI, TPL, LQ, echo round trip time time).\\
+The goals are understand the correlation between distance and the signals originating from the target devices and also understand the relation between Wi-Fi and Bluetooth. In fact, our primary scope is not find the absolute position of a device, but comprehend if the Bluetooth signals and the Wi-Fi ones have origin from the same device. 
 \subsubsection{The environment}
 The preliminary experiments were held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
 During the first phase of the experiment, the home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise. In addition, it was also crucial to have a direct path between the studied devices.\\
@@ -20,7 +30,7 @@ A Raspberry Pi 3 was used to capture Wi-Fi probes and Bluetooth signals. The Wi-
 The Raspberry Pi were placed in a fixed point, while the target devices were moved in different distances every 10 minutes. The path between the Raspberry Pi and the devices has a straight line without any obstacle in the middle.\\
 In the end, our script made the average of all the values to obtain a single value for each position.
 \subsection{Results}
-As explained before, we want to understand if the collected parameters are in relation with the distance, how we can infer the distance from an RSSI value and study the other variables in order to understand if they are useful in our case.\\
+As explained before, we want to understand if the collected parameters are in relation with the distance , how we can infer the distance from an RSSI value and study the other variables in order to understand if they are useful in our case.\\
 \subsubsection{Bluetooth}
 The Bluetooth signals used in this experiment are the connection based RSSI, the TPL (Transmit Power Level), the LQ (Link Quality), the echo response time (obtained from ping) and the RX power level (obtained from inquiry with RSSI).\\
 From figure X, the following observations can be made:
@@ -57,13 +67,18 @@ It is also important understand the relation between Wi-Fi and Bluetooth RSSI. I
 This relation is fundamental in the matching of Wi-Fi and Bluetooth MAC address.
 \section{Esperimento sala}
 Starting from the previous data and considerations, now we can explain the real MAC address coupling experiment.\\
-During this test we have collected the Bluetooth RSSI and the Wi-Fi probes of 15 devices placed randomly. The devices positions are known, and they are kept in the same position during all the experiment's time. In this way we obtain two different RSSI signals (Bluetooth and Wi-Fi) of each device at the same time. This signals aren't related because they come from two different chipset. The goal is pair two MAC Address, one coming from Wi-Fi and the other one coming from Bluetooth signals, to identify uniquely a device.\\
+\linebreak
+During this test we have collected the Bluetooth RSSI and the Wi-Fi probes of 15 devices placed randomly. The devices positions are known, and they are kept in the same position during all the experiment's time. In this way we obtain two different RSSI signals (Bluetooth and Wi-Fi) of each device at the same time. This signals aren't related because they come from two different chipset. The goal is pair two MAC Address, one coming from Wi-Fi and the other one coming from Bluetooth signals, to identify uniquely a device. Pair the Mac Addresses means understand if the Wi-Fi and the Bluetooth RSSI have origin from the same device.\\
+\linebreak
 In order to couple the two RSSI we create various algorithm and test them to understand which algorithm is better as matching one.
 
 \subsubsection{The environment}
 Also this phase was held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
 The home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise and it was also crucial to have a direct path between the devices.\\
-In the figure X is shown the planimetry of the room. It is divided in 50 squares of side 0.9 m and an area of 8.1 m\textsuperscript{2}.
+In the figure X is shown the planimetry of the room. It is divided in 50 squares of side 0.9 m and an area of 8.1 m\textsuperscript{2}.\\
+\linebreak
+An essential alternative is the scenario choice. There are two possibilities: anchor based or anchor free. In the anchor based scenario only the anchor nodes (in our case the Raspberry Pis) knows the position. The other nodes (in our case the devices) derive the position through the anchor. This coordinate system is absolute. In the anchor free scenario no node knows his position. A relative coordinate system is obtained.\\
+Our choice is the anchor based scenario, because only the Raspberry Pis are able to catch the probes and manipulate the data. The target devices are passive.
 \subsubsection{The devices}
 In the environment we place in a random way five different target devices. Those devices are moved in three different random position in order to simulate the presence of 15 different devices.\\
 The used devices they are:
@@ -74,7 +89,7 @@ The used devices they are:
 \item an iPad with iOs 10
 \item a Samsung Tablet ???
 \end{itemize}
-During this first phase, as probe catcher we use 4 Raspberry Pis, with the NETGEAR dongle, at the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
+As anchor we use 4 Raspberry Pis, with the NETGEAR dongle, in the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
 This configuration permits to cover all the zone of the room and to have different capturing angles.
 
 \subsubsection{Execution (o Implementation?)}
@@ -135,7 +150,8 @@ Of course, the choice curve was the logarithmic one (we analyzed the behaviour i
 We also use a linear model to convert the RSSI to the distance and the results are not so different.
 
 \subsection{Trilateration}
-Trilateration is trigonometric approach for tracking mobile objects considering the concept of triangles. Since the device knows distance from a minimum of three known Raspberry Pi, triangulation is performed to determine its coordinates. 
+Trilateration is trigonometric approach for tracking mobile objects considering the concept of triangles. Since the device knows distance from a minimum of three known Raspberry Pi, triangulation is performed to determine its coordinates.\\
+
 
 \section{Approci: top k best e falsi positivi/neg	}
 
