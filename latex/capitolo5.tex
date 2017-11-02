@@ -1,24 +1,27 @@
 \chapter{Experiments}
 \label{capitolo5}
 \thispagestyle{empty}
-A smartphone with the Wi-Fi turned on emits a number of probe requests. If the Bluetooth is turned on, we can stimulate the smartphone to emit some Bluetooth signals. Both the probes and the Bluetooth signals are identify by two different MAC addresses based on the wireless communication that we are using.\\
+If a smartphone Wi-Fi is left turned on it emits a number of probe requests. If also the Bluetooth is turned on, we can stimulate the smartphone to emit some Bluetooth signals. Both the probes and the Bluetooth signals are identify by two different MAC addresses based on the wireless communication that we are using.\\
 Pair the Wi-Fi MAC address and the Bluetooth MAC address permits to identify uniquely a mobile device. In fact those two signals derive from the same device but they are not immediately related. As we will see below, the found values are completely different, but they represent the same information: the distance.\\
 \linebreak
 The distance between the two mobile devices can be expresses in different way:
 \begin{itemize}
-\item \textbf{Time of arrival (ToA):} the estimation of the distance is obtained by measuring the signal propagation time. {The Time of Flight is \(T_f = \frac{d}{c}\). \(d\) is the distance between the nodes and \(c\) is the speed propagation (c = 299792, 458km/s)} <- evitabile;
+\item \textbf{Time of arrival (ToA):} the estimation of the distance is obtained by measuring the signal propagation time. (The Time of Flight is \(T_f = \frac{d}{c}\). \(d\) is the distance between the nodes and \(c\) is the speed propagation (c = 299792, 458km/s)) -- questo magari e' evitabile;
 \item \textbf{Time Difference of Arrival (TDoA):} in TDoA the receivers deduce the distance from instant differences and propagation speeds;
 \item \textbf{Angle of Arrival (AoA):} In AoA there are directional antennas to estimate the signal arrival angle and deduce the distance;
 \item \textbf{Received Signal Strength Indicator (RSSI):} RSSI use the signal attenuation to infer the distance, in fact a signal attenuates during propagation.
 \end{itemize}
-Line-Of-Sight (LOS) propagation is a characteristic of signals propagation which means waves which travel in a direct path from the source to the receiver. In closed environments is difficult to have a straight line between a sender and a receiver.
-sistemare l'inizio
+Line-Of-Sight (LOS) propagation is a characteristic of signals propagation which means waves which travel in a direct path from the source to the receiver. In closed environments is difficult to have a straight line between a sender and a receiver. The signal is affected to multipath, that is the propagation of the signal through different path. It is caused by atmospheric ducting, reflection and refraction caused by walls, body, windows, etc... .\\
+These issues make inaccurate techniques like ToA, TDoA or AoA. So, in our experiments we choose the RSSI based approach.\\
+\linebreak
+It is important to remind that we are not only focused on the absolute distance between a sender ad a receiver. We want to determine if the Wi-Fi and the Bluetooth signals have the same path loss to establish if the device is the same.\\
+\linebreak  
 In this section, are first described the experimental test-bed and the devices used during the experiment. Then the analysis of the device's Wi-Fi and Bluetooth parameters are presented along with discussions and graphics. After the study and the choice of the parameters, the real matching experiment is explained. Successively the coupling algorithms and the methodology are described. In the end there is the interpretation of the results. (ampliare meglio e segnare le sezioni mano a mano che lo scrivo)\\
 
 - dichiarazioni su che esperimenti sono stati fatti\\
 \section{Preliminary experiments}
-In this experiment we have captured the Wi-Fi probes (containing the Wi-Fi RSSI) and the Bluetooth signals (RSSI, TPL, LQ, echo round trip time time).\\
-The goals are understand the correlation between distance and the signals originating from the target devices and also understand the relation between Wi-Fi and Bluetooth. In fact, our primary scope is not find the absolute position of a device, but comprehend if the Bluetooth signals and the Wi-Fi ones have origin from the same device. 
+In this experiment we have captured the Wi-Fi probes (containing the Wi-Fi RSSI) and the Bluetooth signals (RSSI, TPL, LQ, echo round trip time).\\
+The goals are understand the correlation between distance and the signals originating from the target devices and also understand the relation between Wi-Fi and Bluetooth. In fact, our main scope is not find the absolute position of a device, but comprehend if the Bluetooth signals and the Wi-Fi ones have origin from the same device. 
 \subsubsection{The environment}
 The preliminary experiments were held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
 During the first phase of the experiment, the home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise. In addition, it was also crucial to have a direct path between the studied devices.\\
@@ -30,11 +33,16 @@ A Raspberry Pi 3 was used to capture Wi-Fi probes and Bluetooth signals. The Wi-
 The Raspberry Pi were placed in a fixed point, while the target devices were moved in different distances every 10 minutes. The path between the Raspberry Pi and the devices has a straight line without any obstacle in the middle.\\
 In the end, our script made the average of all the values to obtain a single value for each position.
 \subsection{Results}
-As explained before, we want to understand if the collected parameters are in relation with the distance , how we can infer the distance from an RSSI value and study the other variables in order to understand if they are useful in our case.\\
+As explained before, we want to understand if the collected parameters are in relation with the distance and if they are in relation among each others. It is also important comprehend how we can infer the distance from an RSSI value and study the other variables in order to understand if they are useful in our case.
 \subsubsection{Bluetooth}
-The Bluetooth signals used in this experiment are the connection based RSSI, the TPL (Transmit Power Level), the LQ (Link Quality), the echo response time (obtained from ping) and the RX power level (obtained from inquiry with RSSI).\\
+The Bluetooth signals analyzed during this experiment are the connection based RSSI, the TPL (Transmit Power Level), the LQ (Link Quality), the echo response time (obtained from ping) and the RX power level (obtained from inquiry with RSSI).\\
 From figure X, the following observations can be made:
-\paragraph{Connection based RSSI:} The Received Signal Strength Indicator strongly depends to the distance. It starts from 0 dBm, which means that the target device is inside the GRPR and goes down. As we can note from the image, the iPad chipset is more powerful than the LG one. In fact it's easy to imagine that after ten meters the LG smartphone lose the connection (-35 dBm is the maximum for RSSI value), instead the iPad can move apart and be connected yet. So, the RSSI value strongly depends from the device model.\\
+\begin{figure}[htbp]
+\centering
+\includegraphics[scale = 0.8, keepaspectratio]{multiple_bt}
+\caption{multiple bt}
+\end{figure}
+\paragraph{Connection based RSSI:} The Received Signal Strength Indicator strongly depends to the distance. It starts from 0 dBm, which means that the target device is inside the GRPR and goes down. As we can note from the image, the iPad chipset is more powerful than the LG one. In fact it's easy to imagine that after ten meters the LG lose the connection (-35 dBm is the maximum for RSSI value), instead the iPad can move apart and be connected yet. So, the RSSI value strongly depends from the device model.\\
 Finally, we supposed the curves follows a logarithmic trend as all the decibel values. This is in part true, but not so evident as we imagine. However is evident that is possible to infer the distance starting from RSSI.
 \paragraph{LQ:} The link quality, as specification said, start from 255 if the connection is strong and goes down until 0 when the connection is poor. In our experiment the LQ values poorly correlates with the distance. When the devices are near and distant from the Raspberry Pi the value is respectively high and low, but in the middle distance it is not meaningful. For these reasons, for our measurement LQ is discarded.
 \paragraph{TPL:} 
@@ -44,16 +52,39 @@ We have imagined the more is the distance and the more is the round-trip time, b
 \paragraph{RX Power Level}
 The Raspberry Pi Bluetooth chipset provide absolute RX power level through inquiry, instead of the relative RSSI values as suggested by Bluetooth specification that depends on the GRPR range. Fig. X certainly establishes the RX power level shows a great correlation with distance. Also in this case, there are evident difference between the LG RX power level and the iPad RX.
 
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.8, keepaspectratio]{bt_rx_vs_distance}
+\caption{bt rx}
+\end{figure}
+
 \subsubsection{Bluetooth RSSI vs Bluetooth RX Power Level}
 As we have seen before, the two principal Bluetooth signals parameters are the RSSI and the RX Power Level. 
 They represent the same value, but the first one includes the presence of the GRPR. \\
-In figure Y is shown the relation between the two. Their dependence is linear, so it possible to easily convert the RX power level in RSSI  and vice versa.\\
+In figure Y is shown the relation between the two. Their dependence is linear, so it possible to easily convert the RX power level in RSSI  and vice versa.
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.8, keepaspectratio]{rssivsrx}
+\caption{rssi vs rx power level}
+\end{figure}
 In the following experiments we decide to use only the RSSI. Whilst the RX seems more accurate, the RSSI collects many more values than RX. This permits to be more precise and reduce the time of the experiments thinking also of a real scenario. In fact, as we can see in figure XYZ,  during a ten minutes measurement, the number of RSSI values are almost ten times more than the RX values obtained from the inquiry. The RSSI can be request every seconds (or more), while the RX is affected to the duration of the inquiry that is around 10.24 milliseconds.
-Fare grafico numero di valori di rss e rx (istogramma)\\
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.8, keepaspectratio]{numberofrssirx}
+\caption{Number of rssi e rx}
+\end{figure}
+
 In addition, the RSSI can be also obtained for non-visible devices, while the RX is only for the visible ones. In a real world scenario, obtain the unseen devices values is a big advantage.
 
+
+
 \subsubsection{Wi-Fi}
-The last preliminary experiment is the relation between Wi-Fi and distance. As said previously, the Wi-Fi probes have a field containing the RSSI. After capturing it and averaging the data on the basis of the distance, the graphic in figure X was been created.\\GRAFICO\\
+The last preliminary experiment is the relation between Wi-Fi and distance. As said previously, the Wi-Fi probes have a field containing the RSSI. After capturing it and averaging the data on the basis of the distance, the graphic in figure X was been created.
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.8, keepaspectratio]{wifi_rssi_vs_distance}
+\caption{wifi rssi vs distance}
+\end{figure}
 The Wi-Fi RSSI follows a logarithmic distribution depending on the distance. It is quite obvious due to the fact that RSSI represents the power of a signal in logarithmic scale. Therefore, as we imagine, the Wi-Fi RSSI is a good indicator of the distance of a device.\\
 The distribution of the Wi-Fi RSSI is rather similar to the distribution of the Bluetooth RX power, but the signal strength is higher in Wi-Fi. This is due to the fact that the Wi-Fi range is greater than the one of Bluetooth, which is only around 10 meters for a Class 2 device.
 
@@ -75,13 +106,13 @@ In order to couple the two RSSI we create various algorithm and test them to und
 \subsubsection{The environment}
 Also this phase was held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
 The home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise and it was also crucial to have a direct path between the devices.\\
-In the figure X is shown the planimetry of the room. It is divided in 50 squares of side 0.9 m and an area of 8.1 m\textsuperscript{2}.\\
+In the figure X is shown the planimetry of the room. It is divided in 50 squares of side 0.9 meters and an area of 8.1 m\textsuperscript{2}.\\
 \linebreak
 An essential alternative is the scenario choice. There are two possibilities: anchor based or anchor free. In the anchor based scenario only the anchor nodes (in our case the Raspberry Pis) knows the position. The other nodes (in our case the devices) derive the position through the anchor. This coordinate system is absolute. In the anchor free scenario no node knows his position. A relative coordinate system is obtained.\\
-Our choice is the anchor based scenario, because only the Raspberry Pis are able to catch the probes and manipulate the data. The target devices are passive.
+Our choice was the anchor based scenario, because only the Raspberry Pis are able to catch the probes and manipulate the data. In fact, the target devices are passive.
 \subsubsection{The devices}
-In the environment we place in a random way five different target devices. Those devices are moved in three different random position in order to simulate the presence of 15 different devices.\\
-The used devices they are:
+In the environment we place in a random way five different target devices. Every device is moved in three different random position in order to simulate the presence of 15 different devices.\\
+The used devices are:
 \begin{itemize}
 \item a Samsung S advance with Android ??? (CyanogenMOD)
 \item a LG-E450 with Android Kit Kat 4.4.2 (credo) (Ultra Slim ROM)
@@ -89,11 +120,11 @@ The used devices they are:
 \item an iPad with iOs 10
 \item a Samsung Tablet ???
 \end{itemize}
-As anchor we use 4 Raspberry Pis, with the NETGEAR dongle, in the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
+As anchors we used 4 Raspberry Pis, with the NETGEAR dongle, in the four corners of the room. In the second phase two more Raspberry Pis were added as in figure X. \\
 This configuration permits to cover all the zone of the room and to have different capturing angles.
 
 \subsubsection{Execution (o Implementation?)}
-Even during this experiment the Raspberry Pi stay in a fixed point and the five target devices where placed in three different positions every 10 minutes. \\
+During the experiment the Raspberry Pi stay in a fixed point and the five target devices where placed in three different positions every 10 minutes. \\
 At the end of the capturing phase the script deletes the corrupted data and generates a Wi-Fi dataset and a Bluetooth one.\\
 The datasets are composed of:
 \begin{itemize}
@@ -106,7 +137,7 @@ In this way was created a dataset with \textit{n} rows and 6 columns (in case of
 \linebreak
 After this process, we calculate the average of the RSSI of each device for each Raspberry Pi in the two datasets. As a result, we have two different datasets (Bluetooth and Wi-Fi) with 15 lines, one for each device. (In figure X is represented an example of Bluetooth dataset. There are 4 columns with the RSSI and one column with the MAC Address. In the first line there is the BOOOH1 device, its rasp1 RSSI is -666, rasp2 RSSI is -66 and so on. sistemare qua, mettere un immagine con i due dataset separati cosi si capisce un po' meglio.)
 
-\section{Algoritmi}
+\section{Algorithms}
 After the capturing phase and the manipulation of the datasets, we focused on the matching algorithms. Various approaches were tested, the best ones are:
 \begin{itemize}
 \item normalization;
@@ -118,12 +149,12 @@ After the capturing phase and the manipulation of the datasets, we focused on th
 In all of these algorithms our goal is pair a line of the Wi-Fi dataset with one of the Bluetooth dataset or vice versa. In fact, each line in the Wi-Fi dataset represents the Wi-Fi signal of a device and we want to find its equivalent in the Bluetooth dataset finding its most similar line.
 
 \paragraph{Euclidean Distance}
-In order to find the most similar line we use the euclidean distance. It is the straight-line distance between two, or more, points in euclidean space. In our case, we have 4 points, one for each Raspberry Pi. The euclidean distance in calculated as follows:\\
+In order to find the most similar line we use the euclidean distance. It is the straight-line distance between two, or more, points in euclidean space. In our case, we have 4 points, one for each Raspberry Pi. The euclidean distance is calculated as follows:\\
 \(d(w,b) = \sqrt{(w_1 - b_1)^2 + (w_2 - b_2)^2 +... + (w_i - b_i)^2 + ... + (w_n - b_n)^2}\)
 where \(w_i\) is the \(i^{th}\) Wi-Fi RSSI and \(b_i\) is  is the \(i^{th}\) Bluetooth RSSI, with \(i = 1, 2, ..., n\) and \(n = 4\) or \( n = 6 \) depending on the configuration.\\
 \(d(w,b)\) is close to 0 if the two lines are very similar and became greater if the lines are different.\\
 \linebreak
-Every time we use an algorithm, at the end of the process, we compare each Wi-Fi line with each Bluetooth line using the euclidean distance. It permits to create for each Wi-Fi address a list of Bluetooth addresses. The list is in increasing order based on the euclidean distance, the value more similar to zero is the first of the list, the greatest value is the last one. So, on top of list we have the Bluetooth MAC addresses that are more similar to the Wi-Fi MAC address. Presumably there will be his correspondent and then we can match them.
+Every time we use an algorithm, at the end of the process, we compare each Wi-Fi line with each Bluetooth line using the euclidean distance. It permits to create for each Wi-Fi address a list of Bluetooth addresses. That is an increasing order list based on the euclidean distance, the value closest to zero is the first of the list, the greatest value is the last one. So, on top of list there are the Bluetooth MAC addresses that are more similar to the Wi-Fi MAC address. Presumably there is his correspondent and then we can match them.
 
 \subsection{Normalization}
 The simplest algorithm we have implemented is the normalization of each line.\\
@@ -135,29 +166,83 @@ The normalization formula is:\\
 \( z_i = \frac{x_i-min(x)}{max(x)-min(x)} \)\\
 where \( x=(x_1,..., x_n)\) and \(z_i\) is the \(i^{th}\) normalized data.\\
 \linebreak
-After normalizing the data, we obtain two datasets of values between 0 and 1 representing the Wi-Fi RSSI and the Bluetooth RSSI in a common scale. Now is possible compare the data and match the device lines.
+After normalizing the data, we obtain two datasets of values between 0 and 1 representing the Wi-Fi RSSI and the Bluetooth RSSI in a common scale. Now it is possible compare the data and match the device lines.
+(immagine dataset normalizzato?)
 
 \subsection{RSSI conversion from Bluetooth to Wi-Fi}
-In section 5.X we talked about the linear relation between the Wi-Fi RSSI and the Bluetooth RSSI. This relation was used to convert the Bluetooth values in the Bluetooth dataset in Wi-Fi values. As mentioned above, every device has a different trend, so five different functions were used during the conversion.\\
-Thanks to that, we obtain two Wi-Fi datasets (the real one and the fake one). The last part of the algorithm is to compare each line of the datasets using the euclidean distance and pair the addresses.
+In section 5.X we talked about the linear relation between the Wi-Fi RSSI and the Bluetooth RSSI. This relation was used to convert the Bluetooth values of the Bluetooth dataset in Wi-Fi values. As mentioned above, every device has a different trend, so five different functions were used during the conversion.\\
+Thanks to that, we have obtained two Wi-Fi datasets (the real one and the fake one). The last part of the algorithm is to compare each line of the datasets using the euclidean distance and pair the addresses.
 
 \subsection{RSSI conversion from Bluetooth/Wi-Fi to distance}
-Starting from the dependence between RSSI (Bluetooth or Wi-Fi) and the distance we elaborate this algorithm. The idea is to convert the RSSI of the two datasets in distance and then, using the euclidean distance, matching the line that are more similar between them.\\
+Starting from the dependence between RSSI (Bluetooth or Wi-Fi) and the distance we elaborated this algorithm. The idea is to convert the RSSI of the two datasets in distance and then, using the euclidean distance, match the line that are more similar between them.\\
 \linebreak
-In order to convert the RSSI in distance we create a different curve for each device and for each technology used (Wi-Fi or Bluetooth). It is useful due to the differences of power among the devices.\\
+In order to convert the RSSI in distance is possible to use the following formula and use the inverse:\\
+\(RSSI = p_0 - 10 \alpha log{\frac{d}{d_0}}\)\\
+\begin{itemize}
+\item \(RSSI\): the RSSI value (path loss);
+\item \(p_0\): the received power from the node when the distance is \(d_0\) (RSSI in \(d_0\));
+\item \(d\): distance sender-receiver
+\item \(\alpha\): a path loss constant. It assumes values between 1 and 3, depending on the environment
+\end{itemize}
+The distance precision strongly depends on the values that are used in the previous formula. The right calculation of \(\alpha\) and \(p_0\) are fundamental in order to obtain an accurate distance value.\\
+\(\alpha\) is determined by the environment in which the devices are located and can be found using the inverse formula of the RSSI. \(p_0\), that is the power level measured at 1 meter, was determined in an empirical way during the previous tests.\\
+\linebreak
+As we can see, using the formula (X.Y) is quite complicated due to the estimation of the previous parameters. Furthermore, in our case the distance calculation was not so accurate as we could expect.\\
+\linebreak
+So, in order to convert the RSSI in distance the curves obtained in section 5.XX were used. We create a different curve for each device and for each technology used (Wi-Fi or Bluetooth). It is useful due to the differences of power among the devices.\\
 \linebreak
 Of course, the choice curve was the logarithmic one (we analyzed the behaviour in the previous sections).\\
 We also use a linear model to convert the RSSI to the distance and the results are not so different.
 
 \subsection{Trilateration}
-Trilateration is trigonometric approach for tracking mobile objects considering the concept of triangles. Since the device knows distance from a minimum of three known Raspberry Pi, triangulation is performed to determine its coordinates.\\
+Trilateration is trigonometric approach for tracking mobile objects considering the concept of triangles. Since the device knows distance from a minimum of three known Raspberry Pi, trilateration is performed to determine its coordinates. The position is obtained intersecting the circles created by the distance between devices and anchors; the point of intersection is the coordinate of the target device.\\
+\linebreak
+In our case, we have 4 or more anchors and not always the intersections are in a single point. In this case the problem of trilateration can be approached from an optimisation point of view. We want to find the point X=\(\left(\phi_x, \lambda_x\right)\) that provides us with the best approximation to the actual position P minimizing the error. For this purpose we use the Ordinary Least Squares (OLS) method: \(\frac{\sum { \left[d_i  -dist\left(X,L_i\right)\right] }^2 }{N}\)\\
+Where:
+\begin{itemize}
+\item \(d_i\) is the distance between the anchor and the target device;
+\item \(X\) is the coordinate of the device;
+\item \(L_i\) is the coordinate of the \(i^{th}\) anchor.
+\item \(N\) is the number of anchor.
+\end{itemize}
+The device coordinates are obtained minimizing the error.\\
+\linebreak
+(Forse da qua non si capisce un cazzo)\\
+The next step is apply the ordinary least square method to the Wi-Fi dataset and the Bluetooth dataset in order to find the coordinates of each device through Wi-Fi and the coordinates through Bluetooth.\\
+Finally we compare the two types of coordinates to check the more similar one and pair the MAC address.
 
+\subsection{Fingerprint}
+Fingerprint is one of the most popular method for indoor object tracking. Wi-Fi probe requests and Bluetooth signals located in a certain area create an unique \textit{fingerprint}  that is used for the localization.\\
+The fingerprinting based positioning systems are carried out in two phases: off-line and on-line.\\
+\linebreak
+First one is the off-line phase, during this phase the system is calibrated. The first step is divide the location in squared grids. The grid dimension choice is fundamental to obtain a good measurement of the fingerprint. It is useless to use a dense grid because it is hard to locate Wi-Fi and Bluetooth with the accuracy of centimeters; but it is also useless to use a sparse grid because no significant results would be obtained. \\
+In our test we choose to divide the room in fifty squares with a side of 0.9 meters and an area of 8.1 m\textsuperscript{2}.\\
+\linebreak
+The next step is the collection of the fingerprints and the calibration of each cell. The Raspeberry Pis were used in the previous configuration, four anchors in the angles and two anchors in the middle (as figure XXX). As fingerprint target device we used the LG, the Samsung S Advance and the Samsung S3 mini.\\
+The devices are placed in the middle of each cell in order to capture the Wi-Fi fingerprint and the Bluetooth fingerprint. At the end of the process, based on the device, the average of each cell of every Raspberry Pi is calculated. The vector (in table XY) obtained of the RSSI values at a cell is called the location fingerprint of that cell. All the vectors create a fingerprint Wi-Fi dataset and a Bluetooth one.  The datasets are 7 columns and 50 rows, one row for each cell.\\
+As we can see this operation is very time consuming. This is a great drawback of the fingerprint method.\\
+\linebreak
+The second part is called the on-line phase. During this phase the previously created datasets are used to determine the cell in which the device is.
 
-\section{Approci: top k best e falsi positivi/neg	}
-
+divisione in training e test
+scelta algoritmi
+percentuali di successo nel training
+. 
 
 \section{Results}
+
+intro sul fatto che abbiamo dei dati da rappresentare
+top k value spiegazione, top k (1, 3, 5) di ogni robo
+roc, spiegazione di cos'e' un tp, fp..
+
+\subsection{Top-k values}
 grafici tipo a barre con tutti gli algoritmi per i vari top.
+
+
+\subsection{miglioramento con 6 raspe}
+come migliora da 3 a 6
+
+
+\subsection{True Positive/False Positive rate}
 roc
 
-\section{miglioramento con 6 raspe}
