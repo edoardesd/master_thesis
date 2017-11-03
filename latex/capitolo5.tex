@@ -251,17 +251,24 @@ In figure X are shown how many corrects MAC addresses are inside the \(k\) value
 \includegraphics[scale = 0.8, keepaspectratio]{topk_4rasp}
 \caption{wifi rssi vs distance}
 \end{figure}
-As we can see from the figure, the top-5 behavior of the four algorithms is quite similar. The best is the conversion from Wi-Fi/Bluetooth to distance that have a result of 87%.
+The algorithm that performs better in term of top-5 values is the conversion from Wi-Fi and Bluetooth to distance. The correct value is 87\%, this means that the correct MAC Address is inside the nearest five devices 13 times up 15.\\
+As we can see from the figure, we split this algorithm in two cases: use the logarithmic trend to convert the RSSI in distance and use the linear trend. The results are quite similar, in fact also the linear model is a good approximation of the RSSI trend especially when the devices are distant.\\
+We can imagine that the conversion of the RSSI in distance performs well, because both Wi-Fi RSSI and Bluetooth RSSI are in a strong relation to the distance. Also, the conversion models are very accurate because we use a different trend for each device.
+\linebreak
+The conversion from RSSI to distance is very precise using the Top-5 approach, but it is only 40\% in top 1.\\
+A good algorithm for the top-1 method is the conversion from Bluetooth to Wi-Fi. This algorithm permits to pair correctly the 53\% of the devices. This result shows the strong relation between the Wi-Fi RSSI and the Bluetooth RSSI as we saw in figure x (quella con wifi vs bluetooth con gli rssi).\\
+\linebreak
+A good trade-off between accuracy and cost of the algorithm is the normalization. It does not need a phase of pre-computation of the trends like the conversion algorithms nor a minimization of the errors like the trilateration. This algorithm is very fast and cheap. We obtain satisfactory results: 33\% in top1, 67\% in top3 and 80\% in top 5, only 7 percentage points less than the best one algorithm.
 
-top k value spiegazione, top k (1, 3, 5) di ogni robo
+\subsubsection{miglioramento con 6 raspe}
+come migliora da 3 a 6 
+
+
 roc, spiegazione di cos'e' un tp, fp..
 
-\subsection{Top-k values}
-grafici tipo a barre con tutti gli algoritmi per i vari top.
 
 
-\subsection{miglioramento con 6 raspe}
-come migliora da 3 a 6
+
 
 
 \subsection{True Positive/False Positive rate}
