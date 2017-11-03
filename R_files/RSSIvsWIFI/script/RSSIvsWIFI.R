@@ -25,16 +25,15 @@ s3_distanze_tutte <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/s3_distanze_t
 tab_distanze_tutte <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/tab_distanze_tutte.csv")
 ipad_distanze <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/ipad_distanze.csv")
 s3_distanze <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/s3_distanze.csv")
-tab_distanze <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/tab_distanze.csv")
+tab_distanze <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/disti.csv",  col_types = cols(rssi = col_number(), rx = col_number()))
 movimentato_lg <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/movimentato_lg.csv")
 movimentato_lg_milli <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/movimentato_lg_milli.csv")
-sams_wifiVSbt <- read_excel("~/Documents/R_files/RSSIvsWIFI/data/sams_wifiVSbt.xlsx")
-lg_wifiVSbt <- read_excel("~/Documents/R_files/RSSIvsWIFI/data/lg_wifiVSbt.xlsx", col_types = c("text", "numeric", "numeric"))
+sams_wifiVSbt <- read_excel("~/Documents/R_files/RSSIvsWIFI/data/sams_wifiVSbt.xlsx", col_types = c("numeric"))
+lg_wifiVSbt <- read_excel("~/Documents/R_files/RSSIvsWIFI/data/lg_wifiVSbt.xlsx", col_types = c("numeric", "numeric", "numeric"))
 LG_WIFI_rssi_rx <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/LG_WIFI_rssi+rx.csv")
 SAMS_WIFI_rssi_rx <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/SAMS_WIFI_rssi+rx.csv")
 SAMS_1milli <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/SAMS_1milli.csv")
 LG_1milli <- read_csv("~/Documents/R_files/RSSIvsWIFI/data/LG_1milli.csv")
-
 
 
 colnames(LG_WIFI_rssi_rx)[4] <- "distance"
@@ -45,11 +44,11 @@ colnames(s3_distanze)[1] <- "rssi"
 colnames(s3_distanze)[2] <- "rx"
 colnames(ipad_distanze)[1] <- "rssi"
 colnames(ipad_distanze)[2] <- "rx"
-colnames(tab_distanze)[1] <- "rssi"
-colnames(tab_distanze)[2] <- "rx"
-tab_distanze = tab_distanze[-6,]
-tab_distanze = tab_distanze[-8,]
-ipad_distanze = ipad_distanze[-6,]
+#colnames(tab_distanze)[1] <- "rssi"
+#colnames(tab_distanze)[2] <- "rx"
+#tab_distanze = tab_distanze[-6,]
+#tab_distanze = tab_distanze[-8,]
+#ipad_distanze = ipad_distanze[-6,]
 
 ###### LG ######
 ggplot(data = LG_WIFI_rssi_rx,aes(x = distance,y = rx, group=distance, color=distance)) + stat_sum() + ggtitle("LG WIFI distance")
@@ -60,6 +59,24 @@ ggplot(data = LG_WIFI_rssi_rx,aes(x = rssi,y = rx, group=distance, color=distanc
 ggplot(data = LG_1milli,aes(x = rssi,y = rx, group=distance, color=distance)) + stat_sum() + ggtitle("LG precisione decimo secondi")
 plot(lg_wifiVSbt$wifi, lg_wifiVSbt$bluetooth)
 abline(lm(lg_wifiVSbt$bluetooth ~ lg_wifiVSbt$wifi))
+
+#da wifi a distanze 
+plot(lg_wifiVSbt$wifi, lg_wifiVSbt$distance)
+abline(lm(lg_wifiVSbt$distance ~ lg_wifiVSbt$wifi))
+
+lm(sams_wifiVSbt$distance ~ sams_wifiVSbt$wifi)
+lm(s3_distanze_tutte$distance ~ s3_distanze_tutte$rx)
+lm(tab_distanze_tutte$distance ~ tab_distanze_tutte$rx)
+lm(ipad_distanze_tutte$distance ~ ipad_distanze_tutte$rx)
+
+#da bt a distanze
+lm(lg_wifiVSbt$distance ~ lg_wifiVSbt$bluetooth)
+
+plot(sams_wifiVSbt$bluetooth ~ sams_wifiVSbt$distance)
+lm(s3_distanze_tutte$distance ~ s3_distanze_tutte$rssi)
+lm(tab_distanze_tutte$distance ~ tab_distanze_tutte$rssi)
+lm(ipad_distanze_tutte$distance ~ ipad_distanze_tutte$rssi)
+
 plot(sams_wifiVSbt$wifi, sams_wifiVSbt$bluetooth)
 lgdist.lm = lm(lg_wifiVSbt$wifi ~ lg_wifiVSbt$bluetooth)
 sams.lm = lm(sams_wifiVSbt$wifi ~ sams_wifiVSbt$bluetooth)
@@ -145,3 +162,44 @@ bplot_sam1_rssi
 mean(subset(LG_WIFI_rssi_rx$rx, LG_WIFI_rssi_rx$distance == "02"))
 
 c(mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "02")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "03")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "04")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "05")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "06")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "07")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "08")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "09")), mean(subset(SAMS_WIFI_rssi_rx$rssi, SAMS_WIFI_rssi_rx$distance == "10")))
+
+plot(movimentato_lg_milli)
+
+
+#disegnare i log di tutti i dispositivi
+#LOGARITMICO
+ggplot() + geom_point(data=s3_distanze, aes(x=abs(distance), y=abs(rssi)), color = 'blue') + stat_smooth(data=s3_distanze, aes(x=abs(distance), y=abs(rssi)),method="lm",formula=y~log(x), se=FALSE, color = 'blue', fullrange = TRUE) + 
+  geom_point(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), color = 'red') + stat_smooth(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), method="lm",formula=y~log(x), se=FALSE, color = 'red', fullrange = TRUE) + 
+  geom_point(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), color = 'green') + stat_smooth(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), method="lm",formula=y~log(x), se=FALSE, color = 'green', fullrange = FALSE) +
+  geom_point(data=tab_distanze, aes(x=abs(distance), y=abs(rssi)), color = 'yellow') + stat_smooth(data=tab_distanze, aes(x=abs(distance), y=abs(rssi)), method="lm",formula=y~log(x), se=FALSE, color = 'yellow', fullrange = TRUE) + 
+  geom_point(data=ipad_distanze, aes(x=abs(distance), y=abs(rssi)), color = 'black') + stat_smooth(data=ipad_distanze, aes(x=abs(distance), y=abs(rssi)), method="lm",formula=y~log(x), se=FALSE, color = 'black', fullrange = TRUE) #+ coord_cartesian(ylim = c(50, 90))
+
+  
+ggplot() + geom_point(data=s3_distanze, aes(x=abs(distance), y=abs(rx)), color = 'blue') + stat_smooth(data=s3_distanze, aes(x=abs(distance), y=abs(rx)),method="lm",formula=y~log(x), se=FALSE, color = 'blue', fullrange = TRUE) + 
+  geom_point(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), color = 'red') + stat_smooth(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), method="lm",formula=y~log(x), se=FALSE, color = 'red', fullrange = TRUE) + 
+  geom_point(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), color = 'green') + stat_smooth(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), method="lm",formula=y~log(x), se=FALSE, color = 'green', fullrange = FALSE) +
+  geom_point(data=tab_distanze, aes(x=abs(distance), y=abs(rx)), color = 'yellow') + stat_smooth(data=tab_distanze, aes(x=abs(distance), y=abs(rx)), method="lm",formula=y~log(x), se=FALSE, color = 'yellow', fullrange = TRUE) + 
+  geom_point(data=ipad_distanze, aes(x=abs(distance), y=abs(rx)), color = 'black') + stat_smooth(data=ipad_distanze, aes(x=abs(distance), y=abs(rx)), method="lm",formula=y~log(x), se=FALSE, color = 'black', fullrange = TRUE) #+ coord_cartesian(ylim = c(50, 90))
+
+
+
+### LINEARE
+ggplot() + geom_point(data=s3_distanze, aes(x=abs(distance), y=abs(rssi)), color = 'blue') + stat_smooth(data=s3_distanze, aes(x=abs(distance), y=abs(rssi)),method="lm", se=FALSE, color = 'blue', fullrange = TRUE) + 
+  geom_point(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), color = 'red') + stat_smooth(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), method="lm", se=FALSE, color = 'red', fullrange = TRUE) + 
+  geom_point(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), color = 'green') + stat_smooth(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(bluetooth)), method="lm", se=FALSE, color = 'green', fullrange = FALSE) +
+  geom_point(data=tab_distanze, aes(x=abs(distance), y=abs(rssi)), color = 'yellow') + stat_smooth(data=tab_distanze, aes(x=abs(distance), y=abs(rssi)), method="lm", se=FALSE, color = 'yellow', fullrange = TRUE) + 
+  geom_point(data=ipad_distanze, aes(x=abs(distance), y=abs(rssi)), color = 'black') + stat_smooth(data=ipad_distanze, aes(x=abs(distance), y=abs(rssi)), method="lm", se=FALSE, color = 'black', fullrange = TRUE) #+ coord_cartesian(ylim = c(50, 90))
+
+
+ggplot() + geom_point(data=s3_distanze, aes(x=abs(distance), y=abs(rx)), color = 'blue') + stat_smooth(data=s3_distanze, aes(x=abs(distance), y=abs(rx)),method="lm", se=FALSE, color = 'blue', fullrange = TRUE) + 
+  geom_point(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), color = 'red') + stat_smooth(data=sams_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), method="lm", se=FALSE, color = 'red', fullrange = TRUE) + 
+  geom_point(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), color = 'green') + stat_smooth(data=lg_wifiVSbt, aes(x=abs(distance), y=abs(wifi)), method="lm", se=FALSE, color = 'green', fullrange = FALSE) +
+  geom_point(data=tab_distanze, aes(x=abs(distance), y=abs(rx)), color = 'yellow') + stat_smooth(data=tab_distanze, aes(x=abs(distance), y=abs(rx)), method="lm", se=FALSE, color = 'yellow', fullrange = TRUE) + 
+  geom_point(data=ipad_distanze, aes(x=abs(distance), y=abs(rx)), color = 'black') + stat_smooth(data=ipad_distanze, aes(x=abs(distance), y=abs(rx)), method="lm", se=FALSE, color = 'black', fullrange = TRUE) #+ coord_cartesian(ylim = c(50, 90))
+
+
+ggplot(data=tab_di, aes(x=abs(rssi), y=abs(rx))) + geom_point(data=tab_di, aes(x=abs(rssi), y=abs(rx))) + geom_line(data=tab_di, aes(x=abs(rssi), y=abs(rx))) + stat_smooth(data=tab_di, aes(x=abs(rssi), y=abs(rx)), method="lm",formula=y~log(x), se=FALSE) + scale_x_continuous(limits = c(0, 15))
+g2 <- ggplot(data=sams_wifiVSbt, aes(x=abs(bluetooth), y=abs(wifi))) + geom_point() #+ geom_line() #+ stat_smooth(method="lm",formula=y~log(x), se=FALSE) + scale_x_continuous(limits = c(0, 15))
+g3 <- ggplot(data=lg_wifiVSbt, aes(x=abs(bluetooth), y=abs(wifi))) + geom_point() #+ geom_line() #+ stat_smooth(method="lm",formula=y~log(x), se=FALSE)+ scale_x_continuous(limits = c(0, 15))
+
+gtot <- g1+g2+g3

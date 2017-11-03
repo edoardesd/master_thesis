@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ContentFilters</key>
+	<dict/>
+	<key>auto_connect</key>
+	<true/>
+	<key>data</key>
+	<dict>
+		<key>connection</key>
+		<dict>
+			<key>colorIndex</key>
+			<integer>3</integer>
+			<key>database</key>
+			<string>new_lab</string>
+			<key>host</key>
+			<string>localhost</string>
+			<key>kcid</key>
+			<string>-458291362964406129</string>
+			<key>name</key>
+			<string>localhost_lab:DB</string>
+			<key>rdbms_type</key>
+			<string>mysql</string>
+			<key>sslCACertFileLocation</key>
+			<string></string>
+			<key>sslCACertFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslCertificateFileLocation</key>
+			<string></string>
+			<key>sslCertificateFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslKeyFileLocation</key>
+			<string></string>
+			<key>sslKeyFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>type</key>
+			<string>SPSocketConnection</string>
+			<key>useSSL</key>
+			<integer>0</integer>
+			<key>user</key>
+			<string>root</string>
+		</dict>
+		<key>session</key>
+		<dict>
+			<key>connectionEncoding</key>
+			<string>latin1</string>
+			<key>contentFilter</key>
+			<dict>
+				<key>filterComparison</key>
+				<string>contains</string>
+				<key>filterComparisonTag</key>
+				<integer>4</integer>
+				<key>filterField</key>
+				<string>mac_address</string>
+				<key>filterValue</key>
+				<string>30:5A:3A</string>
+				<key>firstBetweenField</key>
+				<string></string>
+				<key>menuLabel</key>
+				<string>`mac_address` LIKE '%30:5A:3A%'</string>
+				<key>secondBetweenField</key>
+				<string></string>
+			</dict>
+			<key>contentPageNumber</key>
+			<integer>1</integer>
+			<key>contentSelection</key>
+			<data>
+			YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFy
+			Y2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJX
+			TlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAF
+			gAdUdHlwZVRyb3dzXxAdU2VsZWN0aW9uRGV0YWlsVHlwZU5TSW5k
+			ZXhTZXTSFwsYGVxOU1JhbmdlQ291bnQQAIAG0hscHR5aJGNsYXNz
+			bmFtZVgkY2xhc3Nlc1pOU0luZGV4U2V0oh8gWk5TSW5kZXhTZXRY
+			TlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVk
+			QXJjaGl2ZXLRJidUZGF0YYABAAgAEQAaACMALQAyADcAQABGAE0A
+			VQBgAGcAagBsAG4AcQBzAHUAdwB8AIEAoQCmALMAtQC3ALwAxwDQ
+			ANsA3gDpAPIA9wEEAQcBGQEcASEAAAAAAAACAQAAAAAAAAAoAAAA
+			AAAAAAAAAAAAAAABIw==
+			</data>
+			<key>contentSortColIsAsc</key>
+			<true/>
+			<key>contentViewport</key>
+			<string>{{0, 0}, {720, 522}}</string>
+			<key>isToolbarVisible</key>
+			<true/>
+			<key>queries</key>
+			<string>SELECT DISTINCT mac_address 
+FROM dataset_lab_pos1
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos2
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos3
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos4
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos5
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos9
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos10
+UNION
+SELECT DISTINCT mac_address 
+FROM dataset_lab_pos11;
+
+SET @lg_wifi = 'C4:43:8F:B3:0A:F7';
+SET @s3_wifi = 'C8:14:79:31:3C:2A';
+SET @sams_wifi = 'D8:90:E8:29:AD:3F';
+SET @tab_wifi = '84:11:9E:FD:16:B3';
+SET @ipad_wifi = 'DC:A9:04:4F:D9:35';
+SET @huawei_wifi = 'F4:E3:FB:85:66:D8';
+
+SET @huawei_bt = 'F4:E3:FB:85:53:1D'; 
+SET @lg_bt = '88:C9:D0:1F:3E:48';
+SET @s3_bt = 'C8:14:79:31:3C:29';
+SET @sams_bt = 'D8:90:E8:29:AD:3E';
+SET @tab_bt = '84:11:9E:FD:16:B2';
+SET @ipad_bt = 'DC:A9:04:4F:D9:36';
+
+
+UPDATE new_lab3_wifi p 
+SET mac_address = 
+    CONCAT(mac_address , '_hua_n_p3')
+WHERE mac_address = @huawei_wifi;
+
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos1
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos2
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos3
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos4
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos5
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos9
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos10
+UNION
+SELECT rasp1, rasp2, rasp3, rasp4, rasp5, rasp6, mac_address FROM bluetooth_dataset_lab_pos11;
+
+
+INSERT INTO all_wifi
+SELECT * FROM dataset_lab_pos1
+UNION
+SELECT * FROM dataset_lab_pos2
+UNION
+SELECT * FROM dataset_lab_pos3
+UNION
+SELECT * FROM dataset_lab_pos4
+UNION
+SELECT * FROM dataset_lab_pos5
+UNION
+SELECT * FROM dataset_lab_pos9
+UNION
+SELECT * FROM dataset_lab_pos10
+UNION
+SELECT * FROM dataset_lab_pos11;
+
+
+SELECT r1.rssi AS "rasp1",r2.rssi AS "rasp2", r3.rssi AS "rasp3", r4.rssi AS "rasp4", r5.rssi AS "rasp5", r6.rssi AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address;
+
+SELECT AVG(r1.rssi) AS "rasp1", AVG(r2.rssi) AS "rasp2", AVG(r3.rssi) AS "rasp3", AVG(r4.rssi) AS "rasp4", AVG(r5.rssi) AS "rasp5", AVG(r6.rssi) AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address
+GROUP BY r2.mac_address;
+
+SELECT AVG(rx), rasp, mac_address 
+FROM new_lab8_wifi
+GROUP BY mac_address, rasp;
+
+SELECT AVG(rx), rasp, mac_address 
+FROM new_lab2_wifi
+GROUP BY mac_address, rasp;
+
+
+INSERT INTO rasp1_bt
+SELECT  mac_address, AVG(rssi)
+FROM lab_new5_bluetooth
+WHERE rasp = 1
+GROUP BY mac_address;
+
+INSERT INTO new_lab2_wifi_copy
+SELECT *
+FROM new_lab2_wifi;
+
+INSERT INTO new_lab5_wifi_copy
+SELECT DISTINCT mac_address, rasp, AVG(rx)
+FROM lab_new5_wifi
+GROUP BY mac_address,rasp
+HAVING COUNT(*) &gt; 10;
+
+INSERT INTO rasp6_wifi
+SELECT  mac_address, rx
+FROM new_lab4_wifi_copy
+WHERE rasp = 6;
+
+SELECT AVG(r1.rx) AS "rasp1", AVG(r2.rx) AS "rasp2", AVG(r3.rx) AS "rasp3", AVG(r4.rx) AS "rasp4", AVG(r5.rx) AS "rasp5", AVG(r6.rx) AS "rasp6", r1.mac_address
+FROM rasp1_wifi AS r1, rasp2_wifi AS r2, rasp3_wifi AS r3, rasp4_wifi AS r4, rasp5_wifi AS r5, rasp6_wifi AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address
+GROUP BY mac_address;
+
+SELECT *
+FROM lab_new5_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+			<key>table</key>
+			<string>new_lab9_wifi</string>
+			<key>view</key>
+			<string>SP_VIEW_CUSTOMQUERY</string>
+			<key>windowVerticalDividerPosition</key>
+			<real>240</real>
+		</dict>
+	</dict>
+	<key>encrypted</key>
+	<false/>
+	<key>format</key>
+	<string>connection</string>
+	<key>queryFavorites</key>
+	<array/>
+	<key>queryHistory</key>
+	<array>
+		<string>SELECT *
+FROM lab_new5_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM lab_new4_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab12_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab11_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab10_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab9_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab8_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab6_wifi
+WHERE mac_address LIKE '30:5A:3A%'</string>
+		<string>SELECT *
+FROM new_lab9_wifi
+WHERE mac_address CONTAINS '30:5A:3A'</string>
+		<string>SELECT *
+FROM new_lab9_wifi
+WHERE mac_address LIKE '30:5A:3A'</string>
+		<string>SELECT *
+FROM new_lab8_wifi
+WHERE mac_address LIKE '30:5A:3A'</string>
+		<string>SELECT *
+FROM new_lab7_wifi
+WHERE mac_address LIKE '30:5A:3A'</string>
+		<string>SELECT *
+FROM new_lab6_wifi
+WHERE mac_address LIKE '30:5A:3A'</string>
+		<string>SELECT r1.rssi AS "rasp1",r2.rssi AS "rasp2", r3.rssi AS "rasp3", r4.rssi AS "rasp4", r5.rssi AS "rasp5", r6.rssi AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address</string>
+		<string>SELECT AVG(r1.rssi) AS "rasp1", AVG(r2.rssi) AS "rasp2", AVG(r3.rssi) AS "rasp3", AVG(r4.rssi) AS "rasp4", AVG(r5.rssi) AS "rasp5", AVG(r6.rssi) AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address
+GROUP BY r2.mac_address</string>
+		<string>SELECT AVG(r1.rssi) AS "rasp1", AVG(r2.rssi) AS "rasp2", AVG(r3.rssi) AS "rasp3", AVG(r4.rssi) AS "rasp4", AVG(r5.rssi) AS "rasp5", AVG(r6.rssi) AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address
+GROUP BY r1.mac_address</string>
+		<string>SELECT AVG(r1.rssi) AS "rasp1", AVG(r2.rssi) AS "rasp2", AVG(r3.rssi) AS "rasp3", AVG(r4.rssi) AS "rasp4", AVG(r5.rssi) AS "rasp5", AVG(r6.rssi) AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address
+GROUP BY mac_address</string>
+		<string>SELECT AVG(r1.rssi) AS "rasp1", AVG(r2.rssi) AS "rasp2", AVG(r3.rssi) AS "rasp3", AVG(r4.rssi) AS "rasp4", AVG(r5.rssi) AS "rasp5", AVG(r6.rssi) AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address</string>
+		<string>SELECT r1.rssi AS "rasp1", r2.rssi AS "rasp2", r3.rssi AS "rasp3", r4.rssi AS "rasp4", r5.rssi AS "rasp5", r6.rssi AS "rasp6", r1.mac_address
+FROM rasp1_bt AS r1, rasp2_bt AS r2, rasp3_bt AS r3, rasp4_bt AS r4, rasp5_bt AS r5, rasp6_bt AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address</string>
+		<string>SELECT AVG(r1.rx) AS "rasp1", AVG(r2.rx) AS "rasp2", AVG(r3.rx) AS "rasp3", AVG(r4.rx) AS "rasp4", AVG(r5.rx) AS "rasp5", AVG(r6.rx) AS "rasp6", r1.mac_address
+FROM rasp1_wifi AS r1, rasp2_wifi AS r2, rasp3_wifi AS r3, rasp4_wifi AS r4, rasp5_wifi AS r5, rasp6_wifi AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r5.mac_address = r6.mac_address
+GROUP BY mac_address</string>
+	</array>
+	<key>rdbms_type</key>
+	<string>mysql</string>
+	<key>rdbms_version</key>
+	<string>5.7.18</string>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>

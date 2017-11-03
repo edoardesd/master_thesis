@@ -1,0 +1,16 @@
+algorithm,top,percentage
+norm_line,1,33
+norm_line,3,67
+norm_line,5,80
+conv,1,53
+conv,3,67
+conv,5,80
+dist_lin,1,33
+dist_lin,3,73
+dist_lin,5,87
+dist_log,1,40
+dist_log,3,73
+dist_log,5,87
+tri,1,47
+tri,3,60
+tri,5,80

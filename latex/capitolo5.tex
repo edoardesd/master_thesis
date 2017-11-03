@@ -21,21 +21,21 @@ In this section, are first described the experimental test-bed and the devices u
 - dichiarazioni su che esperimenti sono stati fatti\\
 \section{Preliminary experiments}
 In this experiment we have captured the Wi-Fi probes (containing the Wi-Fi RSSI) and the Bluetooth signals (RSSI, TPL, LQ, echo round trip time).\\
-The goals are understand the correlation between distance and the signals originating from the target devices and also understand the relation between Wi-Fi and Bluetooth. In fact, our main scope is not find the absolute position of a device, but comprehend if the Bluetooth signals and the Wi-Fi ones have origin from the same device. 
+The goals are understand the correlation between distance and the signals originating from the target devices and also understand the relation between Wi-Fi and Bluetooth. In fact, our main scope is not find the absolute position of a device, but comprehend if the Bluetooth and the Wi-Fi signals have origin from the same device. 
 \subsubsection{The environment}
 The preliminary experiments were held in an home environment with a dimension of 9.50 meters x 4.50 meters and an area of 42.75 m\textsuperscript{2}.
 During the first phase of the experiment, the home environment was chosen because it was important to have an isolated environment and no other devices that could cause noise. In addition, it was also crucial to have a direct path between the studied devices.\\
 \subsubsection{The devices}
 The target devices used in during this experiment were a LG-E450 with Android Kit Kat 4.4.2 (credo) (Ultra Slim custom ROM) and an Ipad ?? with iOs 10. \\
 \linebreak
-A Raspberry Pi 3 was used to capture Wi-Fi probes and Bluetooth signals. The Wi-Fi module was a NETGEAR W150 and the Bluetooth module was the internal one. The presence of the Raspberry Pi's case doesn't influence the strength of the signals.
+A Raspberry Pi 3 was used to capture Wi-Fi probes and Bluetooth signals. The Wi-Fi module was a NETGEAR W150 and the Bluetooth module was the internal one. The presence of the Raspberry Pi's case does not influence the strength of the signals.
 \subsubsection{Execution (o Implementation?)}
 The Raspberry Pi were placed in a fixed point, while the target devices were moved in different distances every 10 minutes. The path between the Raspberry Pi and the devices has a straight line without any obstacle in the middle.\\
 In the end, our script made the average of all the values to obtain a single value for each position.
 \subsection{Results}
 As explained before, we want to understand if the collected parameters are in relation with the distance and if they are in relation among each others. It is also important comprehend how we can infer the distance from an RSSI value and study the other variables in order to understand if they are useful in our case.
 \subsubsection{Bluetooth}
-The Bluetooth signals analyzed during this experiment are the connection based RSSI, the TPL (Transmit Power Level), the LQ (Link Quality), the echo response time (obtained from ping) and the RX power level (obtained from inquiry with RSSI).\\
+The Bluetooth signals analyzed during this experiment are the connection based RSSI, the TPL (Transmit Power Level), the LQ (Link Quality), the echo round trip time (obtained from ping) and the RX power level (obtained from inquiry with RSSI).\\
 From figure X, the following observations can be made:
 \begin{figure}[htbp]
 \centering
@@ -111,7 +111,7 @@ In the figure X is shown the planimetry of the room. It is divided in 50 squares
 An essential alternative is the scenario choice. There are two possibilities: anchor based or anchor free. In the anchor based scenario only the anchor nodes (in our case the Raspberry Pis) knows the position. The other nodes (in our case the devices) derive the position through the anchor. This coordinate system is absolute. In the anchor free scenario no node knows his position. A relative coordinate system is obtained.\\
 Our choice was the anchor based scenario, because only the Raspberry Pis are able to catch the probes and manipulate the data. In fact, the target devices are passive.
 \subsubsection{The devices}
-In the environment we place in a random way five different target devices. Every device is moved in three different random position in order to simulate the presence of 15 different devices.\\
+In the environment we place in a random way five different target devices. Every device is moved in three different random positions in order to simulate the presence of 15 different devices.\\
 The used devices are:
 \begin{itemize}
 \item a Samsung S advance with Android ??? (CyanogenMOD)
@@ -195,7 +195,7 @@ Of course, the choice curve was the logarithmic one (we analyzed the behaviour i
 We also use a linear model to convert the RSSI to the distance and the results are not so different.
 
 \subsection{Trilateration}
-Trilateration is trigonometric approach for tracking mobile objects considering the concept of triangles. Since the device knows distance from a minimum of three known Raspberry Pi, trilateration is performed to determine its coordinates. The position is obtained intersecting the circles created by the distance between devices and anchors; the point of intersection is the coordinate of the target device.\\
+Trilateration is trigonometric approach for tracking mobile objects considering the concept of circles. Since the device knows distance from a minimum of three known Raspberry Pi, trilateration is performed to determine its coordinates. The position is obtained intersecting the circles created by the distance between devices and anchors; the point of intersection is the coordinate of the target device.\\
 \linebreak
 In our case, we have 4 or more anchors and not always the intersections are in a single point. In this case the problem of trilateration can be approached from an optimisation point of view. We want to find the point X=\(\left(\phi_x, \lambda_x\right)\) that provides us with the best approximation to the actual position P minimizing the error. For this purpose we use the Ordinary Least Squares (OLS) method: \(\frac{\sum { \left[d_i  -dist\left(X,L_i\right)\right] }^2 }{N}\)\\
 Where:
@@ -203,7 +203,7 @@ Where:
 \item \(d_i\) is the distance between the anchor and the target device;
 \item \(X\) is the coordinate of the device;
 \item \(L_i\) is the coordinate of the \(i^{th}\) anchor.
-\item \(N\) is the number of anchor.
+\item \(N\) is the number of anchors.
 \end{itemize}
 The device coordinates are obtained minimizing the error.\\
 \linebreak
@@ -216,7 +216,7 @@ Fingerprint is one of the most popular method for indoor object tracking. Wi-Fi 
 The fingerprinting based positioning systems are carried out in two phases: off-line and on-line.\\
 \linebreak
 First one is the off-line phase, during this phase the system is calibrated. The first step is divide the location in squared grids. The grid dimension choice is fundamental to obtain a good measurement of the fingerprint. It is useless to use a dense grid because it is hard to locate Wi-Fi and Bluetooth with the accuracy of centimeters; but it is also useless to use a sparse grid because no significant results would be obtained. \\
-In our test we choose to divide the room in fifty squares with a side of 0.9 meters and an area of 8.1 m\textsuperscript{2}.\\
+In our test we choose to divide the room in fifty squares with a side of 0.9 meters and an area of 0.81 m\textsuperscript{2}.\\
 \linebreak
 The next step is the collection of the fingerprints and the calibration of each cell. The Raspeberry Pis were used in the previous configuration, four anchors in the angles and two anchors in the middle (as figure XXX). As fingerprint target device we used the LG, the Samsung S Advance and the Samsung S3 mini.\\
 The devices are placed in the middle of each cell in order to capture the Wi-Fi fingerprint and the Bluetooth fingerprint. At the end of the process, based on the device, the average of each cell of every Raspberry Pi is calculated. The vector (in table XY) obtained of the RSSI values at a cell is called the location fingerprint of that cell. All the vectors create a fingerprint Wi-Fi dataset and a Bluetooth one.  The datasets are 7 columns and 50 rows, one row for each cell.\\
@@ -227,11 +227,32 @@ The second part is called the on-line phase. During this phase the previously cr
 divisione in training e test
 scelta algoritmi
 percentuali di successo nel training
-. 
 
 \section{Results}
+The problem is the match between a Wi-Fi MAC address and a Bluetooth one. In particular find which Wi-Fi vector is more similar to a Bluetooth vector and vice versa. For this purpose we use the euclidean distance. For each Wi-Fi MAC address we create a ordered list of Bluetooth MAC addresses from the most similar to the most different.\\
+This method has allowed us to use a top-k value approach.
 
-intro sul fatto che abbiamo dei dati da rappresentare
+\subsection{Top-k value}
+For each target MAC address the ordered list of possible MAC addresses is 15 lines long. \\
+Top-k approach means that we select the first \(k\) MAC addresses of the ordered list and decide that the correct MAC address is inside that \(k\) values. We don't know exactly what is the correct MAC address, but we have reduced the possible MAC address.\\
+\linebreak 
+We identify three breakpoints (the k values):
+\begin{itemize}
+\item Top 1
+\item Top 3
+\item Top 5
+\end{itemize}
+A particular case of top-k is when \(k = 1\). This means that we pick the most similar value and decide that value is the correct MAC address.
+In top 3 and top 5 we choose the first 3 or 5 MAC addresses as possible MAC address.\\
+\linebreak
+In figure X are shown how many corrects MAC addresses are inside the \(k\) values. These percentage values are in a 4 Raspberry Pis scenario.
+\begin{figure}[H]
+\centering
+\includegraphics[scale = 0.8, keepaspectratio]{topk_4rasp}
+\caption{wifi rssi vs distance}
+\end{figure}
+As we can see from the figure, the top-5 behavior of the four algorithms is quite similar. The best is the conversion from Wi-Fi/Bluetooth to distance that have a result of 87%.
+
 top k value spiegazione, top k (1, 3, 5) di ogni robo
 roc, spiegazione di cos'e' un tp, fp..
 

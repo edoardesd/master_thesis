@@ -34,8 +34,8 @@ def parse_data(wifi_data, bluetooth_data):
 
 	return wifi_set, bluetooth_set_new
 
-wifi_set, bluetooth_set = parse_data("dataset/wifi", "dataset/bluetooth")
-wifi_set, distance_set = parse_data("dataset/wifi", "dataset/distanze_vere")
+wifi_set, bluetooth_set = parse_data("../dataset/wifi", "../dataset/bluetooth")
+wifi_set, distance_set = parse_data("../dataset/wifi", "../dataset/distanze_vere")
 
 
 def rssi_formula(alpha, rssi, p0):	

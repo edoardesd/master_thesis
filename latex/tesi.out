@@ -1,0 +1,15 @@
+\BOOKMARK [0][-]{chapter.1}{Experiments}{}% 1
+\BOOKMARK [1][-]{section.1.1}{Preliminary experiments}{chapter.1}% 2
+\BOOKMARK [2][-]{subsection.1.1.1}{Results}{section.1.1}% 3
+\BOOKMARK [2][-]{subsection.1.1.2}{Parametri per l'esperimento sala}{section.1.1}% 4
+\BOOKMARK [1][-]{section.1.2}{Esperimento sala}{chapter.1}% 5
+\BOOKMARK [1][-]{section.1.3}{Algorithms}{chapter.1}% 6
+\BOOKMARK [2][-]{subsection.1.3.1}{Normalization}{section.1.3}% 7
+\BOOKMARK [2][-]{subsection.1.3.2}{RSSI conversion from Bluetooth to Wi-Fi}{section.1.3}% 8
+\BOOKMARK [2][-]{subsection.1.3.3}{RSSI conversion from Bluetooth/Wi-Fi to distance}{section.1.3}% 9
+\BOOKMARK [2][-]{subsection.1.3.4}{Trilateration}{section.1.3}% 10
+\BOOKMARK [2][-]{subsection.1.3.5}{Fingerprint}{section.1.3}% 11
+\BOOKMARK [1][-]{section.1.4}{Results}{chapter.1}% 12
+\BOOKMARK [2][-]{subsection.1.4.1}{Top-k values}{section.1.4}% 13
+\BOOKMARK [2][-]{subsection.1.4.2}{miglioramento con 6 raspe}{section.1.4}% 14
+\BOOKMARK [2][-]{subsection.1.4.3}{True Positive/False Positive rate}{section.1.4}% 15

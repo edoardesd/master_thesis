@@ -194,7 +194,7 @@ ten_row_bt2 = sample.df(subset(df.sam_bt, location == "10.4"), 10)
 ten_row_bt = rbind(ten_row_bt, ten_row_bt2)
 ten_row_bt2 = sample.df(subset(df.sam_bt, location == "10.5"), 10)
 ten_row_bt = rbind(ten_row_bt, ten_row_bt2)
-View(ten_row_bt)
+#View(ten_row_bt)
 table(ten_row_bt$location)
 
 set.seed(1234)
@@ -309,7 +309,7 @@ ten_row_wifi2 = sample.df(subset(df.sam_wifi, location == "10.4"), 10)
 ten_row_wifi = rbind(ten_row_wifi, ten_row_wifi2)
 ten_row_wifi2 = sample.df(subset(df.sam_wifi, location == "10.5"), 10)
 ten_row_wifi = rbind(ten_row_wifi, ten_row_wifi2)
-View(ten_row_wifi)
+#View(ten_row_wifi)
 table(ten_row_wifi$location)
 
 
@@ -416,4 +416,3 @@ write.csv(wifi_avg, file = "fingerprint_wifi_avg.txt",row.names=FALSE)
 write.csv(bt_avg, file = "fingerprint_bt_avg.txt",row.names=FALSE)
 
 
-s3_bt_avg[,1]

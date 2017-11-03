@@ -226,7 +226,7 @@ def check_roc(data, dataset_full):
 				true_neg +=1
 
 
-	#print "Veri pos: ",true_pos, "    Falsi pos:",false_pos, "    Sotto soglia:", sotto_soglia, "Veri neg:",true_neg, "Falsi neg:", false_neg
+	print "Veri pos: ",true_pos, "    Falsi pos:",false_pos, "    Sotto soglia:", sotto_soglia, "Veri neg:",true_neg, "Falsi neg:", false_neg
 	result_roc = [true_pos, false_pos, true_neg, false_neg]
 	return result_roc
 
@@ -672,11 +672,13 @@ def dataset_normalizza(dataset):
 	dict2 = copy.deepcopy(dataset)
 	for key in dataset:
 		for i in range(0, len(dataset[key])):
-			print key, dataset[key][i]
+			#print key, dataset[key][i]
 			dict2[key][i] =list(dict2[key][i])
 			dataset[key][i] = list(dataset[key][i])
 			dict2[key][i][1] = "%.4f" % float((dataset[key][i][1]-min_l)/diff)
 			dict2[key][i] = tuple(dict2[key][i])
+
+	print max_l, min_l
 	return dict2
 #dataset import
 wifi_set_norm, bluetooth_set_norm = parse_data("../dataset/wifi_norm", "../dataset/bluetooth_norm")
@@ -714,6 +716,7 @@ wifi_to_bt_linear = convert_wifi_bt(wifi_set)
 
 euclidean_distance_conversion_linear = compute_euclidean_distance(wifi_to_bt_linear, bluetooth_set)
 cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear, bluetooth_set)
+
 
 #print_results_long(euclidean_distance_conversion_linear, False)
 
@@ -783,9 +786,13 @@ euclidean_distance_norm_line = compute_euclidean_distance(wifi_norm_line_56, blu
 cos_result_line = compute_cos_sim(wifi_norm_line_56, bluetooth_norm_line_56)
 
 line_norm_56 = print_results_long(euclidean_distance_norm_line, False)
+check_roc(create_threshold_set(line_norm_56, 0.25),line_norm_56)
 
-create_data_roc(line_norm_56,"df.line_norm_56")
 
+
+#create_data_roc(line_norm_56,"df.line_norm_56")
+norm_norm = dataset_normalizza(line_norm_56)
+create_data_roc(norm_norm,"df.norm_norm")
 #pp.pprint(threshold_test(0, 1.5, 0.1, line_norm_56))
 
 
@@ -811,11 +818,12 @@ cosine_similarity_conversion_linear = compute_cos_sim(wifi_to_bt_linear_56, blue
 conversione_56 = print_results_long(euclidean_distance_conversion_linear, False)
 #pp.pprint(conversione_56)
 #pp.pprint(threshold_test(0, 30, 2, conversione_56))
-create_data_roc(conversione_56,"df.conversione_56")
+#create_data_roc(conversione_56,"df.conversione_56")
 
 
+conversione_norm = dataset_normalizza(conversione_56)
+create_data_roc(conversione_norm,"df.conversione_norm")
 
-dataset_normalizza(conversione_56)
 
 ###### TRASFORMAZIONE METRI ######
 wifi_distance_56, bluetooth_distance_56 = convert_to_distance(wifi_set_56, bluetooth_set_56)
@@ -823,8 +831,9 @@ euclidean_with_dist = compute_euclidean_distance(wifi_distance_56, bluetooth_dis
 cosine_with_dist = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
 
 metri_lineare_56 = print_results_long(euclidean_with_dist, False)
-create_data_roc(metri_lineare_56,"df.metri_lineare_56")
-
+#create_data_roc(metri_lineare_56,"df.metri_lineare_56")
+metri_lineare_norm = dataset_normalizza(metri_lineare_56)
+create_data_roc(metri_lineare_norm,"df.metri_lineare_norm")
 
 
 
@@ -858,7 +867,10 @@ euclidean_with_dist_56 = compute_euclidean_distance(wifi_distance_56, bluetooth_
 cosine_with_dist_56 = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
 
 metri_log_56 = print_results_long(euclidean_with_dist_56, False)
-create_data_roc(metri_log_56,"df.metri_log_56")
+#create_data_roc(metri_log_56,"df.metri_log_56")
+metri_log_norm = dataset_normalizza(metri_log_56)
+create_data_roc(metri_log_norm,"df.metri_log_norm")
+
 
 ####### TRILATERATION #######
 wifi_coord = []
