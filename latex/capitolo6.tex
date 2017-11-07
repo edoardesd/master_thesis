@@ -1,18 +1,48 @@
-\chapter{Realizzazioni sperimentali e valutazione}
+\chapter{Real World Experiment}
 \label{capitolo6}
 \thispagestyle{empty}
 
-\begin{quotation}
-{\footnotesize
-\noindent\emph{``Bambino: Questo � l'ultimo avviso per voi e i vostri rubagalline \\
-Il pistolero si alza: Che avete detto? \\
-Bambino: RUBAGALLINE \\
-Il pistolero si risiede: Aaah.''}
-\begin{flushright}
-Lo chiamavano Trinit\`a \dots
-\end{flushright}
-}
-\end{quotation}
-\vspace{0.5cm}
+In the previous chapter was presented a test performed in a isolated environment with known devices. That type of experiment was important to understand the behavior of the devices and to test our algorithms.\\
+\linebreak
+To proof if the home results are valid in a real scenario we decide to replicate the previous experiments. We chose an university lab in which we do not know how many devices are present and we also do not know a priori the Wi-Fi MAC addresses and the Bluetooth MAC addresses of the devices.\\
+\linebreak
+We decided not to make preliminary tests. The relations between distance and RSSI and between Wi-Fi RSSI and Bluetooth RSSI have been calculated using a spy device placed in a known point. We chose this approach because we want to simulate a real scenario in which is not possible to perform preliminary tests.\\
+Another difference with the home experiment was choosing not to use the fingerprint algorithm. It is costly and time consuming. In an unknown scenario the fingerprint is difficult to replicate, due to time and cost consumption.\\
+\linebreak
+There is also a difference in term of datasets dimension. People use much more Wi-Fi than Bluetooth. Often the Bluetooth is keep off or it is invisible, instead Wi-Fi is almost always turned on. Hence, the number of unique Wi-Fi MAC addresses will be greater than the number of unique Bluetooth MAC addresses.
 
-\noindent Si mostra il progetto dal punto di vista sperimentale, le cose materialmente realizzate. In questa sezione si mostrano le attivit\`a sperimentali svolte, si illustra il funzionamento del sistema (a grandi linee) e si spiegano i risultati ottenuti con la loro valutazione critica. Bisogna introdurre dati sulla complessit\`a degli algoritmi e valutare l'efficienza del sistema.
+\section{The environment}
+The environment of this experiment is the AntLab, an university laboratory of 10 meters x 8 meters and an area of about 80 square meters. To cover all the area of the laboratory six Raspberry Pis are placed (figure XX). There are desks, computers, chairs in the laboratory and during the experiment there were about 10 people. This configuration causes a different path loss than the previous experiment.
+\section{The devices}
+Before doing the experiment, we did not know how many devices would have been in the environment nor the position.\\
+All the devices are unknown except two. We used the previous LG and Samsung S smartphones and we placed them in a known position. This was done to perform a sort of real time mapping of the environment. 
+
+\section{Execution (o Implementation?)}
+As mentioned above, we do not know the number of devices in the laboratory.\\
+\texttt{hcitool scan} allowed us to discover the visible Bluetooth devices. We found eleven different Bluetooth MAC addresses that are present during all the experiment time.\\
+Our script has been run for ten minutes. We suppose that during this period the devices are in a static position.\\
+\linebreak
+An high number of Wi-Fi probe requests have been captured. The tool deleted all the corrupted probes. We have also decided to delete all addresses that have less than 10 probe requests. We suppose that these probes come from people outside the laboratory or from passers.\\
+We obtain 35 different Wi-Fi MAC addresses and we made the average of each different address creating a dataset of 35 lines and 7 rows (six RSSI rows and a MAC address row).\\
+As regard Bluetooth we generate a dataset of eleven lines and 7 rows.\\
+\linebreak
+The next phase is the matching one. As before the used algorithms were:
+\begin{itemize}
+\item normalization;
+\item conversion from Bluetooth to Wi-Fi;
+\item conversion from Bluetooth/Wi-Fi to distance using the linear model;
+\item conversion from Bluetooth/Wi-Fi to distance using the logarithmic model;
+\item fingerprint.
+\end{itemize}
+The way in which the algorithm were used has been the same like the home experiment, explained in chapter 5.XX. As mentioned above, the only unused algorithm has been the fingerprint due to its time consuming.\\
+
+\section{Results}
+The goal of the experiment is the same of the home experiment: pair two MAC addresses, one coming from Wi-Fi and the other one coming from Bluetooth.\\
+\linebreak
+The are several differences respect to the first experiment. The more evident difference is that we do not know a priori which is the correct MAC address couple, in fact almost all devices are not directly in our control. It permits us understand if our algorithm are valid in a not controlled environment.\\
+There is a difference of path loss due to the different presence of desks and computer. Also the devices models are dissimilar. These last two difference made our trend and curve impossible to use to convert the RSSI in distance and the convert the two type of RSSI each other. In fact the curve presented in section 5.XXX are device and environment specific.
+
+
+come hanno performato gli algoritmi
+top k
+roc
