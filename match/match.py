@@ -115,6 +115,16 @@ def mse(x, locations, distances):
 	
 	return result
 
+
+def create_coord_dict(coord_list):
+	coord_dict = {}
+	for coord in coord_list:
+		x = coord[1].split(',')[0]
+		y = coord[1].split(',')[1]
+		coord_dict[coord[0]] = (x,y)
+
+	return coord_dict
+
 def euclidean_distance(x1, y1, x2, y2):
 	#print x1, y1, x2, y2
 	sum_square = (x2-x1)**2 + (y2-y1)**2
@@ -226,7 +236,7 @@ def check_roc(data, dataset_full):
 				true_neg +=1
 
 
-	print "Veri pos: ",true_pos, "    Falsi pos:",false_pos, "    Sotto soglia:", sotto_soglia, "Veri neg:",true_neg, "Falsi neg:", false_neg
+	#print "Veri pos: ",true_pos, "    Falsi pos:",false_pos, "    Sotto soglia:", sotto_soglia, "Veri neg:",true_neg, "Falsi neg:", false_neg
 	result_roc = [true_pos, false_pos, true_neg, false_neg]
 	return result_roc
 
@@ -623,7 +633,7 @@ def fingerprint_result(wifi_finger, bt_finger, diff_device):
 	best_3_bt = print_results_short(bt_cells, False, False)
 
 	best_3_wifi = convert_cells(best_3_wifi, labels)
-	best_w_bt = convert_cells(best_3_bt, labels)
+	best_3_bt = convert_cells(best_3_bt, labels)
 
 
 	return best_3_wifi, best_3_bt
@@ -678,8 +688,91 @@ def dataset_normalizza(dataset):
 			dict2[key][i][1] = "%.4f" % float((dataset[key][i][1]-min_l)/diff)
 			dict2[key][i] = tuple(dict2[key][i])
 
-	print max_l, min_l
+	#print max_l, min_l
 	return dict2
+
+
+#FINGERPRINT TOTTAALE
+def find_coord(cell):
+	for coord in coord_fingerprint:
+		if coord == cell:
+			#print coord_fingerprint[cell]
+			return coord_fingerprint[cell]
+
+def convert_coord(k_dict):
+	dict_coord = {}
+	for dev in k_dict.items():
+		k_item_list = []
+		for k_item in dev[1]:
+		
+		#k_item[0] = find_coord(k_item[0])
+			k_item = list(k_item)
+			k_item.append(find_coord(k_item[0]))
+			k_item = tuple(k_item)
+			k_item_list.append(k_item)
+		
+	
+		dict_coord[dev[0]] = k_item_list
+
+	return dict_coord
+
+def add_weight(k_dict):
+	dict_coord = {}
+	weight_list = {}
+	for dev in k_dict.items():
+		k_item_list = []
+		sum_weight = 0
+		for k_item in dev[1]:
+		
+		#k_item[0] = find_coord(k_item[0])
+			k_item = list(k_item)
+			weight = "%.8f" %float(1/math.pow(k_item[1],2))
+			k_item.append(weight)
+			k_item = tuple(k_item)
+			k_item_list.append(k_item)
+			sum_weight = sum_weight + float(weight)
+
+		weight_list[dev[0]]=sum_weight
+		dict_coord[dev[0]] = k_item_list
+
+	return dict_coord, weight_list
+
+def normalize_weight(k_dict, weight_list):
+	dict_coord = {}
+	i = 0
+	for key,value in k_dict.iteritems():
+	
+		dev = value
+		k_item_list = []
+		for k_item in dev:
+			print k_item
+		#k_item[0] = find_coord(k_item[0])
+			k_item = list(k_item)
+			weight = k_item[3]
+			norm_we = "%.4f" % float(float(weight)/float(weight_list[key]))
+			k_item.append(norm_we)
+			k_item = tuple(k_item)
+			k_item_list.append(k_item)
+
+		dict_coord[key] = k_item_list
+		i = i+1
+
+	return dict_coord
+
+def calculate_coord(k_dict):
+	final_dict = {}
+	for key,value in k_dict.iteritems():
+		true_coord = (0,0)
+		for line in value:
+			weight = line[-1]
+			true_coord = list(true_coord)
+			true_coord[0] = "%.4f" %float(float(true_coord[0]) + float(line[2][0])*float(weight))
+			true_coord[1] = "%.4f" %float(float(true_coord[1]) + float(line[2][1])*float(weight))
+
+		final_dict[key] = true_coord
+
+	return final_dict
+
 #dataset import
 wifi_set_norm, bluetooth_set_norm = parse_data("../dataset/wifi_norm", "../dataset/bluetooth_norm")
 wifi_set_norm_line, bluetooth_set_norm_line = parse_data("../dataset/wifi_norm_line", "../dataset/bluetooth_norm_line")
@@ -688,6 +781,8 @@ wifi_avg_all, bluetooth_avg_all = parse_data("../dataset/fingerprint/sams_avg_al
 true_dist, bluetooth_ratio = parse_data("../dataset/distanze_vere", "../dataset/bluetooth_ratio")
 wifi_set, bluetooth_ratio2 = parse_data("../dataset/wifi", "../dataset/bluetooth_ratio2")
 wifi_set, bluetooth_ratio3 = parse_data("../dataset/wifi", "../dataset/bluetooth_ratio3")
+
+
 
 
 ###### COMPUTE ALPHA ######
@@ -867,6 +962,7 @@ euclidean_with_dist_56 = compute_euclidean_distance(wifi_distance_56, bluetooth_
 cosine_with_dist_56 = compute_cos_sim(wifi_distance_56, bluetooth_distance_56)
 
 metri_log_56 = print_results_long(euclidean_with_dist_56, False)
+create_data_roc(metri_log_56, "df.nonorm_log")
 #create_data_roc(metri_log_56,"df.metri_log_56")
 metri_log_norm = dataset_normalizza(metri_log_56)
 create_data_roc(metri_log_norm,"df.metri_log_norm")
@@ -904,10 +1000,58 @@ for line in bluetooth_distance_56:
 
 euc_coord = compute_euclidean_distance(wifi_coord, bt_coord)
 cosine_coord = compute_cos_sim(wifi_coord, bt_coord)
-#print_results_long(cosine_coord, True)
+tri_56 = print_results_long(cosine_coord, False)
+trin_norm = dataset_normalizza(tri_56)
+
+create_data_roc(trin_norm,"df.tri_56")
 
 
 
+########## NEW FINGEPRINT
+sh_s3_wifi_4, coord_fingerprint = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/coord_fingerprint")
+sh_s3_wifi_4, sh_s3_bt_4 = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/sh_s3_bt_4")
+sh_sams_wifi_4, sh_sams_bt_4 = parse_data("../dataset/fingerprint/new/sh_sams_wifi_4", "../dataset/fingerprint/new/sh_sams_bt_4")
+
+sh_wifi, sh_bt = fingerprint_result(sh_sams_wifi_4, sh_sams_bt_4, False)
 
 
+def print_best_k(distance_dict, k, print_res):
+	#rev = True -> descending order
+	#rev = False -> ascending order
+	best_k = {}
+	
+	for dev in distance_dict:
+		#print "\nDevice",dev,": "
+		#print distance_dict[dev][:k]
+		
+		best_k[dev] = distance_dict[dev][:k]
+			#pp.pprint(sorted(distance_dict[i].items(), key=itemgetter(1), reverse=False)[:-47])
+		#best_3[i] =  sorted(distance_dict[i].items(), key=itemgetter(1), reverse=False)[:-47]
+
+	return best_k
+
+
+#best_k_5_bt_sams = print_best_k(sh_bt, 5, True)
+
+
+
+coord_fingerprint=create_coord_dict(coord_fingerprint)
+
+#pp.pprint(coord_fingerprint)
+def fingerprint_total(dataset, k):
+	new_data = print_best_k(dataset, k, True)
+	new_data = convert_coord(new_data)
+	new_data, weight_data = add_weight(new_data)
+	new_data = normalize_weight(new_data, weight_data)
+
+	return calculate_coord(new_data)
+
+
+
+#best_k_5_bt_sams = convert_coord(best_k_5_bt_sams)
+#best_k_5_bt_sams, sams_k5_weight_list = add_weight(best_k_5_bt_sams)
+#best_k_5_bt_sams = normalize_weight(best_k_5_bt_sams, sams_k5_weight_list)
+
+
+pp.pprint(fingerprint_total(sh_bt, 5))
 
