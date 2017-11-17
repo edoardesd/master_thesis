@@ -190,6 +190,26 @@ def parse_data(wifi_data, bluetooth_data):
 
 	return wifi_set, bluetooth_set_new
 
+def parse_csv(wifi_data, bluetooth_data):
+	wifi_set = []
+	bluetooth_set = []
+	wifi_dat = np.genfromtxt(wifi_data+".csv", delimiter='\n', dtype=None)
+	bluetooth_dat = np.genfromtxt(bluetooth_data+".csv", delimiter='\n', dtype=None)
+
+
+	for line in wifi_dat:
+		wifi_set.append(line.split(','))
+
+	for line in bluetooth_dat:
+		bluetooth_set.append(line.split(','))
+
+	bluetooth_set_new = []
+	for line in bluetooth_set:
+		line = filter(None, line) 
+		bluetooth_set_new.append(line)
+
+	return wifi_set[1:], bluetooth_set_new[1:]
+
 def print_results_long(distance_dict, rev):
 	#rev = True -> descending order
 	#rev = False -> ascending order
@@ -507,6 +527,7 @@ def calculate_dist_finger(real_data, fingerprint_data):
 			
 		i += 1
 
+	
 	return euclidean_dist
 
 #wifi true = wifi, wifi false = bt
@@ -745,7 +766,7 @@ def normalize_weight(k_dict, weight_list):
 		dev = value
 		k_item_list = []
 		for k_item in dev:
-			print k_item
+			#print k_item
 		#k_item[0] = find_coord(k_item[0])
 			k_item = list(k_item)
 			weight = k_item[3]
@@ -997,7 +1018,6 @@ for line in bluetooth_distance_56:
 	location = result.x
 	bt_coord.append(location)
 
-
 euc_coord = compute_euclidean_distance(wifi_coord, bt_coord)
 cosine_coord = compute_cos_sim(wifi_coord, bt_coord)
 tri_56 = print_results_long(cosine_coord, False)
@@ -1009,10 +1029,16 @@ create_data_roc(trin_norm,"df.tri_56")
 
 ########## NEW FINGEPRINT
 sh_s3_wifi_4, coord_fingerprint = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/coord_fingerprint")
-sh_s3_wifi_4, sh_s3_bt_4 = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/sh_s3_bt_4")
-sh_sams_wifi_4, sh_sams_bt_4 = parse_data("../dataset/fingerprint/new/sh_sams_wifi_4", "../dataset/fingerprint/new/sh_sams_bt_4")
 
-sh_wifi, sh_bt = fingerprint_result(sh_sams_wifi_4, sh_sams_bt_4, False)
+s3_wifi_fingerprint, s3_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/sh_s3_bt_4")
+sams_wifi_fingerprint, sams_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_sams_wifi_4", "../dataset/fingerprint/new/sh_sams_bt_4")
+lg_wifi_fingerprint, lg_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_lg_wifi_4", "../dataset/fingerprint/new/sh_lg_bt_4")
+avg_wifi_fingerprint, avg_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_avg_wifi_4", "../dataset/fingerprint/new/sh_avg_bt_4")
+
+sh_s3_wifi_all, sh_s3_bt_all = parse_data("../dataset/fingerprint/new/sh_s3_wifi_all", "../dataset/fingerprint/new/sh_s3_bt_all")
+sh_sams_wifi_all, sh_sams_bt_all = parse_data("../dataset/fingerprint/new/sh_sams_wifi_all", "../dataset/fingerprint/new/sh_sams_bt_all")
+sh_lg_wifi_all, sh_lg_bt_all = parse_data("../dataset/fingerprint/new/sh_lg_wifi_all", "../dataset/fingerprint/new/sh_lg_bt_all")
+sh_avg_wifi_all, sh_avg_bt_all = parse_data("../dataset/fingerprint/new/sh_avg_wifi_all", "../dataset/fingerprint/new/sh_avg_bt_all")
 
 
 def print_best_k(distance_dict, k, print_res):
@@ -1031,13 +1057,8 @@ def print_best_k(distance_dict, k, print_res):
 	return best_k
 
 
-#best_k_5_bt_sams = print_best_k(sh_bt, 5, True)
 
 
-
-coord_fingerprint=create_coord_dict(coord_fingerprint)
-
-#pp.pprint(coord_fingerprint)
 def fingerprint_total(dataset, k):
 	new_data = print_best_k(dataset, k, True)
 	new_data = convert_coord(new_data)
@@ -1046,12 +1067,48 @@ def fingerprint_total(dataset, k):
 
 	return calculate_coord(new_data)
 
+def compute_fingerprint_euclidean_distance(wifi_finger, bt_finger):
+	euclidean_distance = {}
+	for key_wifi,value_wifi in wifi_finger.iteritems():
+		sum_dist = 0
+		array_distance = {}
+
+		for key_bt,value_bt in bt_finger.iteritems():
+		
+			for i in range(0,2):
+				sum_dist = sum_dist + math.pow(float(value_wifi[i]) - float(value_bt[i]),2)
+		
+			eucli_dist = "%8f" % math.sqrt(sum_dist)
+			sum_dist = 0
+			array_distance[key_bt] = eucli_dist
+		euclidean_distance[key_wifi] = array_distance
+
+	return euclidean_distance
+#best_k_5_bt_sams = print_best_k(sh_bt, 5, True)
+coord_fingerprint=create_coord_dict(coord_fingerprint)
+
+
+f_avg_wifi_4, f_avg_bt_4 = fingerprint_result(avg_wifi_fingerprint, avg_bt_fingerprint, True)
+
+#pp.pprint(coord_fingerprint)
+
 
 
 #best_k_5_bt_sams = convert_coord(best_k_5_bt_sams)
 #best_k_5_bt_sams, sams_k5_weight_list = add_weight(best_k_5_bt_sams)
 #best_k_5_bt_sams = normalize_weight(best_k_5_bt_sams, sams_k5_weight_list)
 
+K = 7
+bt_fingerprint_avg_4 = fingerprint_total(f_avg_bt_4, K)
+wifi_fingerprint_avg_4 = fingerprint_total(f_avg_wifi_4, K)
+#pp.pprint(bt_fingerprint_sams)
 
-pp.pprint(fingerprint_total(sh_bt, 5))
+#pp.pprint(wifi_fingerprint_sams)
+#sams_fingerprint = compute_euclidean_distance(bt_fingerprint_sams, wifi_fingerprint_sams)
+
+
+
+pp.pprint(print_results_long(compute_fingerprint_euclidean_distance(wifi_fingerprint_avg_4, bt_fingerprint_avg_4), False))
+#pp.pprint(print_results_long(sams_fingerprint, False))
+
 
