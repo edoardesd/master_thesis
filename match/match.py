@@ -890,6 +890,7 @@ print "------------------------------------------"
 ###############   RASP 5 e RASP 6   #############
 
 wifi_set_56, bluetooth_set_56 = parse_data("../dataset/df_completo_wifi", "../dataset/df_completo_bt")
+#wifi_set, bluetooth_set = parse_data("../dataset/df_completo_wifi", "../dataset/df_completo_bt")
 wifi_norm_line_56, bluetooth_norm_line_56 = parse_data("../dataset/df_completo_norm_line_wifi", "../dataset/df_completo_norm_line_bt")
 wifi_norm_56, bluetooth_norm_56 = parse_data("../dataset/df_completo_norm_wifi", "../dataset/df_completo_norm_bt")
 
@@ -1028,6 +1029,10 @@ create_data_roc(trin_norm,"df.tri_56")
 
 
 ########## NEW FINGEPRINT
+#da 4 o da 6 se commento (6 se libero la riga sotto)
+wifi_set, bluetooth_set = parse_data("../dataset/df_completo_wifi", "../dataset/df_completo_bt")
+
+
 sh_s3_wifi_4, coord_fingerprint = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/coord_fingerprint")
 
 s3_wifi_fingerprint, s3_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_s3_wifi_4", "../dataset/fingerprint/new/sh_s3_bt_4")
@@ -1035,10 +1040,10 @@ sams_wifi_fingerprint, sams_bt_fingerprint = parse_data("../dataset/fingerprint/
 lg_wifi_fingerprint, lg_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_lg_wifi_4", "../dataset/fingerprint/new/sh_lg_bt_4")
 avg_wifi_fingerprint, avg_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_avg_wifi_4", "../dataset/fingerprint/new/sh_avg_bt_4")
 
-sh_s3_wifi_all, sh_s3_bt_all = parse_data("../dataset/fingerprint/new/sh_s3_wifi_all", "../dataset/fingerprint/new/sh_s3_bt_all")
-sh_sams_wifi_all, sh_sams_bt_all = parse_data("../dataset/fingerprint/new/sh_sams_wifi_all", "../dataset/fingerprint/new/sh_sams_bt_all")
-sh_lg_wifi_all, sh_lg_bt_all = parse_data("../dataset/fingerprint/new/sh_lg_wifi_all", "../dataset/fingerprint/new/sh_lg_bt_all")
-sh_avg_wifi_all, sh_avg_bt_all = parse_data("../dataset/fingerprint/new/sh_avg_wifi_all", "../dataset/fingerprint/new/sh_avg_bt_all")
+s3_wifi_fingerprint, s3_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_s3_wifi_all", "../dataset/fingerprint/new/sh_s3_bt_all")
+sams_wifi_fingerprint, sams_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_sams_wifi_all", "../dataset/fingerprint/new/sh_sams_bt_all")
+lg_wifi_fingerprint, lg_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_lg_wifi_all", "../dataset/fingerprint/new/sh_lg_bt_all")
+avg_wifi_fingerprint, avg_bt_fingerprint = parse_data("../dataset/fingerprint/new/sh_avg_wifi_all", "../dataset/fingerprint/new/sh_avg_bt_all")
 
 
 def print_best_k(distance_dict, k, print_res):
@@ -1055,8 +1060,6 @@ def print_best_k(distance_dict, k, print_res):
 		#best_3[i] =  sorted(distance_dict[i].items(), key=itemgetter(1), reverse=False)[:-47]
 
 	return best_k
-
-
 
 
 def fingerprint_total(dataset, k):
@@ -1088,7 +1091,7 @@ def compute_fingerprint_euclidean_distance(wifi_finger, bt_finger):
 coord_fingerprint=create_coord_dict(coord_fingerprint)
 
 
-f_avg_wifi_4, f_avg_bt_4 = fingerprint_result(avg_wifi_fingerprint, avg_bt_fingerprint, True)
+f_avg_wifi_4, f_avg_bt_4 = fingerprint_result(avg_wifi_fingerprint, avg_bt_fingerprint, False)
 
 #pp.pprint(coord_fingerprint)
 
@@ -1098,7 +1101,7 @@ f_avg_wifi_4, f_avg_bt_4 = fingerprint_result(avg_wifi_fingerprint, avg_bt_finge
 #best_k_5_bt_sams, sams_k5_weight_list = add_weight(best_k_5_bt_sams)
 #best_k_5_bt_sams = normalize_weight(best_k_5_bt_sams, sams_k5_weight_list)
 
-K = 7
+K = 1
 bt_fingerprint_avg_4 = fingerprint_total(f_avg_bt_4, K)
 wifi_fingerprint_avg_4 = fingerprint_total(f_avg_wifi_4, K)
 #pp.pprint(bt_fingerprint_sams)
@@ -1108,7 +1111,8 @@ wifi_fingerprint_avg_4 = fingerprint_total(f_avg_wifi_4, K)
 
 
 
-pp.pprint(print_results_long(compute_fingerprint_euclidean_distance(wifi_fingerprint_avg_4, bt_fingerprint_avg_4), False))
+finger_fina = print_results_long(compute_fingerprint_euclidean_distance(wifi_fingerprint_avg_4, bt_fingerprint_avg_4), False)
 #pp.pprint(print_results_long(sams_fingerprint, False))
 
+#create_data_roc(finger_fina,"df.finger_avg_k1")
 
