@@ -56,7 +56,7 @@ class BluetoothProcessor:
 		global ping
 		if ping:
 			if "Ping" in line:
-				print "Start pinging process!"
+				#print "Start pinging process!"
 				return self.client_list, True
 
 			#killare bene le cose
@@ -98,7 +98,7 @@ class BluetoothProcessor:
 			global counter
 			counter += 1
 			if (counter % 17 == 0):
-				print "Ping in progress!"
+				print "Ping is running..."
 
 			v = re.split(r'\s{1,}', line)
 			

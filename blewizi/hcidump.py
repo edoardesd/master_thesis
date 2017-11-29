@@ -76,7 +76,7 @@ class HcidumpProcessor:
 
 		counter +=1
 		if (counter%197 == 0):
-			print "HCIDUMP is running!"
+			print "HCIDUMP is running..."
 
 		if not line:
 			return self.client_list, False		
@@ -148,7 +148,7 @@ class HcidumpProcessor:
 
 						self.client_list[last_mac]["name"] = client_name
 
-						new_bt_device = "Find a new Bluetooth device at time "+self.client_list[last_mac]["first seen"]+". Mac address: "+last_mac+" , device name: "+ self.client_list[last_mac]["name"]
+						new_bt_device = "NEW Wi-Fi dev. MAC address: "+last_mac+", dev name: "+ self.client_list[last_mac]["name"]+", timestamp: "+self.client_list[last_mac]["first seen"]+", RSSI: "+rx_power
 						print new_bt_device
 
 						if rasp_mode:

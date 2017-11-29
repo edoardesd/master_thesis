@@ -67,7 +67,7 @@ class AirodumpProcessor:
 
 		counter +=1
 		if (counter%400028 == 0):
-			print "WIFI is running!"
+			print "WIFI is running..."
 
 		#per guardare output di airodump a schermo
 		#if line:
@@ -120,7 +120,7 @@ class AirodumpProcessor:
 				self.client_list[CLIENT]["first seen"] = now
 				self.client_list[CLIENT]["last seen"] = now
 				#self.client_list[CLIENT]["probes"] = ""
-				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
+				new_client_str = "NEW Wi-Fi dev. MAC address: "+CLIENT+", timestamp: "+self.client_list[CLIENT]["first seen"]+", RSSI: "+rx_power
 				print new_client_str
 				
 				if rasp_mode:
