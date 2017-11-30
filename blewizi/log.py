@@ -392,8 +392,9 @@ if __name__ == "__main__":
 
 
 	#thread_bd.start()
-	thread_wifi.start()	
 	thread_hc.start()
+	thread_wifi.start()	
+	
 	
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
