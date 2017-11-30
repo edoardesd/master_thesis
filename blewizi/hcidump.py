@@ -65,7 +65,7 @@ class HcidumpProcessor:
 
 		#recupero la stringa che sta scrivendo airodump
 		line = self.bt.stdout.readline()
-
+		print line
 		#setto il tempo attuale
 		now = datetime.now().strftime("%H:%M:%S")
 		#now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
@@ -75,10 +75,11 @@ class HcidumpProcessor:
 			#elf.logger.write("L:"+line.encode('ascii', errors='ignore'))
 
 		counter +=1
-		if (counter%197 == 0):
+		if (counter%487 == 0):
 			print "HCIDUMP is running..."
 
 		if not line:
+			print self.client_list
 			return self.client_list, False		
 
 		try:
@@ -156,7 +157,7 @@ class HcidumpProcessor:
 
 			if in_BLE:
 				print "BLE", line
-
+			print self.client_list
 			return self.client_list, True
 	
 		except:
