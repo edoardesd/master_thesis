@@ -149,9 +149,11 @@ class HcidumpProcessor:
 
 						self.client_list[last_mac]["name"] = client_name
 
-						new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: "+ client_name +", timestamp: "+self.client_list[last_mac]["first seen"]+", RSSI: "+rx_power
-						print new_bt_device
-
+						#new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: "+ client_name +", timestamp: "+self.client_list[last_mac]["first seen"]+", RSSI: "+rx_power
+						#print new_bt_device
+						print "ciao"
+						
+						
 						if rasp_mode:
 							mosquitto_pub(new_bt_device)
 
