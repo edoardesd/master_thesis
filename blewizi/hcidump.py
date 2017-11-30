@@ -132,7 +132,7 @@ class HcidumpProcessor:
 						#self.client_list[CLIENT]["device class"] = mac_line[-3][2:]
 						
 
-					else:
+					#else:
 						#lenght_key = self.client_list[CLIENT]["times seen"]
 						#lenght_key += 1
 
