@@ -148,7 +148,7 @@ class HcidumpProcessor:
 
 						self.client_list[last_mac]["name"] = client_name
 
-						new_bt_device = "NEW Wi-Fi dev. MAC address: "+last_mac+", dev name: "+ self.client_list[last_mac]["name"]+", timestamp: "+self.client_list[last_mac]["first seen"]+", RSSI: "+rx_power
+						new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: "+ client_name +", timestamp: "+self.client_list[last_mac]["first seen"]+", RSSI: "+rx_power
 						print new_bt_device
 
 						if rasp_mode:
