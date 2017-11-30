@@ -121,37 +121,37 @@ class HcidumpProcessor:
 
 					#prima volta che scopro il nuovo client
 					if not self.client_list.has_key(CLIENT):
-						self.client_list[CLIENT] = {}
+						#self.client_list[CLIENT] = {}
 
 						probe_key = 1
-						self.client_list[CLIENT]["times seen"] = 1
-						self.client_list[CLIENT]["probe info"] = {probe_key: {"RX": rx_power, "TS": now}}
-						self.client_list[CLIENT]["first seen"] = now
-						self.client_list[CLIENT]["last seen"] = now
-						self.client_list[CLIENT]["name"] = "not discovered yet!"
-						self.client_list[CLIENT]["device class"] = mac_line[-3][2:]
+						#self.client_list[CLIENT]["times seen"] = 1
+						#self.client_list[CLIENT]["probe info"] = {probe_key: {"RX": rx_power, "TS": now}}
+						#self.client_list[CLIENT]["first seen"] = now
+						#self.client_list[CLIENT]["last seen"] = now
+						#self.client_list[CLIENT]["name"] = "not discovered yet!"
+						#self.client_list[CLIENT]["device class"] = mac_line[-3][2:]
 						
 
 					else:
-						lenght_key = self.client_list[CLIENT]["times seen"]
-						lenght_key += 1
+						#lenght_key = self.client_list[CLIENT]["times seen"]
+						#lenght_key += 1
 
-						self.client_list[CLIENT]["probe info"][lenght_key] = {"RX": rx_power,"TS": now}
-						self.client_list[CLIENT]["times seen"] += 1
-						self.client_list[CLIENT]["last seen"] = now
+						#self.client_list[CLIENT]["probe info"][lenght_key] = {"RX": rx_power,"TS": now}
+						#self.client_list[CLIENT]["times seen"] += 1
+						#self.client_list[CLIENT]["last seen"] = now
 
 				#se sono alla seconda riga della inquiry
 				if v.startswith("Complete local name"):
 					#se non ho ancora settato il nome del dispositivo
-					if self.client_list[last_mac]["name"] == "not discovered yet!":
+					#if self.client_list[last_mac]["name"] == "not discovered yet!":
 						v = v[:-2]
 						client_name = v[22:]
 
-						self.client_list[last_mac]["name"] = client_name
+					#	self.client_list[last_mac]["name"] = client_name
 
 						new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: "+ client_name +", timestamp: "+now+", RSSI: "+rx_power
 						print new_bt_device
-						print "ciao"
+						#print "ciao"
 						
 						
 						if rasp_mode:
