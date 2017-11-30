@@ -24,7 +24,7 @@ class AirodumpProcessor:
 		mon_interface = "wlan1mon"
 		pwd = subprocess.check_output(['pwd']).rstrip() + "/"
 		dev = subprocess.check_output(['cat', pwd+'config/raspi-number.txt'])[:1]
-                print dev
+                #print dev
                 if dev == '6':
                         print "hi guys, jari here"
                         mon_interface = "wlan1"
