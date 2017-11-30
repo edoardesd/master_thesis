@@ -65,7 +65,7 @@ class HcidumpProcessor:
 
 		#recupero la stringa che sta scrivendo airodump
 		line = self.bt.stdout.readline()
-		print line
+		#print line
 		#setto il tempo attuale
 		now = datetime.now().strftime("%H:%M:%S")
 		#now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
@@ -79,7 +79,7 @@ class HcidumpProcessor:
 			print "HCIDUMP is running..."
 
 		if not line:
-			print self.client_list
+			#print self.client_list
 			return self.client_list, False		
 
 		try:
@@ -149,8 +149,8 @@ class HcidumpProcessor:
 
 						self.client_list[last_mac]["name"] = client_name
 
-						#new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: "+ client_name +", timestamp: "+self.client_list[last_mac]["first seen"]+", RSSI: "+rx_power
-						#print new_bt_device
+						new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: "+ client_name +", timestamp: "+now+", RSSI: "+rx_power
+						print new_bt_device
 						print "ciao"
 						
 						
@@ -159,7 +159,7 @@ class HcidumpProcessor:
 
 			if in_BLE:
 				print "BLE", line
-			print self.client_list
+			#print self.client_list
 			return self.client_list, True
 	
 		except:
