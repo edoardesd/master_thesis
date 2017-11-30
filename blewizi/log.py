@@ -387,11 +387,11 @@ if __name__ == "__main__":
 
 	thread_wifi = myThread(1, "wifi")
 	thread_hc = myThread(2, "bluetooth")
-	thread_bd = myThread(3, "ping/rssi")
+	#thread_bd = myThread(3, "ping/rssi")
 
 
 
-	thread_bd.start()
+	#thread_bd.start()
 	thread_wifi.start()	
 	thread_hc.start()
 	
@@ -400,5 +400,5 @@ if __name__ == "__main__":
 
 	ad.stop()
 	bt.stop()
-	bd.stop()
+	#bd.stop()
 	signal_handler()
