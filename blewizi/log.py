@@ -374,7 +374,7 @@ if __name__ == "__main__":
 
 	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d%m%y", localtime())
-	starting_string = "\nstarts at " +starting_time+ "  of " +starting_day
+	starting_string = " starts at " +starting_time+ "  of " +starting_day
 
 	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
 	print "BLEWIZI dump V 3.0", starting_string
