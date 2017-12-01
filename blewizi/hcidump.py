@@ -154,7 +154,7 @@ class HcidumpProcessor:
 
 						self.client_list[last_mac]["name"] = client_name
 
-						new_bt_device = "NEW Bluetooth dev. MAC address: "+last_mac+", dev name: " +client_name+", timestamp: "+now+", RSSI: "+last_rssi
+						new_bt_device = "Bluetooth dev. MAC address: "+last_mac+", dev name: " +client_name+", timestamp: "+now+", RSSI: "+last_rssi
 						print new_bt_device
 						
 						
