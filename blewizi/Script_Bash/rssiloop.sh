@@ -11,7 +11,7 @@ while true; do
 	OUT="$(sudo hcitool rssi $MAC)"
 	RSSI_val=${OUT#$remove}
 	sum_rssi=$((sum_rssi+RSSI_val))
-	echo $((100*sum_rssi/x)) | sed 's/..$/.&/'
-	echo "rssi: $RSSI_val  ----- avg rssi: $avg "
+	avg=$((sum_rssi/x))
+	echo "rssi: $RSSI_val  ----- avg rssi: $avg"
 done
 
