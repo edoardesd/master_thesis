@@ -15,7 +15,7 @@ getwd()
 
 #INIZIO IMPORT
 #install.packages('e1071', dependencies=TRUE)
-install.packages('caret', dependencies = TRUE)
+#install.packages('caret', dependencies = TRUE)
 require(class)
 library(readr)
 require(ggplot2)

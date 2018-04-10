@@ -12,7 +12,7 @@ with open(file) as fp:
 			elif line[-6] == " ":
 				time_ms = line [-6:]
 			else:
-				time_ms = line [-7:]
+				time_ms = line [-7:]   
 
 			
-			print time_ms
+			print time_ms, ""

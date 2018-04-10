@@ -24,7 +24,7 @@ class AirodumpProcessor:
 		mon_interface = "wlan1mon"
 		pwd = subprocess.check_output(['pwd']).rstrip() + "/"
 		dev = subprocess.check_output(['cat', pwd+'config/raspi-number.txt'])[:1]
-                print dev
+                #print dev
                 if dev == '6':
                         print "hi guys, jari here"
                         mon_interface = "wlan1"
@@ -35,7 +35,7 @@ class AirodumpProcessor:
 
 
 		#per scrivere su file: '-w', 'lab', '--output-format', 'csv', '--channel', '10'
-		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '--channel', '6'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+		self.fd = subprocess.Popen(['airodump-ng', mon_interface, '--channel', '11'], bufsize=1, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
 		#self.logger = sys.stdout #open("/logs/dump.log", "a")
 
 		return self.fd
@@ -67,7 +67,7 @@ class AirodumpProcessor:
 
 		counter +=1
 		if (counter%400028 == 0):
-			print "WIFI is running!"
+			print "WIFI is running..."
 
 		#per guardare output di airodump a schermo
 		#if line:
@@ -120,7 +120,7 @@ class AirodumpProcessor:
 				self.client_list[CLIENT]["first seen"] = now
 				self.client_list[CLIENT]["last seen"] = now
 				#self.client_list[CLIENT]["probes"] = ""
-				new_client_str = "I've found a new client with mac address "+CLIENT+" at time "+self.client_list[CLIENT]["first seen"]
+				new_client_str = "Wi-Fi dev. MAC address: "+CLIENT+", timestamp: "+self.client_list[CLIENT]["first seen"]+", RSSI: "+rx_power
 				print new_client_str
 				
 				if rasp_mode:

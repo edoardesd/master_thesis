@@ -1,0 +1,180 @@
+\chapter{Technical Overview}
+\thispagestyle{empty}
+
+The use of smartphones, tablets, laptops and other smart devices has become fundamental in everyday life. Data traffic grows rapidly and in every moment people exchange photos, video, document and data of any kind. The two technologies most involved in this process are \textit{Wi-Fi} and \textit{Bluetooth}.\\
+The main purpose of Wi-Fi is provides Internet access to devices that are within the range of a wireless network that is connected to the Internet.\\
+Bluetooth deals with communications between a mobile phone and other systems like handsfree headset, car stereo system, wireless speakers, keyboard or mouse. It also permits data transfer and internet tethering.\\
+\linebreak
+Each modern device has integrated Wi-Fi and Bluetooth chipsets that send signals over the air. These communications can be easily intercept showing a unique \textbf{Media Access Control Address} (\textit{MAC Address}). In particular a couple of MAC address for each device, one for Wi-Fi network and one for Bluetooth. \\
+That is a privacy issue; in fact the MAC address identify uniquely a device, so it can be used to associate a smartphone to a person.\\
+\linebreak
+The goal of this thesis is understand how Wi-Fi and Bluetooth signals are related and, in particular, how Wi-Fi and Bluetooth MAC addresses can be coupled each other. In fact, as we will explain below, a Bluetooth and a Wi-Fi MAC address coming from the same device cannot be immediately related each other because the two addresses are different.\\
+\linebreak
+The possibility to pair two different MAC addresses opens to different implications.\\
+It can create a more accurate indoor localization system, in fact the use of two technologies can increase the precision of the position.\\
+In addition, it is a malicious attackers weapon. The malicious hacker can commit attacks on both two interfaces creating denial of services (DOS) or exploit other vulnerabilities.\\
+The pair process can also operate a sort a de-randomization (replace the address with a fake one) process of the Wi-Fi MAC address. If we know that the random Wi-Fi MAC is related to a true Bluetooth MAC we can infer the real Wi-Fi address.
+
+\section{Wi-Fi}
+Wi-Fi is a technology for wireless local area networking with devices based on the \textit{IEEE 802.11} standards. In the US and in Europe, Wi-Fi operates at 2.4 GHz (\textit{802.11b/g}) over 11 channels, three of which are not overlapping (1, 6, 11). In figure X is shown how the channels are arranged: they may only be separated by 5MHz but the spread spectrum uses 25MHz centred on each channel. The use of different non-overlapping channels permits to reduce the collision between Wi-Fi packets. (figura con i canali)\\
+\linebreak
+Recently Wi-Fi supports also 5 GHz (\textit{802.11n}) with 21 channels with higher capacity, but a shorter range compared to 2.4 GHz. Modern device can switch between 2.4 GHz and 5 GHz, using a technique called \textit{band steering}, depending on traffic demand.\\
+\linebreak
+When a smartphone or a laptop want to connect to connect to the internet through Wi-Fi needs to connect to an \textit{Access Point} (AP).\\
+So, every device with Wi-Fi interface turned on, regularly broadcast some Wi-Fi probe requests in order to advertise their presence and actively discover Wi-Fi access points  in proximity. This mechanism is called active scan and permits devices to have a list of nearby access points. \\
+IEEE 802.11 define another mechanism to discover Wi-Fi AP: a passive mechanism, in which APs periodically advertise their presence to mobile devices using beacons.
+\subsection{Passive Scanning}
+When a device performs passive scanning, it starts to listen over the 11 Wi-Fi channels hopping periodically from one to another and passively detect nearby APs. When a beacon is captured, the mobile device responds with a Wi-Fi association frame.\\
+The beacons contain network configuration parameters, such as the Service Set Identifier (SSID), the type of encryption and the supported data rates.\\
+The beacon interval is not a fixed number: most APs set an interval every 100ms, but it depends on the hardware specification.\\
+The main disadvantage of the passive scanning is listening on all the eleven channels. This operation is time consuming and do not ensure all the beacon are captured.
+\subsection{Active Scanning}
+During the active scanning, the mobile device stimulates its nearby access points sending probe requests. The probe packet includes the device unique identifier, the device supported standards, the probe sequence number (SN) and other fields. The probe can be directed to all the APs (broadcast) or to a specific access point by indicating its SSID. \\
+Active scanning is particularly helpful in scenarios where a mobile device roams across APs. It's also faster and less energy consuming than passive scanning because less packets are lost.\\
+Also, active scanning is the only method to connect to an hidden network indicating the access point SSID.
+\subsection{Probe Request Structure}
+Figure number X represent the packet structure of a probe request. The interesting fields are:
+\begin{itemize}
+\item \textbf{Frame Ctrl:} the type of the frame, usually 0x00;
+\item \textbf{Address 1:} receiver MAC address, usually broadcast (FF:FF:FF:FF:FF:FF);
+\item \textbf{Address 2:} sender MAC address, the device MAC address;
+\item \textbf{Address 3:} Access Point MAC address (BSSID);
+\item \textbf{Sequence Control:} the sequence number (SN) that represent a single probe request;
+\item \textbf{Payload:} the list of the mobile devices SSID;
+\item \textbf{FCS:} a redundant check code.
+\end{itemize}
+In the payload is present a list containing the Wi-Fi APs on which the device was connected. This permits a faster connection between device and access point, but permits to understand the origin of the device and the places his owner visited.\\
+\linebreak
+In table number Y is shown a credible example of probe request. It follows the \textit{IEEE 802.11} standard so it's not encrypted.\\
+In our case, a device with MAC address \textit{14:10:9F:d5:04:01} is broadcasting a probe request with SSID \textbf{polimi-protected} and sequence number equal to 12.
+
+\begin{tabularx}{\textwidth}{|l|l|l|l|l|l|l|l|}
+\hline
+ Frame Ctrl & Duration & Destination &Source & BSSID & SN & SSID& FCS \\ \hline
+... & ... & ff:ff:ff:ff:ff:ff  & 14:10:9F:d5:04:01 & ff:ff:ff:ff:ff:ff& 12 & polimi-protected & ... \\
+... & ... & ff:ff:ff:ff:ff:ff  & 88:30:8a:49:db:0d & ff:ff:ff:ff:ff:ff& 245 & null & ... \\ \hline
+\end{tabularx}
+
+\subsubsection{Probe request number}
+The number of probe requests sent by a mobile phone is very variable among devices. On average some mobile devices send probe requests as often as 55 times per hour, but it might broadcast about 2000 probes per hour.(cit how talkative is your device).\\
+The frequency of the probe request depends on:
+\begin{itemize}
+\item \textbf{Wi-Fi chipset:} the vendor can set up different parameters depending on the company policies;
+\item \textbf{Device operating system:} the OS version and the device settings can affect the number of probes. For example, a fast speed connection setting can send an high number of probes or an energy saving mode can emit a low number of them; (parlare del fatto che un custom OS manda molto piu' probe di uno stock?)
+\item \textbf{Frequency of screen unlocking:} unlock the screen stimulates the probes activity, this permits a faster connection of the device;
+\item \textbf{Number of applications running on the device:} the more is the number of applications and programs that use Wi-Fi, the more the device is forced to send probe requests to maintain available that services.
+\end{itemize}
+
+\section{Bluetooth}
+Bluetooth (IEEE 802.15.1) is a wireless technology standard for exchanging data over short distances from fixed and mobile devices, and building personal area networks (PANs).
+Bluetooth was originated in 1994, when Jaap Haartsen, an electro technician employed at Ericsson, developed it in cooperation with Sven Mattisson. The name is based on the Danish word Bl\r{a}tand, the tenth-century king of Denmark and Norway. \\
+The purpose of Bluetooth is replace cables with short-range and cheap radio connection that permits communication between mobile devices and peripherals.\\
+Bluetooth is an open and royalty-free and, thanks to this, it is the standard for short-range wireless communication in WPAN (Wireless Personal Area Network) situations.
+It operates in the universally unlicensed (but not unregulated) Industrial, Scientific and Medical (ISM) band at 2.4 GHz.
+In the available frequency band, 79 sub-frequencies are used to transmit data, hopping from a frequency to another 1600 times per second in a pseudo random way.\\
+\linebreak
+The range of communication of Bluetooth and the transmission power are determined by their Class. As we can see in the \textbf{table 3.2} Class 1 radios has the longest range of transmission (100 meters), instead Class 3 has a range of up to 1 meter. 
+In this research, the used devices are mostly belonging to Class 2 (e.g. smart phones, tablets, laptops), their internal chipset range is about 10 meters.
+\begin{table}[H]
+\centering
+\caption*{Table 3.2}
+\begin{tabular}{|r|r|r|} 
+\hline
+ Class & Trasmission Power & Range \\ \hline \hline 
+ Class 1  & 100 mW (20dBm) &  100m \\
+ Class 2  & 2.5 mW (4dBm) &   10m\\
+ Class 3&  1 mW (0dBm) &  1m \\ \hline
+\end{tabular}
+\end{table}
+Bluetooth architecture is based on \textit{master/slave model}. A single master device can be connected up to seven different slaves devices to generate a network, called \textit{piconet}. The master shares his clock with the slaves; it also coordinates and manage the connection in the piconet and sends/requests data to the slaves.\\
+\linebreak
+The Bluetooth standard defines three different types of connection which are layered to form the Bluetooth stack.\\
+The first one is ACL (Asynchronous Connection-Less). Each device receives a default ACL logical transport when it joins the piconet. The connection must be explicitly set up and accepted between two devices before packets can be transferred.\\
+Directly above the ACL is the Logical Link Control and Adaptation Protocol (L2CAP) layer. This is a packet-based layer that provides guaranteed packet sequencing. Once established, an L2CAP connection remains open until either end explicitly closes it, or the Link Supervision Time Out (LSTO) expires.\\
+L2CAP actually serves as the transport protocol for RFCOMM, so every RFCOMM connection is actually encapsulated within an L2CAP connection.\\
+RFCOMM (Radio Frequency Communications) layer is the reliable stream-based protocol (similar to TCP) used by most Bluetooth applications. It represents the type of connection most people mean by \textit{Bluetooth connection}. 
+
+\subsection{Discover a Bluetooth device}
+In order to start Bluetooth connections between devices, the target device must be turned on and be visible. The device can be also turned on, but not be visible; in this case the pairing process is possible only if the target address is known.\\
+To discovery visible devices, an inquiry mode has been defined. Basically, a device which wants to set up a Bluetooth connection with another one, sends out an inquiry packet and the other visible devices listening for them can answer.\\
+A single Bluetooth inquiry scan process can last until 10.24 seconds(cit. BT and Wifi crowd data collection) and, at the end of the scan, zero or more devices can be discovered. \\
+The inquiry scan, called \textit{Inquiry with RSSI}, contains information about:
+\begin{itemize}
+\item \textbf{Device name:} the name that the owner assigns to the device;
+\item \textbf{Device profile:} type of the device (e.g.: phone, laptop, bluetooth headset, etc.);
+\item \textbf{Supported services:} Bluetooth services provided by the device (e.g.: \textit{Advanced Audio Distribution Profile} (A2DP), \textit{Audio Video Remote Control Profile} (AVRCP), \textit{Basic Imaging Profile} (BIP);
+\item \textbf{Unique MAC address:} a physical address assigned uniquely to each device;
+\item \textbf{Timestamp:} the date and the time of the discovery;
+\item \textbf{Received Signal Strength Indicator (RSSI):} the measurement of the power present in a received radio signal.
+\end{itemize}
+
+\subsection{Bluez}
+In the Linux kernel-based family operating system, the Bluetooth stack is managed by \textit{Bluez}.
+The most useful command of Bluez is \textit{hcitool}. Hcitool (\textit{Host Controller Interface Tool}) is used to configure Bluetooth connections and send some special command to Bluetooth devices, e.g. inquire a remote device.
+Also, hcitool provide access to the RSSI, the LQ and the TPL of a connected device, three fundamental status parameters.\\
+To obtain the previously mentioned values an active connection between the master device and the slave is needed.
+
+\paragraph{Received Signal Strength Indicator (RSSI):}
+According to the Bluetooth Core Specification, the RSSI is an 8-bit signed integer that indicates the difference between the received power level and the \textit{Golden Receiver Power Range} (GRPR). \\
+Using the command \texttt{hcitool rssi \textless bdaddr\textgreater} a value between +15dBm and -35dBm is obtained. \\
+A positive RSSI value indicates how many dB the RSSI is above the upper limit; a negative value indicates how many dB the RSSI is below the lower limit. The value zero indicates that the RSSI is inside the Golden Receive Power Range. (cit bluetoot core v5.0)\\
+The Golden Receive Power Range indicates a zone in which a raw bit error rate is better than 0.1 \% (BER \textless 10\textsuperscript{3}).
+
+\paragraph{Transmit Power Level (TPL):}
+TPL is an 8-bit signed integer which specifies the Bluetooth module's transmit power level (in dBm). Every Bluetooth class has a fixed value and it doesn't change during a Bluetooth connection. For example, Class 2 devices has +4 dBm as maximum power, Class 3 has 0 dBm and Class 1 has +20 dBm.
+
+\paragraph{Link Quality (LQ):}
+Link Quality is a value from 0 to 255, which represents the quality of the link between two devices. The higher the value, the better the link quality is. For most Bluetooth modules, it is derived from the average \textit{bit error rate} (BER) seen at the receiver, and is constantly updated as packets are received.
+
+\subsection{Inquiry with RSSI and hcitool RSSI}
+As explained in section 3.2.1 and 3.2.2, using hcitool of Bluez we can obtain two different types of RSSI values.
+The first value is the RSSI obtained from the inquiry scan (\textit{inqury with RSSI}) and identify the power level of the Bluetooth target device that the receiver sees; the second one is the RSSI obtained directly from a connected device.\\
+To be clearer, from now on, the value obtained from the inquiry scan will be called RX. On the other hand, the value obtained from a connected device will be simply called RSSI.\\
+\linebreak
+This two values are strictly related with a linear dependence, in fact they represents the same value. The RX is the real power level, instead the RSSI is the power level minus the GRPR. RSSI can be converted to RX power level if the Upper and Lower threshold values of the GRPR are known.The relation is further analyzed in section 5.Y.Z. \\
+\subsection{l2ping}
+The Linux Bluetooth stack also permits to ping a Bluetooth device.\\
+Ping is a utility used to test the reachability of an host, in our case a Bluetooth machine. It measures the round-trip time for messages sent from the originating host to a destination that are echoed back to the source.\\
+\linebreak
+In particular, for Bluetooth is used the command \textit{l2ping}. L2ping sends a \textit{L2CAP echo request} to the Bluetooth MAC address (cit man page), and wait and echo response from the target device. L2CAP echo requests are directly analogous to the familiar ICMP ping packet in IP.
+The ping feature is useful to understand if a Bluetooth device is in a particular range. If so, l2ping utility starts to send several echo requests to the target. If not, an error message is shown.\\
+In particular, if the echo request is successful l2ping starts to ping the Bluetooth target device. In the default mode these fields are shown:\\
+\begin{itemize}
+\item The size of the single packet of the echo request (default 44 bytes);
+\item The MAC address of the target;
+\item The progressive id of the packet;
+\item The echo Round-Trip Time (RTT) in milliseconds.
+\end{itemize}
+immagine del terminale col ping\\
+\linebreak
+The use of l2ping permits to create a basic L2CAP connection that almost universally authorisation-free. Although the resultant connections are limited in use for communications (they support little more than low-level testing) they are sufficient to run successfully RSSI, LQ, or TPL Linux commands.
+
+\section{Mac Address}
+Mac Address is the acronym of \textit{Media Access Control Address}. It is an unique identifier of a IEEE 802 network interface. Some examples of IEEE 802 standards are: ethernet, Wi-Fi, ZigBee, FDDI (\textit{Fiber Distributed Data Interface}) and Bluetooth. \\
+In our case MAC address is a fundamental information because it identifies uniquely a particular network interface of the device. Considering that a smartphone is equipped with Wi-Fi and Bluetooth chipset, a device is characterized by a couple of MAC Address: one MAC for Wi-Fi interface and the other one for Bluetooth interface.\\
+\linebreak
+In both cases the structure is the same: a 12 digit (48 bit or 6 bytes) address, usually written it the following three format: 
+\begin{itemize}
+\item \textbf{MM:MM:MM:SS:SS:SS}
+\item \textbf{MM-MM-MM-SS-SS-SS}
+\item \textbf{MMM.MMM.SSS.SSS}
+\end{itemize}
+The leftmost 6 digits (24 bits) called \textit{prefix} is associated with the adapter manufacturer, called OUI (Organizationally Unique Identifier). Each vendor registers and obtains MAC prefixes as assigned by the IEEE. Vendors often possess many prefix numbers associated with their different products.\\
+Discover on the web the vendor from the prefix is quite easy. Whireshark  provides a way to look up OUIs and other MAC address prefixes (https://www.wireshark.org/tools/oui-lookup.html).\\ 
+\linebreak
+The rightmost digits of a MAC address represent an identification number for the specific device. It is called Network Interface Controller (NIC). Among all devices manufactured with the same vendor prefix, each is given their own unique 24-bit number.\\
+\linebreak
+A real example of MAC address of the same device is:
+\begin{itemize}
+\item \textbf{Wi-Fi address:} F4:E3:FB:85:53:1D
+\item \textbf{Bluetooth address:} F4:E3:FB:A5:66:D8
+\end{itemize}
+In the example above the the vendors digits are the same, but often happens that the same device has two completely different Wi-Fi and Bluetooth prefixes.
+
+
+\subsubsection{Privacy implications}
+Due to the fact the MAC address identify uniquely a device, it can be used to identify a person. As explained in Section 2 (Related Work) this can rise a great privacy issue. In fact, as explained above, both Wi-Fi and Bluetooth addresses are easy to obtain: the first one is sent in clear with the probe request and the Bluetooth address is visible during the inquiry scan but the two addresses are different.\\
+\linebreak
+To protect mobile devices from this issue, there's a technique known as MAC address randomization. This replaces the number that uniquely identifies a device's Wi-Fi hardware with randomly generated values, but until now only Apple (iOS 10+) and a few of Android phones perform randomization. Moreover, randomization happens only when a device is locked, when the screen is turned on the real MAC address is broadcast inside the probes.\\
+Bluetooth does not implement any sort of MAC address randomization.
+

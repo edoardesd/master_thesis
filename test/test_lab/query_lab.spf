@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>ContentFilters</key>
+	<dict/>
+	<key>auto_connect</key>
+	<true/>
+	<key>data</key>
+	<dict>
+		<key>connection</key>
+		<dict>
+			<key>colorIndex</key>
+			<integer>3</integer>
+			<key>database</key>
+			<string>lab</string>
+			<key>host</key>
+			<string>localhost</string>
+			<key>kcid</key>
+			<string>-458291362964406129</string>
+			<key>name</key>
+			<string>localhost_lab:DB</string>
+			<key>rdbms_type</key>
+			<string>mysql</string>
+			<key>sslCACertFileLocation</key>
+			<string></string>
+			<key>sslCACertFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslCertificateFileLocation</key>
+			<string></string>
+			<key>sslCertificateFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>sslKeyFileLocation</key>
+			<string></string>
+			<key>sslKeyFileLocationEnabled</key>
+			<integer>0</integer>
+			<key>type</key>
+			<string>SPSocketConnection</string>
+			<key>useSSL</key>
+			<integer>0</integer>
+			<key>user</key>
+			<string>root</string>
+		</dict>
+		<key>session</key>
+		<dict>
+			<key>connectionEncoding</key>
+			<string>latin1</string>
+			<key>contentFilter</key>
+			<dict/>
+			<key>contentPageNumber</key>
+			<integer>1</integer>
+			<key>contentSelection</key>
+			<data>
+			YnBsaXN0MDDUAQIDBAUGJCVYJHZlcnNpb25YJG9iamVjdHNZJGFy
+			Y2hpdmVyVCR0b3ASAAGGoKgHCBMUFRYaIVUkbnVsbNMJCgsMDxJX
+			TlMua2V5c1pOUy5vYmplY3RzViRjbGFzc6INDoACgAOiEBGABIAF
+			gAdUdHlwZVRyb3dzXxAdU2VsZWN0aW9uRGV0YWlsVHlwZU5TSW5k
+			ZXhTZXTSFwsYGVxOU1JhbmdlQ291bnQQAIAG0hscHR5aJGNsYXNz
+			bmFtZVgkY2xhc3Nlc1pOU0luZGV4U2V0oh8gWk5TSW5kZXhTZXRY
+			TlNPYmplY3TSGxwiI1xOU0RpY3Rpb25hcnmiIiBfEA9OU0tleWVk
+			QXJjaGl2ZXLRJidUZGF0YYABAAgAEQAaACMALQAyADcAQABGAE0A
+			VQBgAGcAagBsAG4AcQBzAHUAdwB8AIEAoQCmALMAtQC3ALwAxwDQ
+			ANsA3gDpAPIA9wEEAQcBGQEcASEAAAAAAAACAQAAAAAAAAAoAAAA
+			AAAAAAAAAAAAAAABIw==
+			</data>
+			<key>contentSortColIsAsc</key>
+			<true/>
+			<key>contentViewport</key>
+			<string>{{0, 0}, {720, 522}}</string>
+			<key>isToolbarVisible</key>
+			<true/>
+			<key>queries</key>
+			<string>INSERT INTO lab_n5_wifi_less
+SELECT *
+FROM lab_n5_wifi
+WHERE mac_address in (SELECT DISTINCT mac_address
+FROM lab_n5_wifi
+GROUP BY mac_address, rasp
+HAVING COUNT(*) &gt; 30);
+
+INSERT INTO avg_rasp6_bt
+SELECT AVG(rssi), mac_address, rasp, '1' AS pos
+FROM lab_n1_bluetooth
+WHERE rasp = 6
+GROUP BY mac_address, rasp;
+
+SELECT r1.avg AS rasp1, r2.avg AS rasp2, r3.avg AS rasp3, r4.avg AS rasp4, r5.avg AS rasp5, r6.avg AS rasp6, r1.mac_address, 4 AS pos
+FROM avg_rasp1 AS r1, avg_rasp2 AS r2, avg_rasp3 AS r3, avg_rasp4 AS r4, avg_rasp5 AS r5, avg_rasp6 AS r6
+WHERE r1.mac_address = r2.mac_address AND r2.mac_address = r3.mac_address AND r4.mac_address = r5.mac_address AND r6.mac_address = r5.mac_address AND r3.mac_address = r4.mac_address AND r1.pos = 5 AND r2.pos = 5 AND r3.pos = 5 AND r4.pos = 5 AND r5.pos = 5 AND r6.pos = 5;</string>
+			<key>table</key>
+			<string>avg_rasp1</string>
+			<key>view</key>
+			<string>SP_VIEW_CUSTOMQUERY</string>
+			<key>windowVerticalDividerPosition</key>
+			<real>240</real>
+		</dict>
+	</dict>
+	<key>encrypted</key>
+	<false/>
+	<key>format</key>
+	<string>connection</string>
+	<key>queryFavorites</key>
+	<array/>
+	<key>queryHistory</key>
+	<array>
+		<string>UPDATE bluetooth_dataset_lab_pos9 SET dev = 'elisabetta' WHERE mac_address = 'E0:AC:CB:70:B1:21'</string>
+		<string>UPDATE dataset_lab_pos9 SET dev = 'elisabetta' WHERE mac_address = 'E0:AC:CB:70:B1:21'</string>
+		<string>UPDATE dataset_lab_pos9 SET dev = 'huawei' WHERE mac_address = @huawei_wifi</string>
+		<string>UPDATE dataset_lab_pos9 SET dev = 's3' WHERE mac_address = @s3_wifi</string>
+		<string>UPDATE dataset_lab_pos9 SET dev = 'ipad' WHERE mac_address = @ipad_wifi</string>
+		<string>UPDATE dataset_lab_pos9 SET dev = 'lg' WHERE mac_address = @lg_wifi</string>
+		<string>UPDATE dataset_lab_pos9 SET dev = 'sams' WHERE mac_address = @sams_wifi</string>
+		<string>UPDATE dataset_lab_pos5 SET dev = 'huawei' WHERE mac_address = @huawei_wifi</string>
+		<string>UPDATE dataset_lab_pos5 SET dev = 's3' WHERE mac_address = @s3_wifi</string>
+		<string>UPDATE dataset_lab_pos5 SET dev = 'ipad' WHERE mac_address = @ipad_wifi</string>
+		<string>UPDATE dataset_lab_pos5 SET dev = 'lg' WHERE mac_address = @lg_wifi</string>
+		<string>UPDATE dataset_lab_pos5 SET dev = 'sams' WHERE mac_address = @sams_wifi</string>
+		<string>UPDATE dataset_lab_pos4 SET dev = 'huawei' WHERE mac_address = @huawei_wifi</string>
+		<string>UPDATE dataset_lab_pos4 SET dev = 's3' WHERE mac_address = @s3_wifi</string>
+		<string>UPDATE dataset_lab_pos4 SET dev = 'ipad' WHERE mac_address = @ipad_wifi</string>
+		<string>UPDATE dataset_lab_pos4 SET dev = 'lg' WHERE mac_address = @lg_wifi</string>
+		<string>UPDATE dataset_lab_pos4 SET dev = 'sams' WHERE mac_address = @sams_wifi</string>
+		<string>UPDATE dataset_lab_pos3 SET dev = 'huawei' WHERE mac_address = @huawei_wifi</string>
+		<string>UPDATE dataset_lab_pos3 SET dev = 's3' WHERE mac_address = @s3_wifi</string>
+		<string>UPDATE dataset_lab_pos3 SET dev = 'ipad' WHERE mac_address = @ipad_wifi</string>
+	</array>
+	<key>rdbms_type</key>
+	<string>mysql</string>
+	<key>rdbms_version</key>
+	<string>5.7.18</string>
+	<key>version</key>
+	<integer>1</integer>
+</dict>
+</plist>

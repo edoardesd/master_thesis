@@ -118,7 +118,7 @@ def init_csv(path_day, path_time, my_final_list, csv_type):
 
 	if csv_type == "bd":
 		data = bd_to_list(my_final_list)
-		fieldnames = "mac address, timestamp, rasp, echo_time, rssi".split(",")
+		fieldnames = "mac address, timestamp, rasp, echo_time, rssi, lq, tpl".split(",")
 		path = string_path +"bluetooth.csv"
 	
 	if csv_type == "hc":
@@ -269,19 +269,20 @@ def signal_handler():
 	#print "BLUETOOTH DUMP:"
 	#pp.pprint(bd_list)
 	
-	sleep(5)
+	sleep(2)
 		
 	print "Create CSV"
 	init_csv(starting_day, starting_time, bd_list, "bd")
-	#init_csv(starting_day, starting_time, hc_list, "hc")
+	init_csv(starting_day, starting_time, hc_list, "hc")
 	init_csv(starting_day, starting_time, wifi_list, "wifi")
 
 
 	#subprocess.call(['sudo airmon-ng stop wlan1mon'], shell=True)
 
 	subprocess.check_output(['ifdown', 'wlan0'])
-	sleep(20)
+	sleep(5)
 	subprocess.check_output(['ifup', '--force','wlan0'])
+	subprocess.check_output(['reset'])
 	#sleep(10)
 
 	#print "Restart wifi"
@@ -359,13 +360,13 @@ if __name__ == "__main__":
 	hc_list = {}
 	bd_list = {}
 
- 	#subprocess.Popen(['sudo', 'python', pwd+'log_script/scan_python.py'])
+ 	subprocess.Popen(['sudo', 'hcitool', 'spinq'])
 	
 	# Start the airodump-ng processor
 	ad = airodump.AirodumpProcessor()
 
 	#Start the hcidump processor
-	#bt = hcidump.HcidumpProcessor()
+	bt = hcidump.HcidumpProcessor()
 
 	#Start the bluedump processor
 	bd = bluedump.BluetoothProcessor()
@@ -373,10 +374,10 @@ if __name__ == "__main__":
 
 	starting_time = strftime("%H%M%S", localtime())
 	starting_day = strftime("%d%m%y", localtime())
-	starting_string = "\nStart at time " +starting_time+ "  of " +starting_day
+	starting_string = " starts at " +starting_time+ "  of " +starting_day
 
 	wifi_string = "wifiraw_"+starting_day+"_"+starting_time
-	print "BLEWIZI dump V 2.0", starting_string
+	print "BLEWIZI dump V 3.0", starting_string
 
 	#if dev == "1":
 	#	print "Start MYSQL"
@@ -385,19 +386,20 @@ if __name__ == "__main__":
 	#subprocess.call([pwd+'Script_Bash/./wifi_py_config.sh'], shell=True)
 
 	thread_wifi = myThread(1, "wifi")
-	#thread_hc = myThread(2, "bluetooth")
-	thread_bd = myThread(3, "ping/rssi")
+	thread_hc = myThread(2, "bluetooth")
+	#thread_bd = myThread(3, "ping/rssi")
 
 
 
-	thread_bd.start()
+	#thread_bd.start()
+	thread_hc.start()
 	thread_wifi.start()	
-	#thread_hc.start()
+	
 	
 	sleep(sleep_time)
 	print "\nStop, going to sleep"
 
 	ad.stop()
-	#bt.stop()
-	bd.stop()
+	bt.stop()
+	#bd.stop()
 	signal_handler()

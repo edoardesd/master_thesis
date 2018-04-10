@@ -46,6 +46,8 @@ class HcidumpProcessor:
 		global in_BLE
 		global last_mac
 		global counter
+		global last_rssi
+
 		
 		mosq_host = "127.0.0.1"
 		mosq_topic = "bt/log"
@@ -65,7 +67,7 @@ class HcidumpProcessor:
 
 		#recupero la stringa che sta scrivendo airodump
 		line = self.bt.stdout.readline()
-
+		#print line
 		#setto il tempo attuale
 		now = datetime.now().strftime("%H:%M:%S")
 		#now = datetime.now().strftime("%H:%M:%S.%f")[:-3]
@@ -74,11 +76,13 @@ class HcidumpProcessor:
 		#if line:
 			#elf.logger.write("L:"+line.encode('ascii', errors='ignore'))
 
+		#print line
 		counter +=1
-		if (counter%197 == 0):
-			print "HCIDUMP is running!"
+		if (counter%487 == 0):
+			print "HCIDUMP is running..."
 
 		if not line:
+			#print self.client_list
 			return self.client_list, False		
 
 		try:
@@ -109,11 +113,13 @@ class HcidumpProcessor:
 			if in_inquiry:
 				#elimino la tabbata iniziale
 				v = line.replace("    ", "")
+				#print "osa"
 				if v.startswith("bdaddr"):
 					mac_line = v.split()
 					CLIENT = mac_line[1]
 					rx_power = mac_line[-1].replace("\n", "")
 					last_mac = CLIENT
+					last_rssi = rx_power
 
 					if rx_power == '0x0000':
 						return self.client_list, True
@@ -148,15 +154,16 @@ class HcidumpProcessor:
 
 						self.client_list[last_mac]["name"] = client_name
 
-						new_bt_device = "Find a new Bluetooth device at time "+self.client_list[last_mac]["first seen"]+". Mac address: "+last_mac+" , device name: "+ self.client_list[last_mac]["name"]
+						new_bt_device = "Bluetooth dev. MAC address: "+last_mac+", dev name: " +client_name+", timestamp: "+now+", RSSI: "+last_rssi
 						print new_bt_device
-
+						
+						
 						if rasp_mode:
 							mosquitto_pub(new_bt_device)
 
 			if in_BLE:
 				print "BLE", line
-
+			#print self.client_list
 			return self.client_list, True
 	
 		except:

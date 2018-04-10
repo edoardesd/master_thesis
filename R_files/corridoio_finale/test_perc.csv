@@ -1,0 +1,6 @@
+algorithm,top1,top3,top5
+normalization,33,34,13
+conversion Wi-Fi -> Bluetooth,53,14,13
+conversion Wifi/Bluetooth -> distance (linear),33,40,14
+conversion Wifi/Bluetooth -> distance (logarithmic),40,33,14
+trilateration,47,13,20

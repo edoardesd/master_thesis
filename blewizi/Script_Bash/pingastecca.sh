@@ -1,6 +1,10 @@
 #! /bin/bash
 
+mac_address=$1
+
+echo "ping $mac_address"
+
 while : 
 	do
-		nohup sudo l2ping -f F4:E3:FB:85:53:1D
+		nohup sudo l2ping -f $mac_address
 done

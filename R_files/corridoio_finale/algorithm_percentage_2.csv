@@ -1,0 +1,16 @@
+algorithm,top,percentage
+normalization,5,13
+normalization,3,34
+normalization,1,33
+conversion Wi-Fi -> Bluetooth,1,53
+conversion Wi-Fi -> Bluetooth,3,14
+conversion Wi-Fi -> Bluetooth,5,13
+conversion dist linear,1,33
+conversion dist linear,3,40
+conversion dist linear,5,14
+conversion dist logarithmic,1,40
+conversion dist logarithmic,3,33
+conversion dist logarithmic,5,14
+trilateration,1,47
+trilateration,3,13
+trilateration,5,20

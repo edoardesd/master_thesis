@@ -78,5 +78,42 @@ s3_finger_wifi_56 <- cbind(fingerprint_lg_rasp5_wifi[,-2], fingerprint_s3_rasp6_
 
 all_finger_wifi_56 <- (lg_finger_wifi_56 + sams_finger_wifi_56 + s3_finger_wifi_56)/3
 
+#### CREAZIONE DATASET FINGERPRINT #### nome = f_6_dispositivo.bt/wifi
+#all
+f_6_all.wifi <- cbind(wifi_avg, all_finger_wifi_56)
+f_6_all.wifi <- f_6_all.wifi[, c(1,2,3,4,6,7,5)]
+
+f_6_all.bt <- cbind(bt_avg, all_finger_bt_56)
+f_6_all.bt <- f_6_all.bt[, c(1,2,3,4,6,7,5)]
+
+#lg
+f_6_lg.wifi <- cbind(lg_wifi_avg, lg_finger_wifi_56)
+f_6_lg.wifi <- f_6_lg.wifi[, c(1,2,3,4,6,7,5)]
+
+f_6_lg.bt <- cbind(lg_bt_avg, lg_finger_bt_56)
+f_6_lg.bt <- f_6_lg.bt[, c(1,2,3,4,6,7,5)]
+
+#sams
+f_6_sams.wifi <- cbind(sams_wifi_avg, sams_finger_wifi_56)
+f_6_sams.wifi <- f_6_sams.wifi[, c(1,2,3,4,6,7,5)]
+
+f_6_sams.bt <- cbind(sams_bt_avg, sams_finger_bt_56)
+f_6_sams.bt <- f_6_sams.bt[, c(1,2,3,4,6,7,5)]
+
+#s3
+f_6_s3.wifi <- cbind(s3_wifi_avg, s3_finger_wifi_56)
+f_6_s3.wifi <- f_6_s3.wifi[, c(1,2,3,4,6,7,5)]
+
+f_6_s3.bt <- cbind(s3_bt_avg, s3_finger_bt_56)
+f_6_s3.bt <- f_6_s3.bt[, c(1,2,3,4,6,7,5)]
 
 
+##### EXPORT ####
+write.csv(f_6_all.wifi, file = "f_6_all_wifi.txt",row.names=FALSE)
+write.csv(f_6_all.bt, file = "f_6_all_bt.txt",row.names=FALSE)
+write.csv(f_6_lg.wifi, file = "f_6_lg_wifi.txt",row.names=FALSE)
+write.csv(f_6_lg.bt, file = "f_6_lg_bt",row.names=FALSE)
+write.csv(f_6_sams.wifi, file = "f_6_sams_wifi.txt",row.names=FALSE)
+write.csv(f_6_sams.bt, file = "f_6_sams_bt.txt",row.names=FALSE)
+write.csv(f_6_s3.wifi, file = "f_6_s3_wifi.txt",row.names=FALSE)
+write.csv(f_6_s3.bt, file = "f_6_s3_bt.txt",row.names=FALSE)
